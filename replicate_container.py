@@ -2,22 +2,21 @@ import os
 import subprocess
 import time
 import base64
-from typing import Any, Dict
-
-from hparams import HPARAMS
 import requests
 
-class VLMDocker:
+class ReplicateContainer:
 
-    def __init__(self, name: str = 'llava13b', port: str = '5000', warmup: int = 25):
+    def __init__(self,
+                 name: str = 'llava13b',
+                 port: str = '5000',
+                 warmup: int = 25,
+        ):
         self.nuke()
         self.name, self.port, self.warmup = name, port, warmup
         self.proc = subprocess.Popen([
             "docker", "run", "--rm", 
-            "-v", "/home/oop/dev/LLaVA/llava-v1.5-13b:/src/liuhaotian/llava-v1.5-13b", 
             "-p", f"{port}:{port}", 
-            "--gpus=all", 
-            name
+            "--gpus=all", name
         ])
         time.sleep(self.warmup)
 
@@ -33,24 +32,36 @@ class VLMDocker:
         self.proc.terminate()
         self.nuke()
 
-async def run_vlm(
-    prompt: str = HPARAMS["vlm_prompt"],
-    docker_url: str = HPARAMS["vlm_docker_url"],
-) -> Dict[str, Any]:
-    log: str = f"{HPARAMS['vlm_token']} VLM using PROMPT: {prompt}"
-    _path = os.path.join(HPARAMS["brain_data_dir"], HPARAMS["image_filename"])
-    with open(_path, "rb") as img_file:
+def send_request(
+    filepath: str = '/tmp/image.jpg',
+    docker_url: str = '',
+    **kwargs,
+) -> str:
+    with open(filepath, "rb") as img_file:
         response = requests.post(
             docker_url,
             headers={"Content-Type": "application/json"},
             json={
                 "input": {
                     "image": f"data:image/png;base64,{base64.b64encode(img_file.read()).decode('utf-8')}",
-                    "prompt": prompt,
+                    **kwargs,
                 },
             },
         )
     reply = ''.join(response.json()["output"])
-    log += f" REPLY: {reply}"
-    print(f"\n{HPARAMS['vlm_token']} {log}\n")
-    return {"log": log, "reply": reply}
+    return reply
+
+def llm_request():
+    pass
+
+def vlm_request():
+    pass
+
+def tts_request():
+    pass
+
+def stt_request():
+    pass
+
+if __name__ == "__main__":
+    pass

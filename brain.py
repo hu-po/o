@@ -3,7 +3,7 @@ import os
 
 from hparams import HPARAMS, Task
 from utils import find_file, send_file, task_batch, write_log, clear_data
-from vlm import VLMDocker, run_vlm
+from replicate_container import VLMDocker, run_vlm
 
 
 def _loop():

@@ -1,29 +1,6 @@
 # o
 autonomous humanoid robot
 
-### LLM (Language Language Model)
-
-https://replicate.com/andreasjansson/llama-2-13b-chat-gguf/api?tab=docker
-
-docker run -d -p 5000:5000 --gpus=all r8.im/andreasjansson/llama-2-13b-chat-gguf@sha256:60ec5dda9ff9ee0b6f786c9d1157842e6ab3cc931139ad98fe99e08a35c5d4d4
-curl http://localhost:5000/predictions -X POST \
--H "Content-Type: application/json" \
--d '{"input": {
-  "prompt": "...",
-    "grammar": "...",
-    "jsonschema": "...",
-    "max_tokens": "...",
-    "temperature": "...",
-    "top_p": "...",
-    "top_k": "...",
-    "frequency_penalty": "...",
-    "presence_penalty": "...",
-    "repeat_penalty": "...",
-    "mirostat_mode": "...",
-    "mirostat_learning_rate": "...",
-    "mirostat_entropy": "..."
-  }}'
-
 ### VLM (Video Language Model)
 
 LLaVA 13B running locally at 8bit on a docker container (14G VRAM)
@@ -69,6 +46,10 @@ curl http://localhost:5000/predictions -X POST \
     "no_speech_threshold": "..."
   }}'
 
+docker run --name whisper --gpus=all r8.im/openai/whisper@sha256:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2
+docker commit whisper whisper
+docker run -it --rm -p 5000:5000 --gpus=all whisper
+
 ### TTS (Text To Speech)
 
 https://replicate.com/suno-ai/bark/api?tab=docker
@@ -85,10 +66,30 @@ curl http://localhost:5000/predictions -X POST \
     "output_full": "..."
   }}'
 
-soundevice requires pyaudio which requires portaudio
-```
-sudo apt-get install libportaudio2
-sudo apt-get install python3-pyaudio
-pip install sounddevice==0.4.6
-pip install pydub==0.25.1
-```
+docker run --name bark r8.im/suno-ai/bark@sha256:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787
+docker commit bark bark
+docker run -it --rm -p 5000:5000 --gpus=all bark
+
+### LLM (Language Language Model)
+
+https://replicate.com/meta/llama-2-13b-chat/api?tab=docker
+
+docker run -d -p 5000:5000 --gpus=all r8.im/meta/llama-2-13b-chat@sha256:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d
+curl http://localhost:5000/predictions -X POST \
+-H "Content-Type: application/json" \
+-d '{"input": {
+  "prompt": "...",
+    "system_prompt": "...",
+    "max_new_tokens": "...",
+    "min_new_tokens": "...",
+    "temperature": "...",
+    "top_p": "...",
+    "top_k": "...",
+    "stop_sequences": "...",
+    "seed": "...",
+    "debug": "..."
+  }}'
+
+docker run --name llama2-13b r8.im/meta/llama-2-13b-chat@sha256:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d
+docker commit llama2-13b llama2-13b
+docker run -it --rm -p 5000:5000 --gpus=all llama2-13b
