@@ -1,4 +1,5 @@
 import replicate
+import requests
 
 from util import timeit, encode_image
 
@@ -88,8 +89,7 @@ def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
             "history_prompt": voice,
         },
     )
-    print(output)
-    return output
+    return requests.get(output['url']).content
 
 
 @timeit

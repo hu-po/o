@@ -109,7 +109,7 @@ def save_one_image(rostopic: str = CAMERA_ROS_TOPIC):
     rospy.init_node("save_one_image")
     rospy.Subscriber(rostopic, Image, image_callback)
     rospy.spin()
-    rospy.kill_node("save_one_image")
+    rospy.signal_shutdown("Image saved")
 
 
 @timeit
@@ -157,6 +157,7 @@ def move(
             step_num=step_num,
         )
         gait_manager.stop()
+        rospy.signal_shutdown("Movement complete")
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['success']} moved {direction}"
     else:
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} could not move in unknown direction {direction}"
