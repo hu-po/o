@@ -92,7 +92,7 @@ REPERTOIRE = {
 
 
 @timeit
-def act(
+def choose_action(
     llm: callable,
     state: list,
     repertoire: dict = REPERTOIRE,
@@ -118,16 +118,14 @@ MOVE,forward
 LOOK,up
 Your response should be a single line with the chosen function name and arguments.
 """
-    print(f"Input to llm: {prompt}\n")
     choice = llm(prompt)
-    print(f"Output from act: {choice}")
     func_name, args = choice.split(",")
     if func_name.upper() in repertoire:
+        _msg = f"{EMOJIS['llm']}{EMOJIS['success']} chose {func_name} with args {args}\n"
+        _msg += repertoire[func_name.upper()](args)     
         return repertoire[choice](args)
     else:
-        return (
-            f"{EMOJIS['llm']}{EMOJIS['fail']} could not run unknown function {choice}"
-        )
+        return f"{EMOJIS['llm']}{EMOJIS['fail']} unknown function {func_name}"
 
 
 def autonomous_loop(
@@ -141,14 +139,15 @@ def autonomous_loop(
     while datetime.now() - birthday < lifespan:
         num_steps += 1
         obs = asyncio.run(observe(models["vlm"], models["stt"]))
+        state.append(obs)
         if len(state) >= STATE_SIZE:
             state.pop(0)
-        state.append(obs)
         _state = "\n".join(state)
         print(f"*********** {EMOJIS['state']} at step {num_steps}")
         print(_state)
         print(f"*********** {EMOJIS['state']}")
-        act(models["llm"], _state)
+        act = choose_action(models["llm"], _state)
+        state.append(act)
     print(f"{EMOJIS['died']} robot is dead")
 
 
