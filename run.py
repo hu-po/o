@@ -41,7 +41,7 @@ elif args.robot == "test":
 
 
 BIRTHDAY: datetime = datetime.now()
-LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
+LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
 STATE_SIZE: int = 256  # How many characters worth of state to keep
 BLIND: bool = True  # Do not use vision module
 MUTE: bool = True  # Mute audio output
