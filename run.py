@@ -19,7 +19,7 @@ argparser.add_argument("--mode", type=str, required=True)
 args = argparser.parse_args()
 
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
-DATE_FORMAT: str = "%d.%m.%Y"
+STATE_SIZE: int = 2  # Number of observations to keep in the state
 BLIND: bool = True  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
@@ -29,7 +29,6 @@ AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
 
-STATE_SIZE: int = 2  # Number of observations to keep in the state
 
 
 @timeit
@@ -130,7 +129,7 @@ def autonomous_loop(
     lifespan: timedelta = LIFESPAN,
 ) -> None:
     birthday = datetime.now()
-    print(f"{EMOJIS['born']} born on {datetime.now().strftime(DATE_FORMAT)}")
+    print(f"{EMOJIS['born']} robot is alive")
     state = []
     num_steps = 0
     while datetime.now() - birthday < lifespan:
@@ -144,7 +143,7 @@ def autonomous_loop(
             print(s)
         print(f"*********** {EMOJIS['state']}")
         act(state, models["llm"])
-    print(f"{EMOJIS['died']} died on {datetime.now().strftime(DATE_FORMAT)}")
+    print(f"{EMOJIS['died']} robot is dead")
 
 
 if __name__ == "__main__":
