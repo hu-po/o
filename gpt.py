@@ -25,58 +25,52 @@ VLM_PROMPT: str = ". ".join(
         "Your reponse should not contain any special characters",
     ]
 )
-MAX_TOKENS_VISION: int = 16  # max tokens for reply
+VLM_MAX_TOKENS: int = 16  # max tokens for reply
 LLM_MODEL: str = "gpt-4-1106-preview"
-LLM_SYSTEM_PROMPT: str = ". ".join(
-    [
-        "You are the function master node in a robot control system",
-        "You decide when to run robot functions on behalf of the other robot nodes",
-        "Use the log to avoid previous functions",
-        "Do not use the same functions as before",
-        "You can move to explore and understand the environment",
-        # "The robot can observe the world through sight",
-        # "The robot can observe the world through sound",
-        "Make sure to often listen",
-        "A good default is to listen",
-        "If a human is visible, perform the greet action or speak to them",
-        "If you hear a human, respond to them by speaking",
-        "Try to move towards interesting things",
-        "Always pick a function to run",
-        "The other robot nodes depend on you",
-        "Do not repeat functions",
-    ]
-)
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.0
-TTS_MODEL: str = "tts-1"  # Text-to-speech model
+# Text-to-Speech
+TTS_MODEL: str = "tts-1"
 VOICE: str = "echo"  # (alloy, echo, fable, onyx, nova, and shimmer)
+# Speech-to-Text
 STT_MODEL: str = "whisper-1"  # Speech-to-text model
 
 
 @timeit
 def llm(
     prompt: str,
-    language_model: str = LLM_MODEL,
+    system: str,
+    model: str = LLM_MODEL,
     max_tokens: int = LLM_MAX_TOKENS,
     temperature: float = LLM_TEMPERATURE,
 ) -> str:
-    response = "asd"
-    return response
+    # https://platform.openai.com/docs/guides/text-generation/chat-completions-api
+    response = client.chat.completions.create(
+        model=model,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": prompt},
+        ]
+    )
+    reply = response['choices'][0]['message']['content']
+    return reply
 
 
 @timeit
 def vlm(
     base64_image: str,
     prompt: str = VLM_PROMPT,
-    vision_model: str = VLM_MODEL,
-    max_tokens: int = MAX_TOKENS_VISION,
+    model: str = VLM_MODEL,
+    max_tokens: int = VLM_MAX_TOKENS,
 ) -> str:
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
     }
     payload = {
-        "model": vision_model,
+        "model": model,
         "messages": [
             {
                 "role": "user",
@@ -107,10 +101,10 @@ def tts(text: str, file_name: str, model: str = TTS_MODEL, voice: str = VOICE):
 
 
 @timeit
-def stt(audio_path: str) -> str:
+def stt(audio_path: str, model: str = STT_MODEL) -> str:
     with open(audio_path, "rb") as f:
         transcript = client.audio.transcriptions.create(
-            model=STT_MODEL, file=f, response_format="text"
+            model=model, file=f, response_format="text"
         )
     return transcript
 
@@ -121,3 +115,17 @@ MODELS = {
     "tts": tts,
     "stt": stt,
 }
+
+if __name__ == "__main__":
+    print(tts("hello world", "/tmp/hello_world.mp3"))
+    print(stt("/tmp/hello_world.mp3"))
+    print(llm("you are a robot", "hello"))
+    import cv2
+    import base64
+
+    TEST_IMAGE_PATH = "/tmp/test.jpg"
+    frame = cv2.imread(TEST_IMAGE_PATH)
+    _, buffer = cv2.imencode(".jpg", frame)
+    base64_image = base64.b64encode(buffer).decode("utf-8")
+    print(vlm(base64_image))
+    

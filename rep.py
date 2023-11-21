@@ -1,8 +1,9 @@
+from pydub import AudioSegment
 import replicate
 
 from util import timeit
 
-VLM_MODEL: str = "gpt-4-vision-preview"
+VLM_MODEL: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_PROMPT: str = ". ".join(
     [
         "Describe the scene, objects, and characters",
@@ -18,8 +19,8 @@ VLM_PROMPT: str = ". ".join(
         "Your reponse should not contain any special characters",
     ]
 )
-MAX_TOKENS_VISION: int = 16  # max tokens for reply
-LLM_MODEL: str = "gpt-4-1106-preview"
+VLM_MAX_TOKENS: int = 16  # max tokens for reply
+LLM_MODEL: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
 LLM_SYSTEM_PROMPT: str = ". ".join(
     [
         "You are the function master node in a robot control system",
@@ -41,26 +42,36 @@ LLM_SYSTEM_PROMPT: str = ". ".join(
 )
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.0
-TTS_MODEL: str = "tts-1"  # Text-to-speech model
-VOICE: str = "echo"  # (alloy, echo, fable, onyx, nova, and shimmer)
-STT_MODEL: str = "whisper-1"  # Speech-to-text model
+# Text-to-Speech
+TTS_MODEL: str = (
+    "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"
+)
+VOICE: str = "en_speaker_0"  # 9 total english speakers available
+# Speech-to-Text
+STT_MODEL: str = (
+    "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"
+)
 
 
 @timeit
 def llm(
     prompt: str,
-    language_model: str = LLM_MODEL,
+    system: str,
+    model: str = LLM_MODEL,
     max_tokens: int = LLM_MAX_TOKENS,
     temperature: float = LLM_TEMPERATURE,
 ) -> str:
-    output = replicate.run(
-        "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d",
-        input={"prompt": ...},
-    )
+    # https://replicate.com/meta/llama-2-13b-chat
+    output = replicate.run(model, input={
+        "prompt": prompt,
+        "system_prompt": system,
+        "max_new_tokens": max_tokens,
+        "temperature": temperature,
+    })
     # The meta/llama-2-13b-chat model can stream output as it's running.
     # The predict method returns an iterator, and you can iterate over that output.
     for item in output:
-        # https://replicate.com/meta/llama-2-13b-chat/versions/f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d/api#output-schema
+        # /versions/f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d/api#output-schema
         print(item, end="")
 
 
@@ -68,12 +79,17 @@ def llm(
 def vlm(
     base64_image: str,
     prompt: str = VLM_PROMPT,
-    vision_model: str = VLM_MODEL,
-    max_tokens: int = MAX_TOKENS_VISION,
+    model: str = VLM_MODEL,
+    max_tokens: int = VLM_MAX_TOKENS,
 ) -> str:
+    # https://replicate.com/yorickvp/llava-13b
     output = replicate.run(
-        "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591",
-        input={"image": open("path/to/file", "rb")},
+        model,
+        input={
+            "image": f"data:image/jpeg;base64,{base64_image}",
+            "prompt": prompt,
+            "max_tokens": max_tokens,
+        },
     )
     # The yorickvp/llava-13b model can stream output as it's running.
     # The predict method returns an iterator, and you can iterate over that output.
@@ -84,22 +100,28 @@ def vlm(
 
 @timeit
 def tts(text: str, file_name: str, model: str = TTS_MODEL, voice: str = VOICE):
+    # https://replicate.com/suno-ai/bark
     output = replicate.run(
-        "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787",
+        model,
         input={
-            "prompt": "Hello, my name is Suno. And, uh \u2014 and I like pizza. [laughs] But I also have other interests such as playing tic tac toe."
+            "prompt": text,
+            "history_prompt": voice,
         },
     )
     print(output)
+    seg = AudioSegment.from_file(output, format="mp3")
+    seg.export(file_name, format="mp3")
 
 
 @timeit
-def stt(audio_path: str) -> str:
+def stt(audio_path: str, model: str = STT_MODEL) -> str:
+    # https://replicate.com/openai/whisper
     output = replicate.run(
-        "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
-        input={"audio": open("path/to/file", "rb")},
+        model,
+        input={"audio": open(audio_path, "rb")},
     )
     print(output)
+    return output
 
 
 MODELS = {
@@ -108,3 +130,16 @@ MODELS = {
     "tts": tts,
     "stt": stt,
 }
+
+if __name__ == "__main__":
+    print(tts("hello world", "/tmp/hello_world.mp3"))
+    print(stt("/tmp/hello_world.mp3"))
+    print(llm("you are a robot", "hello"))
+    import cv2
+    import base64
+
+    TEST_IMAGE_PATH = "/tmp/test.jpg"
+    frame = cv2.imread(TEST_IMAGE_PATH)
+    _, buffer = cv2.imencode(".jpg", frame)
+    base64_image = base64.b64encode(buffer).decode("utf-8")
+    print(vlm(base64_image))

@@ -111,7 +111,26 @@ def act(
     state: str,
     tools: dict = REPERTOIRE,
 ) -> str:
-    return llm(state, tools)
+    system = ". ".join(
+        [
+            "You are the function master node in a robot control system",
+            "You decide when to run robot functions on behalf of the other robot nodes",
+            "Use the log to avoid previous functions",
+            "Do not use the same functions as before",
+            "You can move to explore and understand the environment",
+            # "The robot can observe the world through sight",
+            # "The robot can observe the world through sound",
+            "Make sure to often listen",
+            "A good default is to listen",
+            "If a human is visible, perform the greet action or speak to them",
+            "If you hear a human, respond to them by speaking",
+            "Try to move towards interesting things",
+            "Always pick a function to run",
+            "The other robot nodes depend on you",
+            "Do not repeat functions",
+        ]
+    )
+    choice = llm(system, state)
 
 
 def autonomous_loop(
