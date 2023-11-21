@@ -9,7 +9,8 @@ from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-from bot import move, perform, look_at
+from botlook import look_at
+from botmove import move, perform
 from util import timeit, encode_image, make_tmp_audio_path, bytes_to_audio, EMOJIS
 
 argparser = argparse.ArgumentParser()
