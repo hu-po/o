@@ -169,7 +169,7 @@ def autonomous_loop(
         print(f"*********** {EMOJIS['state']} at step {num_steps}")
         print(_state)
         print(f"*********** {EMOJIS['state']}")
-        act = choose_action(models["llm"], repertoire, _state)
+        act = choose_action(models, repertoire, _state)
         state.append(act)
     print(f"{EMOJIS['died']} robot is dead")
 
@@ -180,5 +180,5 @@ if __name__ == "__main__":
     elif args.mode == "rep":
         from rep import MODELS
 
-    REPERTOIRE["SPEAK"] = functools.partial(_tts, tts=MODELS["tts"])
+    REPERTOIRE["SPEAK"] = functools.partial(speak, tts=MODELS["tts"])
     autonomous_loop(MODELS, REPERTOIRE)
