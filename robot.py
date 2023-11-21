@@ -210,10 +210,12 @@ def listen(
     sd.wait()  # Wait until recording is finished
     print(f"Recording finished, saving to {output_path}")
     write(output_path, sample_rate, audio_data)  # Save as WAV file
+
     with open(output_path, "rb") as audio_file:
         transcript = CLIENT.audio.transcriptions.create(
             model=STT_MODEL, file=audio_file, response_format="text"
         )
+
     print(f"Transcript: {transcript}")
     speak(f"{transcript}?")
     return f"Listened for {duration} seconds and heard {transcript}"
@@ -321,10 +323,10 @@ def look(
 
 
 REPERTOIRE = {
-    "move": move,
     "look": look,
-    "perform": perform,
     "listen": listen,
+    "move": move,
+    "perform": perform,
     "speak": speak,
 }
 
