@@ -54,7 +54,11 @@ async def _vlm(
 ) -> str:
     if blind:
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
-    description = vlm()
+    try:
+        description = vlm()
+    except Exception as e:
+        print(e)
+        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see"
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
 
 
@@ -68,14 +72,18 @@ async def _stt(
 ) -> str:
     if deaf:
         return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, robot is deaf"
-    audio_data = sd.rec(
-        int(duration * sample_rate),
-        samplerate=sample_rate,
-        channels=channels,
-    )
-    sd.wait()  # Wait until recording is finished
-    write(output_path, sample_rate, audio_data)
-    transcript = stt(output_path)
+    try:
+        audio_data = sd.rec(
+            int(duration * sample_rate),
+            samplerate=sample_rate,
+            channels=channels,
+        )
+        sd.wait()  # Wait until recording is finished
+        write(output_path, sample_rate, audio_data)
+        transcript = stt(output_path)
+    except Exception as e:
+        print(e)
+        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear"
     return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
@@ -94,7 +102,7 @@ REPERTOIRE = {
 
 @timeit
 def choose_action(
-    llm: callable,
+    models: dict,
     repertoire: dict,
     state: list,
 ) -> str:
@@ -119,11 +127,15 @@ MOVE,forward
 LOOK,up
 Your response should be a single line with the chosen function name and arguments.
 """
-    choice = llm(prompt)
+    choice = models['llm'](prompt)
     func_name, args = choice.split(",")
     if func_name in repertoire:
-        _msg = f"{EMOJIS['llm']}{EMOJIS['success']} chose {func_name} with args {args}\n"
-        _msg += repertoire[func_name](args)     
+        _msg = f"{EMOJIS['llm']}{EMOJIS['success']} running {func_name}({args})\n"
+        if func_name == "MOVE":
+            models["speak"]("moving")
+        if func_name == "PERFORM":
+            models["speak"](f"performing {args}")
+        _msg += repertoire[func_name](args)
         return _msg
     else:
         return f"{EMOJIS['llm']}{EMOJIS['fail']} unknown function {func_name}"
