@@ -10,7 +10,7 @@ from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-from bot_look import look_at, LOOKS
+from bot_look import look, LOOKS
 from bot_move import move, MOVES
 from bot_perform import perform, ACTIONS
 from util import timeit, EMOJIS
@@ -20,7 +20,7 @@ argparser.add_argument("--mode", type=str, required=True)
 args = argparser.parse_args()
 
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
-STATE_SIZE: int = 2  # Number of observations to keep in the state
+STATE_SIZE: int = 3  # Number of observations to keep in the state
 BLIND: bool = False  # Do not use vision module
 MUTE: bool = False  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
@@ -31,8 +31,7 @@ AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
 
 
-@timeit
-def speak(
+async def _tts(
     tts: callable,
     text: str = GREETING,
     mute: bool = MUTE,
@@ -87,16 +86,23 @@ async def _stt(
     return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
-async def observe(vlm: callable, stt: callable):
-    vlm_result, stt_result = await asyncio.gather(_vlm(vlm), _stt(stt))
-    return f"{vlm_result}\n{stt_result}"
+async def observe(models:dict):
+    results = await asyncio.gather(*[
+        _vlm(models['vlm']),
+        _stt(models['stt']),
+        _tts(models['tts'], "observing"),
+    ])
+    return '\n'.join(results)
 
+@timeit
+def speak(*args, **kwargs) -> str:
+    return asyncio.run(_tts(*args, **kwargs))
 
 REPERTOIRE = {
     "SPEAK": speak,
     "MOVE": move,
     "PERFORM": perform,
-    "LOOK": look_at,
+    "LOOK": look,
 }
 
 
@@ -152,7 +158,7 @@ def autonomous_loop(
     num_steps = 0
     while datetime.now() - birthday < lifespan:
         num_steps += 1
-        obs = asyncio.run(observe(models["vlm"], models["stt"]))
+        obs = asyncio.run(observe(models))
         state.append(obs)
         if len(state) >= STATE_SIZE:
             state.pop(0)
@@ -171,5 +177,5 @@ if __name__ == "__main__":
     elif args.mode == "rep":
         from rep import MODELS
 
-    REPERTOIRE["SPEAK"] = functools.partial(speak, tts=MODELS["tts"])
+    REPERTOIRE["SPEAK"] = functools.partial(_tts, tts=MODELS["tts"])
     autonomous_loop(MODELS, REPERTOIRE)

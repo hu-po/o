@@ -38,7 +38,7 @@ def save_one_image(rostopic: str = CAMERA_ROS_TOPIC):
 
 
 @timeit
-def look_at(
+def look(
     direction: str = DEFAULT_LOOK_DIRECTION,
     directions: list = LOOK_DIRECTIONS,
 ) -> str:
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     import random
 
     for _ in range(3):
-        print(look_at(random.choice(LOOKS)))
+        print(look(random.choice(LOOKS)))
