@@ -1,11 +1,9 @@
-import io
 import os
 import requests
 
-from pydub import AudioSegment
 from openai import OpenAI
 
-from util import timeit
+from util import timeit, encode_image
 
 client = OpenAI()
 
@@ -52,9 +50,9 @@ def llm(
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": prompt},
-        ]
+        ],
     )
-    reply = response['choices'][0]['message']['content']
+    reply = response["choices"][0]["message"]["content"]
     return reply
 
 
@@ -93,11 +91,9 @@ def vlm(
 
 
 @timeit
-def tts(text: str, file_name: str, model: str = TTS_MODEL, voice: str = VOICE):
+def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
     response = client.audio.speech.create(model=model, voice=voice, input=text)
-    byte_stream = io.BytesIO(response.content)
-    seg = AudioSegment.from_file(byte_stream, format="mp3")
-    seg.export(file_name, format="mp3")
+    return response.content
 
 
 @timeit
@@ -120,12 +116,4 @@ if __name__ == "__main__":
     print(tts("hello world", "/tmp/hello_world.mp3"))
     print(stt("/tmp/hello_world.mp3"))
     print(llm("you are a robot", "hello"))
-    import cv2
-    import base64
-
-    TEST_IMAGE_PATH = "/tmp/test.jpg"
-    frame = cv2.imread(TEST_IMAGE_PATH)
-    _, buffer = cv2.imencode(".jpg", frame)
-    base64_image = base64.b64encode(buffer).decode("utf-8")
-    print(vlm(base64_image))
-    
+    print(vlm(encode_image("/tmp/test.jpg")))

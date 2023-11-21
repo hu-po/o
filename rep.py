@@ -1,7 +1,6 @@
-from pydub import AudioSegment
 import replicate
 
-from util import timeit
+from util import timeit, encode_image
 
 VLM_MODEL: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_PROMPT: str = ". ".join(
@@ -99,7 +98,7 @@ def vlm(
 
 
 @timeit
-def tts(text: str, file_name: str, model: str = TTS_MODEL, voice: str = VOICE):
+def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
     # https://replicate.com/suno-ai/bark
     output = replicate.run(
         model,
@@ -109,8 +108,7 @@ def tts(text: str, file_name: str, model: str = TTS_MODEL, voice: str = VOICE):
         },
     )
     print(output)
-    seg = AudioSegment.from_file(output, format="mp3")
-    seg.export(file_name, format="mp3")
+    return output
 
 
 @timeit
@@ -135,11 +133,4 @@ if __name__ == "__main__":
     print(tts("hello world", "/tmp/hello_world.mp3"))
     print(stt("/tmp/hello_world.mp3"))
     print(llm("you are a robot", "hello"))
-    import cv2
-    import base64
-
-    TEST_IMAGE_PATH = "/tmp/test.jpg"
-    frame = cv2.imread(TEST_IMAGE_PATH)
-    _, buffer = cv2.imencode(".jpg", frame)
-    base64_image = base64.b64encode(buffer).decode("utf-8")
-    print(vlm(base64_image))
+    print(vlm(encode_image("/tmp/test.jpg")))

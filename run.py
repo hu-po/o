@@ -1,29 +1,25 @@
 import argparse
 import asyncio
-import base64
 import hashlib
 import os
+import io
 from datetime import datetime, timedelta
 
-import cv2
 from pydub import AudioSegment
 from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
 from bot import move, perform, look_at
-from util import timeit, EMOJIS
+from util import timeit, encode_image, EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--mode", type=str, required=True)
 args = argparser.parse_args()
 
-LIFESPAN: timedelta = timedelta(minutes=1) # How long the robot will live
+LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
 DATE_FORMAT: str = "%d.%m.%Y"
-
 BLIND: bool = True  # Do not use vision module
-IMAGE_OUTPUT_PATH: str = "/tmp/image.jpg"  # Image is constantly overwritten
-
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 GREETING: str = "hello there"  # Greeting is spoken on start
@@ -45,7 +41,9 @@ def speak(
         return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is mute"
     file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
     if not os.path.exists(file_name):
-        tts(text, file_name)
+        byte_stream = io.BytesIO(tts(text, file_name))
+        seg = AudioSegment.from_file(byte_stream, format="mp3")
+        seg.export(file_name, format="mp3")
     seg = AudioSegment.from_file(file_name, format="mp3")
     play(seg)
     return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
@@ -53,17 +51,11 @@ def speak(
 
 async def _vlm(
     vlm: callable,
-    image_path: str = IMAGE_OUTPUT_PATH,
     blind: bool = BLIND,
 ) -> str:
     if blind:
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
-    frame = cv2.imread(image_path)
-    if frame is None:
-        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, image is empty"
-    _, buffer = cv2.imencode(".jpg", frame)
-    base64_image = base64.b64encode(buffer).decode("utf-8")
-    description = vlm(base64_image)
+    description = vlm(encode_image())
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw '{description}'"
 
 

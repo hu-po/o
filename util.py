@@ -1,3 +1,4 @@
+import base64
 import time
 
 EMOJIS = {
@@ -16,6 +17,7 @@ EMOJIS = {
     "look": "📷",
     "perform": "🦾",
 }
+IMAGE_PATH = "/tmp/image.jpg" # Image is constantly overwritten
 
 
 def timeit(f):
@@ -30,3 +32,9 @@ def timeit(f):
         return result
 
     return _
+
+@timeit
+def encode_image(image_path: str = IMAGE_PATH):
+    with open(image_path, "rb") as f:
+        base64_image = base64.b64encode(f).decode("utf-8")
+    return base64_image
