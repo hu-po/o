@@ -20,15 +20,16 @@ VLM_PROMPT: str = ". ".join(
         "Your reponse should not contain any special characters",
     ]
 )
-VLM_MAX_TOKENS: int = 16  # max tokens for reply
+VLM_MAX_TOKENS: int = 24  # max tokens for reply
 LLM_MODEL: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
 LLM_MAX_TOKENS: int = 16
-LLM_TEMPERATURE: float = 0.0
+LLM_TEMPERATURE: float = 0.01
 # Text-to-Speech
 TTS_MODEL: str = (
     "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"
 )
 VOICE: str = "en_speaker_0"  # 9 total english speakers available
+TTS_AUDIO_PATH: str = "/tmp/audio.wav"  # audio is constantly overwritten
 # Speech-to-Text
 STT_MODEL: str = (
     "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"
@@ -44,17 +45,16 @@ def llm(
     temperature: float = LLM_TEMPERATURE,
 ) -> str:
     # https://replicate.com/meta/llama-2-13b-chat
-    output = replicate.run(model, input={
-        "prompt": prompt,
-        "system_prompt": system,
-        "max_new_tokens": max_tokens,
-        "temperature": temperature,
-    })
-    # The meta/llama-2-13b-chat model can stream output as it's running.
-    # The predict method returns an iterator, and you can iterate over that output.
-    for item in output:
-        # /versions/f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d/api#output-schema
-        print(item, end="")
+    output = replicate.run(
+        model,
+        input={
+            "prompt": prompt,
+            "system_prompt": system,
+            "max_new_tokens": max_tokens,
+            "temperature": temperature,
+        },
+    )
+    return "".join(output)
 
 
 @timeit
@@ -73,15 +73,16 @@ def vlm(
             "max_tokens": max_tokens,
         },
     )
-    # The yorickvp/llava-13b model can stream output as it's running.
-    # The predict method returns an iterator, and you can iterate over that output.
-    for item in output:
-        # https://replicate.com/yorickvp/llava-13b/versions/2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591/api#output-schema
-        print(item, end="")
+    return "".join(output)
 
 
 @timeit
-def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> AudioSegment:
+def tts(
+    text: str,
+    model: str = TTS_MODEL,
+    voice: str = VOICE,
+    tmp_path: str = TTS_AUDIO_PATH,
+) -> AudioSegment:
     # https://replicate.com/suno-ai/bark
     output = replicate.run(
         model,
@@ -90,9 +91,9 @@ def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> AudioSegment:
             "history_prompt": voice,
         },
     )
-    with open('downloaded_audio.wav', 'wb') as file:
-        file.write(requests.get(output['audio_out']).content)
-    return AudioSegment.from_wav('downloaded_audio.wav')
+    with open(tmp_path, "wb") as file:
+        file.write(requests.get(output["audio_out"]).content)
+    return AudioSegment.from_wav(tmp_path)
 
 
 @timeit
@@ -102,8 +103,7 @@ def stt(audio_path: str, model: str = STT_MODEL) -> str:
         model,
         input={"audio": open(audio_path, "rb")},
     )
-    print(output)
-    return output
+    return output["transcription"]
 
 
 MODELS = {
@@ -119,4 +119,3 @@ if __name__ == "__main__":
     print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
     print(vlm())
-

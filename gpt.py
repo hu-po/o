@@ -25,7 +25,7 @@ VLM_PROMPT: str = ". ".join(
         "Your reponse should not contain any special characters",
     ]
 )
-VLM_MAX_TOKENS: int = 16  # max tokens for reply
+VLM_MAX_TOKENS: int = 24  # max tokens for reply
 LLM_MODEL: str = "gpt-4-1106-preview"
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.0

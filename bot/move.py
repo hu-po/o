@@ -17,6 +17,7 @@ MOVE_DIRECTIONS = {
     "ROTATE_LEFT": [0, 0, 1],
     "ROTATE_RIGHT": [0, 0, -1],
 }
+MOVES = list(MOVE_DIRECTIONS.keys())
 # Speed selection has three levels: 1, 2, 3, and 4, with speed decreasing from fast to slow.
 SPEED: int = 1  # Integer in range [1, 4] slow to fast
 # Step stride in the x direction (meters).
@@ -67,5 +68,5 @@ if __name__ == "__main__":
     import random
 
     for _ in range(3):
-        print(move(random.choice(list(MOVE_DIRECTIONS.keys()))))
+        print(move(random.choice(MOVES)))
 

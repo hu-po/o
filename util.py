@@ -29,7 +29,7 @@ def timeit(f):
         result = f(*args, **kwargs)
         end_time = time.time()
         print(
-            f"----------- {f.__name__} took {EMOJIS['time']}{end_time - start_time:.2f}s"
+            f"----------- {f.__name__} took {end_time - start_time:.2f}s{EMOJIS['time']}"
         )
         return result
 

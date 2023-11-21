@@ -22,7 +22,7 @@ LOOK_DIRECTIONS = {
     "UP": [[23, 500], [24, 650]],
     "DOWN": [[23, 500], [24, 400]],
 }
-
+LOOKS = list(LOOK_DIRECTIONS.keys())
 
 def image_callback(msg):
     bridge = CvBridge()
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     import random
 
     for _ in range(3):
-        print(look_at(random.choice(list(LOOK_DIRECTIONS.keys()))))
+        print(look_at(random.choice(LOOKS)))

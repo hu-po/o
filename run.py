@@ -9,8 +9,9 @@ from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-from bot_look import look_at
-from bot_move import move, perform
+from bot_look import look_at, LOOKS
+from bot_move import move, MOVES
+from bot_perform import perform, ACTIONS
 from util import timeit, EMOJIS
 
 argparser = argparse.ArgumentParser()
