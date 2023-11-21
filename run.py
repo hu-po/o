@@ -137,6 +137,9 @@ LOOK,up
 Your response should be a single line with the chosen function name and arguments.
 """
     choice = models['llm'](prompt)
+    print(f"___________{EMOJIS['robot']}")
+    print(choice)
+    print(f"___________{EMOJIS['robot']}")
     func_name, args = choice.split(",")
     if func_name in repertoire:
         _msg = f"{EMOJIS['llm']}{EMOJIS['success']} running {func_name}({args})\n"
@@ -166,9 +169,9 @@ def autonomous_loop(
         if len(state) >= STATE_SIZE:
             state.pop(0)
         _state = "\n".join(state)
-        print(f"*********** {EMOJIS['state']} at step {num_steps}")
-        print(_state)
         print(f"*********** {EMOJIS['state']}")
+        print(_state)
+        print(f"*********** {EMOJIS['state']} at step {num_steps}")
         act = choose_action(models, repertoire, _state)
         state.append(act)
     print(f"{EMOJIS['died']} robot is dead")
