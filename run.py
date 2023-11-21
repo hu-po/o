@@ -14,8 +14,8 @@ from scipy.io.wavfile import write
 from util import EMOJIS
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="rep")
-argparser.add_argument("--robot", type=str, default="test")
+argparser.add_argument("--model_api", type=str, default="gpt")
+argparser.add_argument("--robot", type=str, default="nex")
 args = argparser.parse_args()
 if args.model_api == "gpt":
     from gpt import llm, vlm, tts, stt
@@ -43,7 +43,7 @@ elif args.robot == "test":
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
 STATE_SIZE: int = 256  # How many characters worth of state to keep
-BLIND: bool = False  # Do not use vision module
+BLIND: bool = True  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 CRIP: bool = False  # Do not move

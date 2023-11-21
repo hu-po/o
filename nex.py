@@ -184,11 +184,11 @@ def look(
 
 if __name__ == "__main__":
     args = argparser.parse_args()
-    if args.mode == "look":
+    if args.mode.upper() == "LOOK":
         print(look(direction=args.name))
-    elif args.mode == "perform":
+    elif args.mode.upper() == "PERFORM":
         print(perform(action=args.name))
-    elif args.mode == "move":
+    elif args.mode.upper() == "MOVE":
         print(move(direction=args.name))
     else:
         print(
