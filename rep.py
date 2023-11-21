@@ -114,10 +114,9 @@ MODELS = {
 }
 
 if __name__ == "__main__":
-    from util import bytes_to_audio
-
-    _bytes = tts("hello world")
-    bytes_to_audio(_bytes, "/tmp/test.mp3")
+    seg = tts("hello world")
+    seg.export("/tmp/test.mp3", format="mp3")
     print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
     print(vlm())
+
