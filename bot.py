@@ -178,6 +178,6 @@ if __name__ == "__main__":
     import random
 
     while True:
-        print(perform(random.choice(ACTIONS)))
-        print(move(random.choice(MOVE_DIRECTIONS.keys())))
+        # print(perform(random.choice(ACTIONS)))
+        # print(move(random.choice(MOVE_DIRECTIONS.keys())))
         print(look_at(random.choice(LOOK_DIRECTIONS.keys())))
