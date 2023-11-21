@@ -84,10 +84,10 @@ async def observe(vlm: callable, stt: callable):
 
 
 REPERTOIRE = {
-    "look": look_at,
-    "move": move,
-    "perform": perform,
-    "speak": speak,
+    "SPEAK": speak,
+    "MOVE": move,
+    "PERFORM": perform,
+    "LOOK": look_at,
 }
 
 
