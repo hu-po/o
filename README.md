@@ -47,3 +47,10 @@ sudo apt-get install python3-pyaudio
 pip install sounddevice==0.4.6
 pip install pydub==0.25.1
 ```
+
+To autostart on robot boot use crontab
+
+```
+crontab -e
+@reboot sh /home/pi/o/run.sh
+```
