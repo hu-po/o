@@ -37,7 +37,6 @@ def timeit(f):
     return _
 
 
-@timeit
 def encode_image(image_path: str = IMAGE_PATH):
     with open(image_path, "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")

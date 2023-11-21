@@ -10,16 +10,17 @@ from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-from nex import LOOKS, MOVES, ACTIONS
+
 from util import EMOJIS
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--mode", type=str, default="gpt")
+argparser.add_argument("--model_api", type=str, default="rep")
+argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
-if args.mode == "gpt":
+if args.model_api == "gpt":
     from gpt import llm, vlm, tts, stt
     from gpt import MODELS, LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
-elif args.mode == "rep":
+elif args.model_api == "rep":
     from rep import llm, vlm, tts, stt
     from rep import MODELS, LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
 print(f"########### {EMOJIS['brain']}")
@@ -28,9 +29,20 @@ print(f"{EMOJIS['vlm']} {VLM_MODEL}")
 print(f"{EMOJIS['tts']} {TTS_MODEL}")
 print(f"{EMOJIS['stt']} {STT_MODEL}")
 print(f"########### {EMOJIS['brain']}")
+if args.robot == "nex":
+    from nex import LOOKS, MOVES, ACTIONS
 
+    ROBOT_FILENAME: str = "nex.py"  # robot commands are run in a subprocess
+elif args.robot == "test":
+    LOOKS = ["up", "down"]
+    MOVES = ["forward", "backward"]
+    ACTIONS = ["greet"]
+    ROBOT_FILENAME: str = "oop.py"
+
+
+BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
-STATE_SIZE: int = 256 # How many characters worth of state to keep
+STATE_SIZE: int = 256  # How many characters worth of state to keep
 BLIND: bool = False  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
@@ -40,7 +52,6 @@ AUDIO_RECORD_TIME: int = 5  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
-ROBOT_FILENAME: str = "nex.py"  # robot commands are run in a subprocess
 
 
 async def _tts(text: str) -> str:
@@ -93,7 +104,7 @@ async def _llm(prompt: str) -> [str, str]:
     return f"{EMOJIS['llm']}{EMOJIS['success']} picked {reply}", reply
 
 
-async def robot(mode:str, name: str) -> str:
+async def robot(mode: str, name: str) -> str:
     if CRIP:
         return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is crippled"
     _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT_FILENAME)
@@ -122,8 +133,10 @@ async def act(mode: str, name: str, speech: str) -> str:
 
 
 async def plan(state: str) -> [str, str]:
-    results = await asyncio.gather(*[
-        _llm(f"""
+    results = await asyncio.gather(
+        *[
+            _llm(
+                f"""
 Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
 MOVE(direction:str)
   direction must be one of {MOVES}
@@ -140,49 +153,45 @@ PERFORM,greet
 LOOK,up
 MOVE,forward
 Your response should be a single line with the chosen function name and arguments.
-"""),
-_llm(f"""
-Summarize the robot log in a couple clever words, be brief but precise
+"""
+            ),
+            _llm(
+                f"""
+Summarize the robot log in a couple clever words, be brief but precise, like yoda
 Here is the robot log
 <robotlog>
 {state}
 </robotlog>
-"""),
-        _tts("deciding"),
-    ])
-    mode_full = results[0]
+"""
+            ),
+            _tts("deciding"),
+        ]
+    )
+    mode_full = results[0][1]
     print(f"___________{EMOJIS['llm']}")
     print(mode_full)
     print(f"___________{EMOJIS['llm']}")
-    speech = results[1]
+    speech = results[1][1]
     print(f"___________{EMOJIS['llm']}")
     print(speech)
     print(f"___________{EMOJIS['llm']}")
     return mode_full, speech
 
 
-def autonomous_loop(
-    models: dict,
-    lifespan: timedelta = LIFESPAN,
-) -> None:
-    birthday = datetime.now()
-    print(f"{EMOJIS['born']} robot is alive")
-    state = ""
-    num_steps = 0
-    while datetime.now() - birthday < lifespan:
-        num_steps += 1
-        if len(state) >= STATE_SIZE:
-            state_as_list = state.splitlines()
-            split_in_half = STATE_SIZE // 2
-            state = "\n".join(state_as_list[-split_in_half:])
-        state += asyncio.run(sense(models))
-        print(f"*********** {EMOJIS['state']}")
-        print(state)
-        print(f"*********** {EMOJIS['state']} at step {num_steps}")
-        mode_full, speech = asyncio.run(plan(state))
-        mode, name = mode_full.split(",")
-        state += act(mode, name, speech)
-    print(f"{EMOJIS['died']} robot is dead")
-
-
-autonomous_loop(MODELS)
+print(f"{EMOJIS['born']} robot is alive")
+state = ""
+num_steps = 0
+while datetime.now() - BIRTHDAY < LIFESPAN:
+    num_steps += 1
+    if len(state) >= STATE_SIZE:
+        state_as_list = state.splitlines()
+        split_in_half = STATE_SIZE // 2
+        state = "\n".join(state_as_list[-split_in_half:])
+    state += asyncio.run(sense())
+    print(f"*********** {EMOJIS['state']}")
+    print(state)
+    print(f"*********** {EMOJIS['state']} at step {num_steps}")
+    mode_full, speech = asyncio.run(plan(state))
+    mode, name = mode_full.split(",")
+    state += asyncio.run(act(mode, name, speech))
+print(f"{EMOJIS['died']} robot is dead")

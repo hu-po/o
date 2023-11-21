@@ -137,6 +137,7 @@ def move(
     else:
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} could not move in unknown direction {direction}"
 
+
 @timeit
 def perform(
     action: str = DEFAULT_ACTION_NAME,
@@ -148,6 +149,7 @@ def perform(
         return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['success']} performed {action}"
     else:
         return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['fail']} could not perform unknown action {action}"
+
 
 def image_callback(msg):
     bridge = CvBridge()
@@ -189,4 +191,6 @@ if __name__ == "__main__":
     elif args.mode == "move":
         print(move(direction=args.name))
     else:
-        print(f"{EMOJIS['robot']}{EMOJIS['fail']} unknown mode {args.mode}, name {args.name}")
+        print(
+            f"{EMOJIS['robot']}{EMOJIS['fail']} unknown mode {args.mode}, name {args.name}"
+        )
