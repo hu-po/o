@@ -109,6 +109,7 @@ def save_one_image(rostopic: str = CAMERA_ROS_TOPIC):
     rospy.init_node("save_one_image")
     rospy.Subscriber(rostopic, Image, image_callback)
     rospy.spin()
+    rospy.kill_node("save_one_image")
 
 
 @timeit
