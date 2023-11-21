@@ -39,7 +39,6 @@ STT_MODEL: str = "whisper-1"  # Speech-to-text model
 @timeit
 def llm(
     prompt: str,
-    system: str,
     model: str = LLM_MODEL,
     max_tokens: int = LLM_MAX_TOKENS,
     temperature: float = LLM_TEMPERATURE,
@@ -50,7 +49,6 @@ def llm(
         max_tokens=max_tokens,
         temperature=temperature,
         messages=[
-            {"role": "system", "content": system},
             {"role": "user", "content": prompt},
         ],
     )
@@ -119,5 +117,5 @@ if __name__ == "__main__":
     seg = tts("hello world")
     seg.export("/tmp/test.mp3", format="mp3")
     print(stt("/tmp/test.mp3"))
-    print(llm("you are a robot", "hello"))
+    print(llm("hello"))
     print(vlm())

@@ -39,7 +39,6 @@ STT_MODEL: str = (
 @timeit
 def llm(
     prompt: str,
-    system: str,
     model: str = LLM_MODEL,
     max_tokens: int = LLM_MAX_TOKENS,
     temperature: float = LLM_TEMPERATURE,
@@ -49,7 +48,6 @@ def llm(
         model,
         input={
             "prompt": prompt,
-            "system_prompt": system,
             "max_new_tokens": max_tokens,
             "temperature": temperature,
         },
@@ -117,5 +115,5 @@ if __name__ == "__main__":
     seg = tts("hello world")
     seg.export("/tmp/test.mp3", format="mp3")
     print(stt("/tmp/test.mp3"))
-    print(llm("you are a robot", "hello"))
+    print(llm("hello"))
     print(vlm())

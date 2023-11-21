@@ -20,8 +20,8 @@ args = argparser.parse_args()
 
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
 STATE_SIZE: int = 2  # Number of observations to keep in the state
-BLIND: bool = True  # Do not use vision module
-MUTE: bool = True  # Mute audio output
+BLIND: bool = False  # Do not use vision module
+MUTE: bool = False  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 GREETING: str = "hello there"  # Greeting is spoken on start
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
@@ -54,7 +54,7 @@ async def _vlm(
     if blind:
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
     description = vlm()
-    return f"{EMOJIS['vlm']}{EMOJIS['success']} saw '{description}'"
+    return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
 
 
 async def _stt(
@@ -75,10 +75,9 @@ async def _stt(
     sd.wait()  # Wait until recording is finished
     write(output_path, sample_rate, audio_data)
     transcript = stt(output_path)
-    return f"{EMOJIS['stt']}{EMOJIS['success']} heard '{transcript}'"
+    return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
-@timeit
 async def observe(vlm: callable, stt: callable):
     vlm_result, stt_result = await asyncio.gather(_vlm(vlm), _stt(stt))
     return f"{vlm_result}\n{stt_result}"
@@ -96,33 +95,39 @@ REPERTOIRE = {
 def act(
     llm: callable,
     state: list,
+    repertoire: dict = REPERTOIRE,
 ) -> str:
-    prompt = '\n'.join(state)
-    system = "You are the function master node in a robot control system. "
-    system += "You decide when to run robot functions on behalf of the other robot nodes. "
-    system += "The other robot nodes depend on you. "
-    system += "The user will provide the log containing previous function calls. "
-    system += "You can move to explore and understand the environment. "
-    system += "If a human is visible, perform the greet action or speak to them. "
-    system += "If you hear a human, respond to them by speaking. "
-    system += "Try to move towards interesting things. "
-    system += "Always pick a function to run. "
-    system += "Return the name of the function you decide to run and any arguments. "
-    system += "The available functions are:"
-    system += "LOOK\n"
-    system += "\t param str: direction, one of {LOOKS}\n"
-    system += "MOVE\n"
-    system += "\t param str: direction, one of {MOVES}\n"
-    system += "PERFORM\n"
-    system += "\t param str: action, one of {ACTIONS}\n"
-    system += "SPEAK\n"
-    system += "\t param str: text, the text to speak, keep it short\n"
-    choice = llm(system, prompt)
+    prompt = f"""
+Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
+SPEAK(text: str)
+  text should be short and relevant to what the robot sees and hears
+MOVE(direction:str)
+  direction must be one of {MOVES}
+PERFORM(action:str)
+  action must be one of {ACTIONS}
+LOOK(direction:str)
+  direction must be one of {LOOKS}
+Here is the robot log
+<robotlog>
+{state}
+</robotlog>
+Pick one of the functions and the args. Here are some example outputs:
+SPEAK,hello my name is robot
+PERFORM,greet
+MOVE,forward
+LOOK,up
+Your response should be a single line with the chosen function name and arguments.
+"""
+    print(f"Input to llm: {prompt}\n")
+    choice = llm(prompt)
     print(f"Output from act: {choice}")
-    if choice.upper() in REPERTOIRE:
-        return REPERTOIRE[choice](llm)
+    func_name, args = choice.split(",")
+    if func_name.upper() in repertoire:
+        return repertoire[choice](args)
     else:
-        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not run unknown function {choice}"
+        return (
+            f"{EMOJIS['llm']}{EMOJIS['fail']} could not run unknown function {choice}"
+        )
 
 
 def autonomous_loop(
@@ -139,11 +144,11 @@ def autonomous_loop(
         if len(state) >= STATE_SIZE:
             state.pop(0)
         state.append(obs)
+        _state = "\n".join(state)
         print(f"*********** {EMOJIS['state']} at step {num_steps}")
-        for s in state:
-            print(s)
+        print(_state)
         print(f"*********** {EMOJIS['state']}")
-        act(models["llm"], state)
+        act(models["llm"], _state)
     print(f"{EMOJIS['died']} robot is dead")
 
 
