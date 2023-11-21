@@ -141,9 +141,9 @@ Your response should be a single line with the chosen function name and argument
     if func_name in repertoire:
         _msg = f"{EMOJIS['llm']}{EMOJIS['success']} running {func_name}({args})\n"
         if func_name == "MOVE":
-            models["speak"]("moving")
+            repertoire['speak'](text="moving")
         if func_name == "PERFORM":
-            models["speak"](f"performing {args}")
+            repertoire['speak'](text=f"performing {args}")
         _msg += repertoire[func_name](args)
         return _msg
     else:
