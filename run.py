@@ -142,13 +142,13 @@ Your response should be a single line with the chosen function name and argument
     print(f"___________{EMOJIS['robot']}")
     func_name, args = choice.split(",")
     if func_name in repertoire:
-        _msg = f"{EMOJIS['llm']}{EMOJIS['success']} running {func_name}({args})\n"
+        result = [f"{EMOJIS['llm']}{EMOJIS['success']} running {func_name}({args})"]
         if func_name == "MOVE":
-            repertoire['speak'](text="moving")
+            result.append(repertoire['SPEAK'](text="moving"))
         if func_name == "PERFORM":
-            repertoire['speak'](text=f"performing {args}")
-        _msg += repertoire[func_name](args)
-        return _msg
+            result.append(repertoire['SPEAK'](text=f"performing {args}"))
+        result.append(repertoire[func_name](args))
+        return "\n".join(result)
     else:
         return f"{EMOJIS['llm']}{EMOJIS['fail']} unknown function {func_name}"
 
