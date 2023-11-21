@@ -22,8 +22,9 @@ args = argparser.parse_args()
 LIFESPAN: timedelta = timedelta(minutes=1)  # How long the robot will live
 STATE_SIZE: int = 3  # Number of observations to keep in the state
 BLIND: bool = False  # Do not use vision module
-MUTE: bool = False  # Mute audio output
+MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
+CRIP: bool = False  # Do not move
 GREETING: str = "hello there"  # Greeting is spoken on start
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
@@ -93,6 +94,8 @@ async def observe(models:dict):
         _tts(models['tts'], "observing"),
     ])
     return '\n'.join(results)
+
+# TODO: async move, perform, and look together? robot functions are unique, but speak can be combined with them
 
 @timeit
 def speak(*args, **kwargs) -> str:
