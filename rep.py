@@ -1,5 +1,6 @@
 import replicate
 import requests
+from pydub import AudioSegment
 
 from util import timeit, encode_image
 
@@ -80,7 +81,7 @@ def vlm(
 
 
 @timeit
-def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
+def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> AudioSegment:
     # https://replicate.com/suno-ai/bark
     output = replicate.run(
         model,
@@ -89,7 +90,9 @@ def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
             "history_prompt": voice,
         },
     )
-    return requests.get(output['url']).content
+    with open('downloaded_audio.wav', 'wb') as file:
+        file.write(requests.get(output['audio_out']).content)
+    return AudioSegment.from_wav('downloaded_audio.wav')
 
 
 @timeit
