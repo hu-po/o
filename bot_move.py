@@ -5,6 +5,8 @@ import rospy
 from ainex_kinematics.gait_manager import GaitManager
 from util import timeit, EMOJIS
 
+
+
 DEFAULT_MOVE_DIRECTION: str = "forward"
 # These multipliers modify the x_amp, y_amp, and rotation_angle
 MOVE_DIRECTIONS = {
@@ -56,7 +58,6 @@ def move(
             step_num=step_num,
         )
         gait_manager.stop()
-        rospy.signal_shutdown("Movement complete")
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['success']} moved {direction}"
     else:
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} could not move in unknown direction {direction}"

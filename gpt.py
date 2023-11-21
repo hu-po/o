@@ -1,6 +1,8 @@
 import os
 import requests
+import io
 
+from pydub import AudioSegment
 from openai import OpenAI
 
 from util import timeit, encode_image
@@ -91,9 +93,10 @@ def vlm(
 
 
 @timeit
-def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> bytes:
+def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> AudioSegment:
     response = client.audio.speech.create(model=model, voice=voice, input=text)
-    return response.content
+    byte_stream = io.BytesIO(response.content)
+    return AudioSegment.from_file(byte_stream, format="mp3")
 
 
 @timeit

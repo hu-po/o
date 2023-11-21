@@ -1,8 +1,5 @@
 import base64
 import time
-import hashlib
-import io
-from pydub import AudioSegment
 
 EMOJIS = {
     "robot": "🤖",
@@ -44,13 +41,3 @@ def encode_image(image_path: str = IMAGE_PATH):
     with open(image_path, "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")
     return base64_image
-
-
-def make_tmp_audio_path(text: str):
-    return f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
-
-
-def bytes_to_audio(bytes: bytes, path: str):
-    byte_stream = io.BytesIO(bytes)
-    seg = AudioSegment.from_file(byte_stream, format="mp3")
-    seg.export(path, format="mp3")

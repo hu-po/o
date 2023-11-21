@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 import os
-import io
+import hashlib
 from datetime import datetime, timedelta
 
 from pydub import AudioSegment
@@ -9,9 +9,9 @@ from pydub.playback import play
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-from botlook import look_at
-from botmove import move, perform
-from util import timeit, encode_image, make_tmp_audio_path, bytes_to_audio, EMOJIS
+from bot_look import look_at
+from bot_move import move, perform
+from util import timeit, EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--mode", type=str, required=True)
@@ -39,10 +39,10 @@ def speak(
 ) -> str:
     if mute:
         return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is mute"
-    file_name = make_tmp_audio_path(text)
+    file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
     if not os.path.exists(file_name):
-        bytes = tts(text)
-        bytes_to_audio(bytes, file_name)
+        seg = tts(text)
+        seg.export(file_name, format="mp3")
     seg = AudioSegment.from_file(file_name, format="mp3")
     play(seg)
     return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
@@ -54,7 +54,7 @@ async def _vlm(
 ) -> str:
     if blind:
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
-    description = vlm(encode_image())
+    description = vlm()
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw '{description}'"
 
 
