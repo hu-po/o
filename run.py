@@ -79,10 +79,9 @@ async def _stt(
 
 
 @timeit
-def observe(vlm: callable, stt: callable):
-    output = asyncio.run(asyncio.gather(_vlm(vlm), _stt(stt)))
-    print(f"Output from observe: {output}")
-    return output
+async def observe(vlm: callable, stt: callable):
+    vlm_result, stt_result = await asyncio.gather(_vlm(vlm), _stt(stt))
+    return f"{vlm_result}\n{stt_result}"
 
 
 REPERTOIRE = {
@@ -136,7 +135,7 @@ def autonomous_loop(
     num_steps = 0
     while datetime.now() - birthday < lifespan:
         num_steps += 1
-        obs = observe(models["vlm"], models["stt"])
+        obs = asyncio.run(observe(models["vlm"], models["stt"]))
         if len(state) >= STATE_SIZE:
             state.pop(0)
         state.append(obs)
