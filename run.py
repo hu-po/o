@@ -80,7 +80,7 @@ async def _stt(
 
 @timeit
 def observe(vlm: callable, stt: callable):
-    output = asyncio.gather(_vlm(vlm), _stt(stt))
+    output = asyncio.run(asyncio.gather(_vlm(vlm), _stt(stt)))
     print(f"Output from observe: {output}")
     return output
 
