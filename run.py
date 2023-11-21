@@ -30,7 +30,6 @@ AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
 
 
-
 @timeit
 def speak(
     tts: callable,
@@ -80,11 +79,9 @@ async def _stt(
 
 
 @timeit
-def observe(
-    vlm: callable,
-    stt: callable,
-):
+def observe(vlm: callable, stt: callable):
     output = asyncio.run([_vlm(vlm), _stt(stt)])
+    print(f"Output from observe: {output}")
     return output
 
 
@@ -99,29 +96,34 @@ REPERTOIRE = {
 @timeit
 def act(
     llm: callable,
-    state: str,
-    tools: dict = REPERTOIRE,
+    state: list,
 ) -> str:
-    system = ". ".join(
-        [
-            "You are the function master node in a robot control system",
-            "You decide when to run robot functions on behalf of the other robot nodes",
-            "Use the log to avoid previous functions",
-            "Do not use the same functions as before",
-            "You can move to explore and understand the environment",
-            # "The robot can observe the world through sight",
-            # "The robot can observe the world through sound",
-            "Make sure to often listen",
-            "A good default is to listen",
-            "If a human is visible, perform the greet action or speak to them",
-            "If you hear a human, respond to them by speaking",
-            "Try to move towards interesting things",
-            "Always pick a function to run",
-            "The other robot nodes depend on you",
-            "Do not repeat functions",
-        ]
-    )
-    choice = llm(system, state)
+    prompt = '\n'.join(state)
+    system = "You are the function master node in a robot control system. "
+    system += "You decide when to run robot functions on behalf of the other robot nodes. "
+    system += "The other robot nodes depend on you. "
+    system += "The user will provide the log containing previous function calls. "
+    system += "You can move to explore and understand the environment. "
+    system += "If a human is visible, perform the greet action or speak to them. "
+    system += "If you hear a human, respond to them by speaking. "
+    system += "Try to move towards interesting things. "
+    system += "Always pick a function to run. "
+    system += "Return the name of the function you decide to run and any arguments. "
+    system += "The available functions are:"
+    system += "LOOK\n"
+    system += "\t param str: direction, one of {LOOKS}\n"
+    system += "MOVE\n"
+    system += "\t param str: direction, one of {MOVES}\n"
+    system += "PERFORM\n"
+    system += "\t param str: action, one of {ACTIONS}\n"
+    system += "SPEAK\n"
+    system += "\t param str: text, the text to speak, keep it short\n"
+    choice = llm(system, prompt)
+    print(f"Output from act: {choice}")
+    if choice.upper() in REPERTOIRE:
+        return REPERTOIRE[choice](llm)
+    else:
+        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not run unknown function {choice}"
 
 
 def autonomous_loop(
@@ -142,7 +144,7 @@ def autonomous_loop(
         for s in state:
             print(s)
         print(f"*********** {EMOJIS['state']}")
-        act(state, models["llm"])
+        act(models["llm"], state)
     print(f"{EMOJIS['died']} robot is dead")
 
 
