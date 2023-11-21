@@ -2,6 +2,7 @@ import base64
 import time
 
 EMOJIS = {
+    "brain": "🧠",
     "robot": "🤖",
     "state": "📄",
     "fail": "❌",
