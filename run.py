@@ -122,8 +122,8 @@ Your response should be a single line with the chosen function name and argument
     func_name, args = choice.split(",")
     if func_name in repertoire:
         _msg = f"{EMOJIS['llm']}{EMOJIS['success']} chose {func_name} with args {args}\n"
-        _msg += repertoire[func_name.upper()](args)     
-        return repertoire[choice](args)
+        _msg += repertoire[func_name](args)     
+        return _msg
     else:
         return f"{EMOJIS['llm']}{EMOJIS['fail']} unknown function {func_name}"
 
