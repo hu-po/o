@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import hashlib
 import os
 import io
 from datetime import datetime, timedelta
@@ -11,7 +10,7 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 
 from bot import move, perform, look_at
-from util import timeit, encode_image, EMOJIS
+from util import timeit, encode_image, make_tmp_audio_path, bytes_to_audio, EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--mode", type=str, required=True)
@@ -39,11 +38,10 @@ def speak(
 ) -> str:
     if mute:
         return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is mute"
-    file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
+    file_name = make_tmp_audio_path(text)
     if not os.path.exists(file_name):
-        byte_stream = io.BytesIO(tts(text, file_name))
-        seg = AudioSegment.from_file(byte_stream, format="mp3")
-        seg.export(file_name, format="mp3")
+        bytes = tts(text)
+        bytes_to_audio(bytes, file_name)
     seg = AudioSegment.from_file(file_name, format="mp3")
     play(seg)
     return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"

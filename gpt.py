@@ -3,7 +3,7 @@ import requests
 
 from openai import OpenAI
 
-from util import timeit, encode_image
+from util import timeit
 
 client = OpenAI()
 
@@ -52,7 +52,7 @@ def llm(
             {"role": "user", "content": prompt},
         ],
     )
-    reply = response["choices"][0]["message"]["content"]
+    reply = response.choices[0].message.content
     return reply
 
 
@@ -91,7 +91,7 @@ def vlm(
 
 
 @timeit
-def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE):
+def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> bytes:
     response = client.audio.speech.create(model=model, voice=voice, input=text)
     return response.content
 
@@ -113,7 +113,10 @@ MODELS = {
 }
 
 if __name__ == "__main__":
-    print(tts("hello world", "/tmp/hello_world.mp3"))
-    print(stt("/tmp/hello_world.mp3"))
+    from util import encode_image, bytes_to_audio
+
+    _bytes = tts("hello world")
+    bytes_to_audio(_bytes, "/tmp/test.mp3")
+    print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
     print(vlm(encode_image("/tmp/test.jpg")))

@@ -1,6 +1,6 @@
 import replicate
 
-from util import timeit, encode_image
+from util import timeit
 
 VLM_MODEL: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_PROMPT: str = ". ".join(
@@ -20,25 +20,6 @@ VLM_PROMPT: str = ". ".join(
 )
 VLM_MAX_TOKENS: int = 16  # max tokens for reply
 LLM_MODEL: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
-LLM_SYSTEM_PROMPT: str = ". ".join(
-    [
-        "You are the function master node in a robot control system",
-        "You decide when to run robot functions on behalf of the other robot nodes",
-        "Use the log to avoid previous functions",
-        "Do not use the same functions as before",
-        "You can move to explore and understand the environment",
-        # "The robot can observe the world through sight",
-        # "The robot can observe the world through sound",
-        "Make sure to often listen",
-        "A good default is to listen",
-        "If a human is visible, perform the greet action or speak to them",
-        "If you hear a human, respond to them by speaking",
-        "Try to move towards interesting things",
-        "Always pick a function to run",
-        "The other robot nodes depend on you",
-        "Do not repeat functions",
-    ]
-)
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.0
 # Text-to-Speech
@@ -130,7 +111,10 @@ MODELS = {
 }
 
 if __name__ == "__main__":
-    print(tts("hello world", "/tmp/hello_world.mp3"))
-    print(stt("/tmp/hello_world.mp3"))
+    from util import encode_image, bytes_to_audio
+
+    _bytes = tts("hello world")
+    bytes_to_audio(_bytes, "/tmp/test.mp3")
+    print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
     print(vlm(encode_image("/tmp/test.jpg")))
