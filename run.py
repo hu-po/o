@@ -3,6 +3,7 @@ import asyncio
 import os
 import hashlib
 from datetime import datetime, timedelta
+import functools
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -94,8 +95,8 @@ REPERTOIRE = {
 @timeit
 def choose_action(
     llm: callable,
+    repertoire: dict,
     state: list,
-    repertoire: dict = REPERTOIRE,
 ) -> str:
     prompt = f"""
 Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
@@ -129,7 +130,8 @@ Your response should be a single line with the chosen function name and argument
 
 
 def autonomous_loop(
-    models,
+    models: dict,
+    repertoire: dict,
     lifespan: timedelta = LIFESPAN,
 ) -> None:
     birthday = datetime.now()
@@ -146,7 +148,7 @@ def autonomous_loop(
         print(f"*********** {EMOJIS['state']} at step {num_steps}")
         print(_state)
         print(f"*********** {EMOJIS['state']}")
-        act = choose_action(models["llm"], _state)
+        act = choose_action(models["llm"], repertoire, _state)
         state.append(act)
     print(f"{EMOJIS['died']} robot is dead")
 
@@ -157,4 +159,5 @@ if __name__ == "__main__":
     elif args.mode == "rep":
         from rep import MODELS
 
-    autonomous_loop(MODELS)
+    REPERTOIRE["SPEAK"] = functools.partial(speak, tts=MODELS["tts"])
+    autonomous_loop(MODELS, REPERTOIRE)
