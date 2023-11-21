@@ -120,7 +120,7 @@ Your response should be a single line with the chosen function name and argument
 """
     choice = llm(prompt)
     func_name, args = choice.split(",")
-    if func_name.upper() in repertoire:
+    if func_name in repertoire:
         _msg = f"{EMOJIS['llm']}{EMOJIS['success']} chose {func_name} with args {args}\n"
         _msg += repertoire[func_name.upper()](args)     
         return repertoire[choice](args)
