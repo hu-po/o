@@ -3,7 +3,7 @@ import requests
 
 from openai import OpenAI
 
-from util import timeit
+from util import timeit, encode_image
 
 client = OpenAI()
 
@@ -58,11 +58,11 @@ def llm(
 
 @timeit
 def vlm(
-    base64_image: str,
     prompt: str = VLM_PROMPT,
     model: str = VLM_MODEL,
     max_tokens: int = VLM_MAX_TOKENS,
 ) -> str:
+    base64_image = encode_image()
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
@@ -113,10 +113,10 @@ MODELS = {
 }
 
 if __name__ == "__main__":
-    from util import encode_image, bytes_to_audio
+    from util import bytes_to_audio
 
     _bytes = tts("hello world")
     bytes_to_audio(_bytes, "/tmp/test.mp3")
     print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
-    print(vlm(encode_image("/tmp/test.jpg")))
+    print(vlm())

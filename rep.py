@@ -1,6 +1,6 @@
 import replicate
 
-from util import timeit
+from util import timeit, encode_image
 
 VLM_MODEL: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_PROMPT: str = ". ".join(
@@ -57,12 +57,12 @@ def llm(
 
 @timeit
 def vlm(
-    base64_image: str,
     prompt: str = VLM_PROMPT,
     model: str = VLM_MODEL,
     max_tokens: int = VLM_MAX_TOKENS,
 ) -> str:
     # https://replicate.com/yorickvp/llava-13b
+    base64_image = encode_image()
     output = replicate.run(
         model,
         input={
@@ -111,10 +111,10 @@ MODELS = {
 }
 
 if __name__ == "__main__":
-    from util import encode_image, bytes_to_audio
+    from util import bytes_to_audio
 
     _bytes = tts("hello world")
     bytes_to_audio(_bytes, "/tmp/test.mp3")
     print(stt("/tmp/test.mp3"))
     print(llm("you are a robot", "hello"))
-    print(vlm(encode_image("/tmp/test.jpg")))
+    print(vlm())

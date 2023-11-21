@@ -177,7 +177,11 @@ def perform(
 if __name__ == "__main__":
     import random
 
-    while True:
-        # print(perform(random.choice(ACTIONS)))
-        # print(move(random.choice(MOVE_DIRECTIONS.keys())))
+    for _ in range(3):
         print(look_at(random.choice(list(LOOK_DIRECTIONS.keys()))))
+
+    for _ in range(3):
+        print(move(random.choice(list(MOVE_DIRECTIONS.keys()))))
+
+    for _ in range(3):
+        print(perform(random.choice(ACTIONS)))
