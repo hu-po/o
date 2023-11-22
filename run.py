@@ -75,8 +75,8 @@ async def _vlm() -> str:
     try:
         description = vlm()
     except Exception as e:
-        print(e)
-        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see"
+        # print(e)
+        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, ERROR"
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
 
 
@@ -93,8 +93,8 @@ async def _stt() -> str:
         write(AUDIO_OUTPUT_PATH, AUDIO_SAMPLE_RATE, audio_data)
         transcript = stt(AUDIO_OUTPUT_PATH)
     except Exception as e:
-        print(e)
-        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear"
+        # print(e)
+        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, ERROR"
     return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
@@ -102,8 +102,8 @@ async def _llm(prompt: str) -> [str, str]:
     try:
         reply = llm(prompt)
     except Exception as e:
-        print(e)
-        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not think"
+        # print(e)
+        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, ERROR"
     return f"{EMOJIS['llm']}{EMOJIS['success']} picked {reply}", reply
 
 
