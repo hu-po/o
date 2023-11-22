@@ -1,4 +1,3 @@
-import base64
 import time
 
 EMOJIS = {
@@ -36,9 +35,3 @@ def timeit(f):
         return result
 
     return _
-
-
-def encode_image(image_path: str = IMAGE_PATH):
-    with open(image_path, "rb") as f:
-        base64_image = base64.b64encode(f.read()).decode("utf-8")
-    return base64_image

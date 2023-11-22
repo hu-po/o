@@ -5,41 +5,24 @@ import io
 from pydub import AudioSegment
 from openai import OpenAI
 
-from util import timeit, encode_image
+from util import timeit
 
 client = OpenAI()
 
-VLM_MODEL: str = "gpt-4-vision-preview"
-VLM_PROMPT: str = ". ".join(
-    [
-        "Describe the scene, objects, and characters",
-        "You are a robot vision module",
-        "You are small and only 20 centimeters off the ground",
-        "Focus on the most important things",
-        "If there are humans mention them and their relative position",
-        "Do not mention the image",
-        "Directly describe the scene",
-        "Be concise",
-        "Do not use punctuation",
-        "Your response will be read out by the robot speech module",
-        "Your reponse should not contain any special characters",
-    ]
-)
-VLM_MAX_TOKENS: int = 24  # max tokens for reply
-LLM_MODEL: str = "gpt-4-1106-preview"
+LLM: str = "gpt-4-1106-preview"
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.0
-# Text-to-Speech
-TTS_MODEL: str = "tts-1"
+VLM: str = "gpt-4-vision-preview"
+VLM_MAX_TOKENS: int = 24
+TTS: str = "tts-1"
 VOICE: str = "echo"  # (alloy, echo, fable, onyx, nova, and shimmer)
-# Speech-to-Text
-STT_MODEL: str = "whisper-1"  # Speech-to-text model
+STT: str = "whisper-1"
 
 
 @timeit
 def llm(
     prompt: str,
-    model: str = LLM_MODEL,
+    model: str = LLM,
     max_tokens: int = LLM_MAX_TOKENS,
     temperature: float = LLM_TEMPERATURE,
 ) -> str:
@@ -58,11 +41,11 @@ def llm(
 
 @timeit
 def vlm(
-    prompt: str = VLM_PROMPT,
-    model: str = VLM_MODEL,
+    prompt: str,
+    base64_image: str,
+    model: str = VLM,
     max_tokens: int = VLM_MAX_TOKENS,
 ) -> str:
-    base64_image = encode_image()
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
@@ -91,14 +74,14 @@ def vlm(
 
 
 @timeit
-def tts(text: str, model: str = TTS_MODEL, voice: str = VOICE) -> AudioSegment:
+def tts(text: str, model: str = TTS, voice: str = VOICE) -> AudioSegment:
     response = client.audio.speech.create(model=model, voice=voice, input=text)
     byte_stream = io.BytesIO(response.content)
     return AudioSegment.from_file(byte_stream, format="mp3")
 
 
 @timeit
-def stt(audio_path: str, model: str = STT_MODEL) -> str:
+def stt(audio_path: str, model: str = STT) -> str:
     with open(audio_path, "rb") as f:
         transcript = client.audio.transcriptions.create(
             model=model, file=f, response_format="text"
@@ -111,4 +94,9 @@ if __name__ == "__main__":
     seg.export("/tmp/test.mp3", format="mp3")
     print(stt("/tmp/test.mp3"))
     print(llm("hello"))
-    print(vlm())
+
+    import base64 
+    TEST_IMAGE_PATH = "/tmp/test.jpg"
+    with open(TEST_IMAGE_PATH, "rb") as f:
+        base64_image = base64.b64encode(f.read()).decode("utf-8")
+    print(vlm("what do you see?"))

@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import base64
 import os
 import hashlib
 from datetime import datetime, timedelta
@@ -20,27 +21,31 @@ argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 if args.model_api == "gpt":
     from gpt import llm, vlm, tts, stt
-    from gpt import LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
+    from gpt import LLM, VLM, TTS, STT
 elif args.model_api == "rep":
     from rep import llm, vlm, tts, stt
-    from rep import LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
+    from rep import LLM, VLM, TTS, STT
 elif args.model_api == "test":
-    LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL = ["test"]*4
+    LLM, VLM, TTS, STT = ["test"] * 4
+
     def llm(x):
         return "test llm reply,"
-    def vlm(x):
+
+    def vlm(x, y):
         return "test vlm reply"
+
     def tts(x):
         return "test tts reply"
+
     def stt(x):
         return None
 
-print(f"########### {EMOJIS['brain']}")
-print(f"{EMOJIS['llm']} {LLM_MODEL}")
-print(f"{EMOJIS['vlm']} {VLM_MODEL}")
-print(f"{EMOJIS['tts']} {TTS_MODEL}")
-print(f"{EMOJIS['stt']} {STT_MODEL}")
-print(f"########### {EMOJIS['brain']}")
+
+print(f"{EMOJIS['llm']} LLM: {LLM}")
+print(f"{EMOJIS['vlm']} VLM: {VLM}")
+print(f"{EMOJIS['tts']} TTS: {TTS}")
+print(f"{EMOJIS['stt']} STT: {STT}")
+
 if args.robot == "nex":
     from nex import LOOKS, MOVES, ACTIONS
 
@@ -51,20 +56,21 @@ elif args.robot == "test":
     ACTIONS = ["greet"]
     ROBOT_FILENAME: str = "oop.py"
 
-
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
 MEMORY: int = 32  # How many characters worth of state to keep in memory
-FORGET: int = 8  # How many characters worth of state to forget 
-BLIND: bool = True  # Do not use vision module
-MUTE: bool = True  # Mute audio output
+FORGET: int = 8  # How many characters worth of state to forget
+
+BLIND: bool = False  # Do not use vision module
+MUTE: bool = False  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 CRIP: bool = False  # Do not move
-GREETING: str = "hello there"  # Greeting is spoken on start
+
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
+IMAGE_OUTPUT_PATH: str = "/tmp/image.jpg"  # captured image is constantly overwritten
 
 
 async def _tts(text: str) -> str:
@@ -87,7 +93,22 @@ async def _vlm() -> str:
     if BLIND:
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
     try:
-        description = vlm()
+        prompt = """
+Describe the scene, objects, and characters
+You are a robot vision module
+You are small and only 20 centimeters off the ground
+Focus on the most important things
+If there are humans mention them and their relative position
+Do not mention the image
+Directly describe the scene
+Be concise
+Do not use punctuation
+Your response will be read out by the robot speech module
+Your reponse should not contain any special characters
+"""
+        with open(IMAGE_OUTPUT_PATH, "rb") as f:
+            base64_image = base64.b64encode(f.read()).decode("utf-8")
+            description = vlm(prompt, base64_image)
     except Exception as e:
         # print(e)
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, ERROR"
@@ -208,12 +229,14 @@ while datetime.now() - BIRTHDAY < LIFESPAN:
     for s in asyncio.run(act(mode, name, speech)):
         state.append(s)
 state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
-poem = llm(f"""
+poem = llm(
+    f"""
 Here is the robot log
 <robotlog>
 {state}
 </robotlog>
-""")
+"""
+)
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
 print(poem)
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
