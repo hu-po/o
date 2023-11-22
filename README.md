@@ -12,10 +12,10 @@ autonomous humanoid robot, uses APIs for vlm, tts, stt, llm
 ```
 pip install openai==1.1.1
 export OPENAI_API_KEY=...
-python run.py --mode gpt
+python run.py --model_api gpt
 ```
 
-## Open Source API
+## Replicate API (Open Source)
 
 - **LLM:** `meta/llama-2-13b-chat`
 - **VLM:** `yorickvp/llava-13b`
@@ -25,7 +25,7 @@ python run.py --mode gpt
 ```
 pip install replicate==0.20.0
 export REPLICATE_API_TOKEN=...
-python run.py --mode rep
+python run.py --model_api rep
 ```
 
 ## Robot
@@ -57,8 +57,8 @@ crontab -e
 
 ## Reddit Post
 
-https://www.reddit.com/r/robotics
-https://www.reddit.com/r/OpenAI/
+[r/Robotics](https://www.reddit.com/r/robotics/comments/1818x5t/zeroshot_autonomous_humanoid/)
+[r/OpenAI](https://www.reddit.com/r/OpenAI/comments/1818yeg/humanoid_robot_with_gpt4v/)
 
 I created a humanoid robot that can see, hear, listen, and speak all in real time. I am using a VLM (vision language model) to interpret images, TTS and STT (Speech-to-Text and Text-to-Speech) for the listening and speaking, and a LLM (language language model) to decide what to do and generate the speech text. All the model inference is through API because the robot is too tiny to perform the compute itself. The robot is a HiWonder AiNex running ROS (Robot Operating System) on a Raspberry Pi 4B.
 
@@ -81,6 +81,8 @@ The robot runs a sense-plan-act loop where the observation (VLM and STT) is used
 Thanks for watching let me know what you think, I plan on working on this little buddy more in the future.
 
 ## Twitter (X) Post
+
+[Post](https://x.com/hupobuboo/status/1727316167138886118)
 
 Zero-Shot Autonomous Humanoid Robot using @replicate and @OpenAI
 
