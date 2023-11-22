@@ -105,13 +105,6 @@ def stt(audio_path: str, model: str = STT_MODEL) -> str:
     return output["transcription"]
 
 
-MODELS = {
-    "llm": llm,
-    "vlm": vlm,
-    "tts": tts,
-    "stt": stt,
-}
-
 if __name__ == "__main__":
     seg = tts("hello world")
     seg.export("/tmp/test.mp3", format="mp3")

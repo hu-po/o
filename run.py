@@ -15,14 +15,14 @@ from util import EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--model_api", type=str, default="gpt")
-argparser.add_argument("--robot", type=str, default="nex")
+argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 if args.model_api == "gpt":
     from gpt import llm, vlm, tts, stt
-    from gpt import MODELS, LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
+    from gpt import LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
 elif args.model_api == "rep":
     from rep import llm, vlm, tts, stt
-    from rep import MODELS, LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
+    from rep import LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
 print(f"########### {EMOJIS['brain']}")
 print(f"{EMOJIS['llm']} {LLM_MODEL}")
 print(f"{EMOJIS['vlm']} {VLM_MODEL}")
