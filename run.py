@@ -56,7 +56,7 @@ AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwr
 
 async def _tts(text: str) -> str:
     if MUTE:
-        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is mute"
+        return "" #f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is mute"
     file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
     if not os.path.exists(file_name):
         seg = tts(text)
