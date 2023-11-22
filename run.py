@@ -43,12 +43,12 @@ elif args.robot == "test":
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
 STATE_SIZE: int = 256  # How many characters worth of state to keep
-BLIND: bool = True  # Do not use vision module
+BLIND: bool = False  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 CRIP: bool = False  # Do not move
 GREETING: str = "hello there"  # Greeting is spoken on start
-AUDIO_RECORD_TIME: int = 5  # Duration for audio recording
+AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten

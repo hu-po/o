@@ -22,6 +22,7 @@ VLM_PROMPT: str = ". ".join(
 )
 VLM_MAX_TOKENS: int = 24  # max tokens for reply
 LLM_MODEL: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
+# LLM_MODEL: str = "mistralai/mistral-7b-instruct-v0.1:83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70"
 LLM_MAX_TOKENS: int = 16
 LLM_TEMPERATURE: float = 0.01
 # Text-to-Speech
