@@ -51,8 +51,9 @@ pip install pydub==0.25.1
 To autostart script on robot boot use crontab (sleep for some time to allow ROS to spin up):
 
 ```
+chmod +x /home/ubuntu/o/run.sh
 crontab -e
-@reboot sleep 30 && sh /home/ubuntu/o/launch.sh
+@reboot sh /home/ubuntu/o/run.sh
 ```
 
 ## Reddit Post
