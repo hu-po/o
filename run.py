@@ -73,20 +73,15 @@ AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwr
 IMAGE_OUTPUT_PATH: str = "/tmp/image.jpg"  # captured image is constantly overwritten
 
 
-async def _tts(text: str) -> str:
-    if MUTE:
-        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is on mute"
+async def _llm(prompt: str) -> [str, str]:
     try:
-        file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
-        if not os.path.exists(file_name):
-            seg = tts(text)
-            seg.export(file_name, format="mp3")
-        seg = AudioSegment.from_file(file_name, format="mp3")
-        play(seg)
+        reply = llm(prompt)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
-    return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
+        return (
+            f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
+        )
+    return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
 
 
 async def _vlm() -> str:
@@ -115,6 +110,24 @@ Your reponse should not contain any special characters
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
 
 
+async def _tts(text: str) -> str:
+    if MUTE:
+        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is on mute"
+    try:
+        file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
+        if not os.path.exists(file_name):
+            seg = tts(text)
+            seg.export(file_name, format="mp3")
+        seg = AudioSegment.from_file(file_name, format="mp3")
+        play(seg)
+    except Exception as e:
+        # print(e)
+        return (
+            f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
+        )
+    return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
+
+
 async def _stt() -> str:
     if DEAF:
         return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, robot is deaf"
@@ -133,16 +146,7 @@ async def _stt() -> str:
     return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
-async def _llm(prompt: str) -> [str, str]:
-    try:
-        reply = llm(prompt)
-    except Exception as e:
-        # print(e)
-        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
-    return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
-
-
-async def robot(func: str, code: str) -> str:
+async def _act(func: str, code: str) -> str:
     if LAME:
         return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is lame"
     _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT_FILENAME)
@@ -165,7 +169,7 @@ async def sense() -> str:
 
 
 async def act(func: str, code: str, speech: str) -> str:
-    return await asyncio.gather(robot(func, code), _tts(speech))
+    return await asyncio.gather(_act(func, code), _tts(speech))
 
 
 async def plan(state: str) -> [str, str, str]:
@@ -230,7 +234,7 @@ while datetime.now() - BIRTHDAY < LIFESPAN:
 state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
 poem = llm(
     f"""
-Here is the robot log
+Write a short eulogy poem for a robot. Here is the robot log:
 <robotlog>
 {state}
 </robotlog>
@@ -239,3 +243,4 @@ Here is the robot log
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
 print(poem)
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
+tts(poem)
