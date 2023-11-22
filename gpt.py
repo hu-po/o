@@ -1,6 +1,6 @@
+import io
 import os
 import requests
-import io
 
 from pydub import AudioSegment
 from openai import OpenAI
@@ -96,7 +96,6 @@ if __name__ == "__main__":
     print(llm("hello"))
 
     import base64 
-    TEST_IMAGE_PATH = "/tmp/test.jpg"
-    with open(TEST_IMAGE_PATH, "rb") as f:
+    with open("/tmp/image.jpg", "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")
     print(vlm("what do you see?"))

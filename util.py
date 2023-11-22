@@ -4,6 +4,7 @@ EMOJIS = {
     "brain": "🧠",
     "robot": "🤖",
     "state": "📄",
+    "save": "💾",
     "fail": "❌",
     "success": "✅",
     "born": "🐣",
@@ -18,6 +19,7 @@ EMOJIS = {
     "perform": "🦾",
     "dead": "🪦",
     "poem": "📜",
+    "plan": "🤔",
 }
 IMAGE_PATH = "/tmp/image.jpg"  # Image is constantly overwritten
 

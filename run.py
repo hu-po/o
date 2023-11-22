@@ -1,24 +1,25 @@
 import argparse
 import asyncio
 import base64
-import os
-import hashlib
-from datetime import datetime, timedelta
-import subprocess
 from collections import deque
+from datetime import datetime, timedelta
+import hashlib
+import os
+import subprocess
 
 from pydub import AudioSegment
 from pydub.playback import play
-import sounddevice as sd
 from scipy.io.wavfile import write
+import sounddevice as sd
 
 
 from util import EMOJIS
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="test")
+argparser.add_argument("--model_api", type=str, default="rep")
 argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
+
 if args.model_api == "gpt":
     from gpt import llm, vlm, tts, stt
     from gpt import LLM, VLM, TTS, STT
@@ -41,30 +42,29 @@ elif args.model_api == "test":
         return None
 
 
-print(f"{EMOJIS['llm']} LLM: {LLM}")
-print(f"{EMOJIS['vlm']} VLM: {VLM}")
-print(f"{EMOJIS['tts']} TTS: {TTS}")
-print(f"{EMOJIS['stt']} STT: {STT}")
-
 if args.robot == "nex":
-    from nex import LOOKS, MOVES, ACTIONS
+    from nex import ROBOT_FUNC_PROMPT
 
-    ROBOT_FILENAME: str = "nex.py"  # robot commands are run in a subprocess
+    # robot commands are run in a subprocess
+    ROBOT_FILENAME: str = "nex.py"
 elif args.robot == "test":
-    LOOKS = ["up", "down"]
-    MOVES = ["forward", "backward"]
-    ACTIONS = ["greet"]
+    ROBOT_FUNC_PROMPT = """
+MOVE(direction:str)
+direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+LOOK(direction:str)
+direction must be one of ["UP", "DOWN", "LEFT", "RIGHT"]
+"""
     ROBOT_FILENAME: str = "oop.py"
 
 BIRTHDAY: datetime = datetime.now()
-LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
+LIFESPAN: timedelta = timedelta(minutes=4)  # How long the robot will live
 MEMORY: int = 32  # How many characters worth of state to keep in memory
 FORGET: int = 8  # How many characters worth of state to forget
 
 BLIND: bool = False  # Do not use vision module
 MUTE: bool = False  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
-CRIP: bool = False  # Do not move
+LAME: bool = False  # Do not use robot commands (move, look, perform)
 
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
@@ -85,7 +85,7 @@ async def _tts(text: str) -> str:
         play(seg)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, ERROR"
+        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
     return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
 
 
@@ -111,7 +111,7 @@ Your reponse should not contain any special characters
             description = vlm(prompt, base64_image)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, ERROR"
+        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, {e.__class__.__name__}"
     return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
 
 
@@ -129,7 +129,7 @@ async def _stt() -> str:
         transcript = stt(AUDIO_OUTPUT_PATH)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, ERROR"
+        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, {e.__class__.__name__}"
     return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
 
 
@@ -138,25 +138,25 @@ async def _llm(prompt: str) -> [str, str]:
         reply = llm(prompt)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, ERROR"
-    return f"{EMOJIS['llm']}{EMOJIS['success']} picked {reply}", reply
+        return f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
+    return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
 
 
-async def robot(mode: str, name: str) -> str:
-    if CRIP:
-        return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is crippled"
+async def robot(func: str, code: str) -> str:
+    if LAME:
+        return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is lame"
     _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT_FILENAME)
     try:
         proc = subprocess.Popen(
-            ["python3", _path, mode, name],
+            ["python3", _path, func, code],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
         )
         stdout, stderr = proc.communicate()
     except Exception as e:
-        print(f"Exception on robot {e}, {stderr}")
-        return f"{EMOJIS['robot']}{EMOJIS['fail']} failed trying to {mode} {name}"
+        # print(f"{e}, {stderr}")
+        return f"{EMOJIS['robot']}{EMOJIS['fail']} robot failed on {func} {code}"
     return stdout
 
 
@@ -164,8 +164,8 @@ async def sense() -> str:
     return await asyncio.gather(_vlm(), _stt(), _tts("observing"))
 
 
-async def act(mode: str, name: str, speech: str) -> str:
-    return await asyncio.gather(robot(mode, name), _tts(speech))
+async def act(func: str, code: str, speech: str) -> str:
+    return await asyncio.gather(robot(func, code), _tts(speech))
 
 
 async def plan(state: str) -> [str, str, str]:
@@ -174,21 +174,16 @@ async def plan(state: str) -> [str, str, str]:
             _llm(
                 f"""
 Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
-MOVE(direction:str)
-  direction must be one of {MOVES}
-PERFORM(action:str)
-  action must be one of {ACTIONS}
-LOOK(direction:str)
-  direction must be one of {LOOKS}
+{ROBOT_FUNC_PROMPT}
 Here is the robot log
 <robotlog>
 {state}
 </robotlog>
 Pick one of the functions and the args. Here are some example outputs:
-PERFORM,greet
+PLAY,greet
 LOOK,up
 MOVE,forward
-Your response should be a single line with the chosen function name and arguments.
+Your response should be a single line with the chosen function code and arguments.
 """
             ),
             _llm(
@@ -203,11 +198,15 @@ Here is the robot log
             _tts("deciding"),
         ]
     )
-    mode, name = results[0][1].split(",")
+    func, code = results[0][1].split(",")
     speech = results[1][1]
-    return mode, name, speech
+    return func, code, speech
 
 
+print(f"LLM {EMOJIS['llm']}: {LLM}")
+print(f"VLM {EMOJIS['vlm']}: {VLM}")
+print(f"TTS {EMOJIS['tts']}: {TTS}")
+print(f"STT {EMOJIS['stt']}: {STT}")
 state = deque([f"{EMOJIS['born']} robot is alive"], maxlen=MEMORY)
 while datetime.now() - BIRTHDAY < LIFESPAN:
     if len(state) >= MEMORY:
@@ -216,17 +215,17 @@ while datetime.now() - BIRTHDAY < LIFESPAN:
         state.appendleft(f"{EMOJIS['forget']} memory erased")
     for s in asyncio.run(sense()):
         state.append(s)
-    print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
     state_str = "\n".join([str(item) for item in state])
+    print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
     print(state_str)
     print(f"*********** {EMOJIS['state']}")
-    mode, name, speech = asyncio.run(plan(state_str))
-    print(f"___________{EMOJIS['llm']}")
+    func, code, speech = asyncio.run(plan(state_str))
+    state.append(f"{EMOJIS['llm']} choosing function {func} {code}")
+    print(f"___________{EMOJIS['plan']}")
     print(speech)
-    print(mode, name)
-    state.append(f"{EMOJIS['robot']} using function {mode} {name}")
-    print(f"___________{EMOJIS['llm']}")
-    for s in asyncio.run(act(mode, name, speech)):
+    print(func, code)
+    print(f"___________{EMOJIS['plan']}")
+    for s in asyncio.run(act(func, code, speech)):
         state.append(s)
 state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
 poem = llm(

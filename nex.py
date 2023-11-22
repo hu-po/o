@@ -1,42 +1,42 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 import argparse
-import rospy
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
 import cv2
+
+import rospy
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
 
 from ainex_kinematics.gait_manager import GaitManager
 from ainex_kinematics.motion_manager import MotionManager
 from util import timeit, EMOJIS
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("mode", type=str)
-argparser.add_argument("name", type=str)
+argparser.add_argument("func", type=str)
+argparser.add_argument("code", type=str)
 
-# Image is constantly overwritten
-IMAGE_OUTPUT_FILENAME: str = "/tmp/image.jpg"
-CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 # Servo 23 is the rotation/pan neck servo range [300, 600]
 # Servo 24 is the tilt/vertical neck servo range [260, 650]
-DEFAULT_LOOK_DIRECTION: str = "FORWARD"
-LOOK_DIRECTIONS = {
+LOOK_DIRECTIONS: dict = {
     "FORWARD": [[23, 500], [24, 500]],
     "LEFT": [[23, 650], [24, 500]],
     "RIGHT": [[23, 350], [24, 500]],
     "UP": [[23, 500], [24, 650]],
     "DOWN": [[23, 500], [24, 400]],
 }
-LOOKS = list(LOOK_DIRECTIONS.keys())
+DEFAULT_LOOK_DIRECTION: str = "FORWARD"
+# Image is constantly overwritten
+IMAGE_OUTPUT_FILENAME: str = "/tmp/image.jpg"
+CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
-DEFAULT_ACTION_NAME: str = "greet"
+
 # Key-frame-y animations in a custom .d6a format
-ACTIONS = [
-    "greet",
-    "hand_open",
-    "wave",
-    "left_hand_put_block",
-    "right_hand_put_block",
+ACTION_NAMES: dict = {
+    "GREET": "greet",
+    "HAPPY_DANCE": "wave",
+    "GRAB_WITH_LEFT_HAND": "left_hand_put_block",
+    "GRAB_WITH_RIGHT_HAND": "right_hand_put_block",
+    # "hand_open"
     # "hurdles",
     # 'turn_right',
     # 'go_turn_right_20',
@@ -79,9 +79,9 @@ ACTIONS = [
     # 'move_up',
     # 'go_turn_right_low',
     # 'forward_step',
-]
+}
+DEFAULT_ACTION_NAME: str = "GREET"
 
-DEFAULT_MOVE_DIRECTION: str = "forward"
 # These multipliers modify the x_amp, y_amp, and rotation_angle
 MOVE_DIRECTIONS = {
     "FORWARD": [1, 0, 0],
@@ -91,25 +91,34 @@ MOVE_DIRECTIONS = {
     "ROTATE_LEFT": [0, 0, 1],
     "ROTATE_RIGHT": [0, 0, -1],
 }
-MOVES = list(MOVE_DIRECTIONS.keys())
+DEFAULT_MOVE_DIRECTION: str = "FORWARD"
 # Speed selection has three levels: 1, 2, 3, and 4, with speed decreasing from fast to slow.
-SPEED: int = 1  # Integer in range [1, 4] slow to fast
+SPEED: int = 3  # Integer in range [1, 4] slow to fast
 # Step stride in the x direction (meters).
 X_AMPLITUDE: float = 0.02  # Highest I see in examples is 0.02
 # Step stride in the y direction (meters).
 Y_AMPLITUDE: float = 0.01  # Highest I see in examples is 0.01
 # Rotation extent (degrees).
-ROTATION_ANGLE: int = 8  # Highest I see in examples is 5, 8
+ROTATION_ANGLE: int = 12  # Highest I see in examples is 5, 8
 # Arm swing extent (degrees), default is 30. When it is 0, no commands will be sent to the arms.
-ARM_SWING_DEGREE: int = 30  # Highest I see in examples is 30
+ARM_SWING_DEGREE: int = 24  # Highest I see in examples is 30
 # Number of steps to take in each movement, default is 1.
-STEP_NUM: int = 2  # I see numbers like 0 and 3 in the code
+STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
+
+ROBOT_FUNC_PROMPT = f"""
+MOVE(direction:str)
+  direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]
+PLAY(action:str)
+  action must be one of [{','.join(ACTION_NAMES.keys())}]
+LOOK(direction:str)
+  direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
+"""
 
 
 @timeit
 def move(
     direction: str = DEFAULT_MOVE_DIRECTION,
-    directions: list = MOVE_DIRECTIONS,
+    directions: dict = MOVE_DIRECTIONS,
     speed: int = SPEED,
     x_amplitude: float = X_AMPLITUDE,
     y_amplitude: float = Y_AMPLITUDE,
@@ -135,20 +144,21 @@ def move(
         gait_manager.stop()
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['success']} moved {direction}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} could not move in unknown direction {direction}"
+        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} unknown move direction {direction}"
 
 
 @timeit
-def perform(
+def play(
     action: str = DEFAULT_ACTION_NAME,
-    actions: list = ACTIONS,
+    actions: dict = ACTION_NAMES,
 ) -> str:
     motion_manager = MotionManager()
-    if action in actions:
+    action = actions.get(action.upper(), None)
+    if action:
         motion_manager.run_action(action)
         return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['success']} performed {action}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['fail']} could not perform unknown action {action}"
+        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['fail']} unknown action {action}"
 
 
 def image_callback(msg):
@@ -170,7 +180,7 @@ def look(
     directions: list = LOOK_DIRECTIONS,
 ) -> str:
     motion_manager = MotionManager()
-    servo_pos = directions.get(direction, None)
+    servo_pos = directions.get(direction.upper(), None)
     if servo_pos:
         motion_manager.set_servos_position(500, servo_pos)
         rospy.sleep(0.2)
@@ -179,18 +189,16 @@ def look(
             f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['success']} looked {direction}"
         )
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['fail']} could not look in unknown direction {direction}"
+        return f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['fail']} unknown look direction {direction}"
 
 
 if __name__ == "__main__":
     args = argparser.parse_args()
-    if args.mode.upper() == "LOOK":
-        print(look(direction=args.name))
-    elif args.mode.upper() == "PERFORM":
-        print(perform(action=args.name))
-    elif args.mode.upper() == "MOVE":
-        print(move(direction=args.name))
+    if args.func.upper() == "LOOK":
+        print(look(direction=args.code))
+    elif args.func.upper() == "PLAY":
+        print(play(action=args.code))
+    elif args.func.upper() == "MOVE":
+        print(move(direction=args.code))
     else:
-        print(
-            f"{EMOJIS['robot']}{EMOJIS['fail']} unknown mode {args.mode}, name {args.name}"
-        )
+        print(f"Unknown func {args.func} code {args.code}")
