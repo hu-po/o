@@ -52,7 +52,7 @@ To autostart script on robot boot use crontab (sleep for some time to allow ROS 
 
 ```
 crontab -e
-@reboot sleep 42 && sh /home/ubuntu/o/run.sh
+@reboot sleep 30 && sh /home/ubuntu/o/launch.sh
 ```
 
 ## Reddit Post
@@ -76,7 +76,7 @@ OpenAI Mode:
 - TTS: tts-1
 - STT: whisper-1
 
-I open sourced (MIT) the code here: https://github.com/hu-po/o
+The robot runs a sense-plan-act loop where the observation (VLM and STT) is used by the LLM to determine what actions to take (moving, talking, performing a greet, etc). I open sourced (MIT) the code here: https://github.com/hu-po/o
 
 Thanks for watching let me know what you think, I plan on working on this little buddy more in the future.
 
