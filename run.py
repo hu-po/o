@@ -44,9 +44,9 @@ elif args.robot == "test":
 
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
-MEMORY: int = 256  # How many characters worth of state to keep in memory
-FORGET: int = 128  # How many characters worth of state to forget 
-BLIND: bool = False  # Do not use vision module
+MEMORY: int = 128  # How many characters worth of state to keep in memory
+FORGET: int = 32  # How many characters worth of state to forget 
+BLIND: bool = True  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
 CRIP: bool = False  # Do not move
@@ -133,7 +133,7 @@ async def act(mode: str, name: str, speech: str) -> str:
     return await asyncio.gather(robot(mode, name), _tts(speech))
 
 
-async def plan(state: str) -> [str, str]:
+async def plan(state: str) -> [str, str, str]:
     results = await asyncio.gather(
         *[
             _llm(
@@ -168,27 +168,31 @@ Here is the robot log
             _tts("deciding"),
         ]
     )
-    mode_full = results[0][1]
+    mode, name = results[0][1].split(",")
     speech = results[1][1]
-    print(f"___________{EMOJIS['llm']}")
-    print(mode_full)
-    print(speech)
-    print(f"___________{EMOJIS['llm']}")
-    return mode_full, speech
+    return mode, name, speech
 
 
 state = deque([f"{EMOJIS['born']} robot is alive"], maxlen=MEMORY)
 while datetime.now() - BIRTHDAY < LIFESPAN:
     if len(state) >= MEMORY:
-        state = deque(random.shuffle(list(state)[:FORGET]), maxlen=MEMORY)
-    state.append(asyncio.run(sense()))
+        for _ in range(FORGET):
+            state.popleft()
+        state.appendleft(f"{EMOJIS['forget']} forgetting")
+    for s in asyncio.run(sense()):
+        state.append(s)
     print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
-    state_str = "\n".join(state)
+    state_str = "\n".join([str(item) for item in state])
     print(state_str)
     print(f"*********** {EMOJIS['state']}")
-    mode_full, speech = asyncio.run(plan(state_str))
-    mode, name = mode_full.split(",")
-    state.append(asyncio.run(act(mode, name, speech)))
+    mode, name, speech = asyncio.run(plan(state_str))
+    print(f"___________{EMOJIS['llm']}")
+    print(speech)
+    print(mode, name)
+    state.append(f"{EMOJIS['robot']} using function {mode} {name}")
+    print(f"___________{EMOJIS['llm']}")
+    for s in asyncio.run(act(mode, name, speech)):
+        state.append(s)
 state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
 poem = llm(f"""
 Here is the robot log
