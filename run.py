@@ -61,8 +61,8 @@ LIFESPAN: timedelta = timedelta(minutes=4)  # How long the robot will live
 MEMORY: int = 32  # How many characters worth of state to keep in memory
 FORGET: int = 8  # How many characters worth of state to forget
 
-BLIND: bool = False  # Do not use vision module
-MUTE: bool = False  # Mute audio output
+BLIND: bool = True  # Do not use see (VLM)
+MUTE: bool = False  # Do not speak (TTS)
 DEAF: bool = False  # Do not listen for audio input
 LAME: bool = False  # Do not use robot commands (move, look, perform)
 
