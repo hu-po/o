@@ -7,7 +7,6 @@ EMOJIS = {
     "fail": "❌",
     "success": "✅",
     "born": "🐣",
-    "dead": "🪦",
     "forget": "🗑️",
     "vlm": "👁️‍🗨️",
     "llm": "💬",
@@ -17,6 +16,8 @@ EMOJIS = {
     "move": "🦿",
     "look": "📷",
     "perform": "🦾",
+    "dead": "🪦",
+    "poem": "📜",
 }
 IMAGE_PATH = "/tmp/image.jpg"  # Image is constantly overwritten
 
