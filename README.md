@@ -54,6 +54,7 @@ To autostart script on robot boot use crontab (sleep for some time to allow ROS 
 chmod +x /home/ubuntu/o/run.sh
 crontab -e
 @reboot sh /home/ubuntu/o/run.sh
+*/5 * * * * /home/ubuntu/o/run.sh
 ```
 
 ## Reddit Post
