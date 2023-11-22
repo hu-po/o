@@ -4,6 +4,8 @@ import os
 import hashlib
 from datetime import datetime, timedelta
 import subprocess
+import random
+from collections import deque
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -42,7 +44,8 @@ elif args.robot == "test":
 
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
-STATE_SIZE: int = 256  # How many characters worth of state to keep
+MEMORY: int = 256  # How many characters worth of state to keep in memory
+FORGET: int = 128  # How many characters worth of state to forget 
 BLIND: bool = False  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
@@ -123,13 +126,11 @@ async def robot(mode: str, name: str) -> str:
 
 
 async def sense() -> str:
-    results = await asyncio.gather(_vlm(), _stt(), _tts("observing"))
-    return "\n".join(results)
+    return await asyncio.gather(_vlm(), _stt(), _tts("observing"))
 
 
 async def act(mode: str, name: str, speech: str) -> str:
-    results = await asyncio.gather(robot(mode, name), _tts(speech))
-    return "\n".join(results)
+    return await asyncio.gather(robot(mode, name), _tts(speech))
 
 
 async def plan(state: str) -> [str, str]:
@@ -168,30 +169,33 @@ Here is the robot log
         ]
     )
     mode_full = results[0][1]
-    print(f"___________{EMOJIS['llm']}")
-    print(mode_full)
-    print(f"___________{EMOJIS['llm']}")
     speech = results[1][1]
     print(f"___________{EMOJIS['llm']}")
+    print(mode_full)
     print(speech)
     print(f"___________{EMOJIS['llm']}")
     return mode_full, speech
 
 
-print(f"{EMOJIS['born']} robot is alive")
-state = ""
-num_steps = 0
+state = deque([f"{EMOJIS['born']} robot is alive"], maxlen=MEMORY)
 while datetime.now() - BIRTHDAY < LIFESPAN:
-    num_steps += 1
-    if len(state) >= STATE_SIZE:
-        state_as_list = state.splitlines()
-        split_in_half = STATE_SIZE // 2
-        state = "\n".join(state_as_list[-split_in_half:])
-    state += asyncio.run(sense())
+    if len(state) >= MEMORY:
+        state = deque(random.shuffle(list(state)[:FORGET]), maxlen=MEMORY)
+    state.append(asyncio.run(sense()))
+    print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
+    state_str = "\n".join(state)
+    print(state_str)
     print(f"*********** {EMOJIS['state']}")
-    print(state)
-    print(f"*********** {EMOJIS['state']} at step {num_steps}")
-    mode_full, speech = asyncio.run(plan(state))
+    mode_full, speech = asyncio.run(plan(state_str))
     mode, name = mode_full.split(",")
-    state += asyncio.run(act(mode, name, speech))
-print(f"{EMOJIS['died']} robot is dead")
+    state.append(asyncio.run(act(mode, name, speech)))
+state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
+poem = llm(f"""
+Here is the robot log
+<robotlog>
+{state}
+</robotlog>
+""")
+print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
+print(poem)
+print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
