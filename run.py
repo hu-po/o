@@ -44,8 +44,8 @@ elif args.robot == "test":
 
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=5)  # How long the robot will live
-MEMORY: int = 128  # How many characters worth of state to keep in memory
-FORGET: int = 32  # How many characters worth of state to forget 
+MEMORY: int = 32  # How many characters worth of state to keep in memory
+FORGET: int = 8  # How many characters worth of state to forget 
 BLIND: bool = True  # Do not use vision module
 MUTE: bool = True  # Mute audio output
 DEAF: bool = False  # Do not listen for audio input
@@ -178,7 +178,7 @@ while datetime.now() - BIRTHDAY < LIFESPAN:
     if len(state) >= MEMORY:
         for _ in range(FORGET):
             state.popleft()
-        state.appendleft(f"{EMOJIS['forget']} forgetting")
+        state.appendleft(f"{EMOJIS['forget']} memory erased")
     for s in asyncio.run(sense()):
         state.append(s)
     print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
