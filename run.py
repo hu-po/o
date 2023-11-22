@@ -4,7 +4,6 @@ import os
 import hashlib
 from datetime import datetime, timedelta
 import subprocess
-import random
 from collections import deque
 
 from pydub import AudioSegment
