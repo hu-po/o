@@ -92,7 +92,7 @@ def move(
 ) -> str:
     rospy.init_node("simple_gait_control_demo")
     gait_manager = GaitManager()
-    modifiers = directions.get(direction, None)
+    modifiers = directions.get(direction.upper(), None)
     if modifiers:
         x_amplitude *= modifiers[0]
         y_amplitude *= modifiers[1]
