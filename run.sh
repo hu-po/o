@@ -1,1 +1,1 @@
-sleep 10 && python3 run.py --model_api gpt --robot nex
+sleep 60 && python3 run.py --model_api gpt --robot nex
