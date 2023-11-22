@@ -15,7 +15,7 @@ from scipy.io.wavfile import write
 from util import EMOJIS
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="gpt")
+argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 if args.model_api == "gpt":
@@ -24,6 +24,17 @@ if args.model_api == "gpt":
 elif args.model_api == "rep":
     from rep import llm, vlm, tts, stt
     from rep import LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL
+elif args.model_api == "test":
+    LLM_MODEL, VLM_MODEL, TTS_MODEL, STT_MODEL = ["test"]*4
+    def llm(x):
+        return "test llm reply,"
+    def vlm(x):
+        return "test vlm reply"
+    def tts(x):
+        return "test tts reply"
+    def stt(x):
+        return None
+
 print(f"########### {EMOJIS['brain']}")
 print(f"{EMOJIS['llm']} {LLM_MODEL}")
 print(f"{EMOJIS['vlm']} {VLM_MODEL}")
@@ -59,12 +70,16 @@ AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwr
 async def _tts(text: str) -> str:
     if MUTE:
         return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is on mute"
-    file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
-    if not os.path.exists(file_name):
-        seg = tts(text)
-        seg.export(file_name, format="mp3")
-    seg = AudioSegment.from_file(file_name, format="mp3")
-    play(seg)
+    try:
+        file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
+        if not os.path.exists(file_name):
+            seg = tts(text)
+            seg.export(file_name, format="mp3")
+        seg = AudioSegment.from_file(file_name, format="mp3")
+        play(seg)
+    except Exception as e:
+        # print(e)
+        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, ERROR"
     return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
 
 
