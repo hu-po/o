@@ -64,6 +64,32 @@ aplay -l
 amixer -c 2 set PCM 100%
 ```
 
+Have to fix the ALSA config to make the USB mic the default:
+
+```
+sudo vim /etc/asound.conf
+sudo alsa force-reload
+```
+```
+pcm.!default {
+    type hw
+    card 2
+}
+ctl.!default {
+    type hw
+    card 2
+}
+```
+
+Test the audio with python3
+
+```
+from pydub import AudioSegment
+from pydub.playback import play
+seg = AudioSegment.from_file("/tmp/tmp0e449aae8f.mp3", "mp3")
+play(seg)
+```
+
 ## Reddit Post
 
 [r/Robotics](https://www.reddit.com/r/robotics/comments/1818x5t/zeroshot_autonomous_humanoid/)

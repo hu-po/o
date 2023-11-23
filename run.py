@@ -163,11 +163,11 @@ async def _act(func: str, code: str) -> str:
     return stdout
 
 
-async def sense() -> str:
+async def sense() -> list:
     return await asyncio.gather(_vlm(), _stt(), _tts("observing"))
 
 
-async def act(func: str, code: str, speech: str) -> str:
+async def act(func: str, code: str, speech: str) -> list:
     return await asyncio.gather(_act(func, code), _tts(speech))
 
 
