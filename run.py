@@ -12,7 +12,6 @@ from pydub.playback import play
 from scipy.io.wavfile import write
 import sounddevice as sd
 
-
 from util import EMOJIS
 
 argparser = argparse.ArgumentParser()

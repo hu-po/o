@@ -57,6 +57,13 @@ crontab -e
 */5 * * * * /home/ubuntu/o/run.sh
 ```
 
+Only a USB microphone works, set the volume with:
+
+```
+aplay -l
+amixer -c 2 set PCM 100%
+```
+
 ## Reddit Post
 
 [r/Robotics](https://www.reddit.com/r/robotics/comments/1818x5t/zeroshot_autonomous_humanoid/)
