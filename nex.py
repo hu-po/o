@@ -77,7 +77,11 @@ PLAY(action:str)
 LOOK(direction:str)
   direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
 """
-
+ROBOT_EXAMPLE_PROMPT = """
+PLAY,greet
+LOOK,up
+MOVE,forward
+"""
 
 @timeit
 def move(

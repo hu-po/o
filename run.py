@@ -42,7 +42,7 @@ elif args.model_api == "test":
 
 
 if args.robot == "nex":
-    from nex import ROBOT_FUNC_PROMPT
+    from nex import ROBOT_FUNC_PROMPT, ROBOT_EXAMPLE_PROMPT
 
     # robot commands are run in a subprocess
     ROBOT_FILENAME: str = "nex.py"
@@ -50,8 +50,10 @@ elif args.robot == "test":
     ROBOT_FUNC_PROMPT = """
 MOVE(direction:str)
 direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
-LOOK(direction:str)
-direction must be one of ["UP", "DOWN", "LEFT", "RIGHT"]
+"""
+    ROBOT_EXAMPLE_PROMPT = """
+MOVE,FORWARD
+MOVE,LEFT
 """
     ROBOT_FILENAME: str = "oop.py"
 
@@ -183,15 +185,13 @@ Here is the robot log
 {state}
 </robotlog>
 Pick one of the functions and the args. Here are some example outputs:
-PLAY,greet
-LOOK,up
-MOVE,forward
+{ROBOT_EXAMPLE_PROMPT}
 Your response should be a single line with the chosen function code and arguments.
 """
             ),
             _llm(
                 f"""
-Summarize the robot log in a couple clever words, be brief but precise, like yoda
+Summarize the robot log in a couple clever words, be brief but precise
 Here is the robot log
 <robotlog>
 {state}
