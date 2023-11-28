@@ -12,50 +12,15 @@ from pydub.playback import play
 from scipy.io.wavfile import write
 import sounddevice as sd
 
-from util import EMOJIS
+from util import EMOJIS, import_models, import_robot
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="rep")
+argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 
-if args.model_api == "gpt":
-    from gpt import llm, vlm, tts, stt
-    from gpt import LLM, VLM, TTS, STT
-elif args.model_api == "rep":
-    from rep import llm, vlm, tts, stt
-    from rep import LLM, VLM, TTS, STT
-elif args.model_api == "test":
-    LLM, VLM, TTS, STT = ["test"] * 4
-
-    def llm(x):
-        return "test llm reply,"
-
-    def vlm(x, y):
-        return "test vlm reply"
-
-    def tts(x):
-        return "test tts reply"
-
-    def stt(x):
-        return None
-
-
-if args.robot == "nex":
-    from nex import ROBOT_FUNC_PROMPT, ROBOT_EXAMPLE_PROMPT
-
-    # robot commands are run in a subprocess
-    ROBOT_FILENAME: str = "nex.py"
-elif args.robot == "test":
-    ROBOT_FUNC_PROMPT = """
-MOVE(direction:str)
-direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
-"""
-    ROBOT_EXAMPLE_PROMPT = """
-MOVE,FORWARD
-MOVE,LEFT
-"""
-    ROBOT_FILENAME: str = "oop.py"
+MODELS: dict = import_models(args.model_api)
+ROBOT: dict = import_robot(args.robot)
 
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=4)  # How long the robot will live
@@ -76,7 +41,7 @@ IMAGE_OUTPUT_PATH: str = "/tmp/image.jpg"  # captured image is constantly overwr
 
 async def _llm(prompt: str) -> [str, str]:
     try:
-        reply = llm(prompt)
+        reply = MODELS["llm"](prompt)
     except Exception as e:
         # print(e)
         return (
@@ -104,7 +69,7 @@ Your reponse should not contain any special characters
 """
         with open(IMAGE_OUTPUT_PATH, "rb") as f:
             base64_image = base64.b64encode(f.read()).decode("utf-8")
-            description = vlm(prompt, base64_image)
+            description = MODELS["vlm"](prompt, base64_image)
     except Exception as e:
         # print(e)
         return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, {e.__class__.__name__}"
@@ -117,12 +82,12 @@ async def _tts(text: str) -> str:
     try:
         file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
         if not os.path.exists(file_name):
-            seg = tts(text)
+            seg = MODELS["tts"](text)
             seg.export(file_name, format="mp3")
         seg = AudioSegment.from_file(file_name, format="mp3")
         play(seg)
     except Exception as e:
-        # print(e)
+        print(e)
         return (
             f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
         )
@@ -140,7 +105,7 @@ async def _stt() -> str:
         )
         sd.wait()  # Wait until recording is finished
         write(AUDIO_OUTPUT_PATH, AUDIO_SAMPLE_RATE, audio_data)
-        transcript = stt(AUDIO_OUTPUT_PATH)
+        transcript = MODELS["stt"](AUDIO_OUTPUT_PATH)
     except Exception as e:
         # print(e)
         return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, {e.__class__.__name__}"
@@ -150,7 +115,7 @@ async def _stt() -> str:
 async def _act(func: str, code: str) -> str:
     if LAME:
         return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is lame"
-    _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT_FILENAME)
+    _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT["filename"])
     try:
         proc = subprocess.Popen(
             ["python3", _path, func, code],
@@ -179,13 +144,13 @@ async def plan(state: str) -> [str, str, str]:
             _llm(
                 f"""
 Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
-{ROBOT_FUNC_PROMPT}
+{ROBOT['functions']}
 Here is the robot log
 <robotlog>
 {state}
 </robotlog>
 Pick one of the functions and the args. Here are some example outputs:
-{ROBOT_EXAMPLE_PROMPT}
+{ROBOT['examples']}
 Your response should be a single line with the chosen function code and arguments.
 """
             ),
@@ -206,10 +171,6 @@ Here is the robot log
     return func, code, speech
 
 
-print(f"LLM {EMOJIS['llm']}: {LLM}")
-print(f"VLM {EMOJIS['vlm']}: {VLM}")
-print(f"TTS {EMOJIS['tts']}: {TTS}")
-print(f"STT {EMOJIS['stt']}: {STT}")
 state = deque([f"{EMOJIS['born']} robot is alive"], maxlen=MEMORY)
 while datetime.now() - BIRTHDAY < LIFESPAN:
     if len(state) >= MEMORY:
@@ -231,7 +192,7 @@ while datetime.now() - BIRTHDAY < LIFESPAN:
     for s in asyncio.run(act(func, code, speech)):
         state.append(s)
 state.append(f"{EMOJIS['dead']} robot is dead, lived for {LIFESPAN}")
-poem = llm(
+poem = MODELS["llm"](
     f"""
 Write a short eulogy poem for a robot. Here is the robot log:
 <robotlog>
@@ -242,4 +203,4 @@ Write a short eulogy poem for a robot. Here is the robot log:
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
 print(poem)
 print(f"~~~~~~~~~~~ {EMOJIS['poem']}")
-tts(poem)
+MODELS["tts"](poem)

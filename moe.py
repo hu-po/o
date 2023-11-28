@@ -1,49 +1,15 @@
 import argparse
 import asyncio
 
-from util import EMOJIS
+from util import EMOJIS, import_models, import_robot
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="rep")
+argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 
-if args.model_api == "gpt":
-    from gpt import llm, vlm, tts, stt
-    from gpt import LLM, VLM, TTS, STT
-elif args.model_api == "rep":
-    from rep import llm, vlm, tts, stt
-    from rep import LLM, VLM, TTS, STT
-elif args.model_api == "test":
-    LLM, VLM, TTS, STT = ["test"] * 4
-
-    def llm(x):
-        return "test llm reply,"
-
-    def vlm(x, y):
-        return "test vlm reply"
-
-    def tts(x):
-        return "test tts reply"
-
-    def stt(x):
-        return None
-
-if args.robot == "nex":
-    from nex import ROBOT_FUNC_PROMPT, ROBOT_EXAMPLE_PROMPT
-
-    # robot commands are run in a subprocess
-    ROBOT_FILENAME: str = "nex.py"
-elif args.robot == "test":
-    ROBOT_FUNC_PROMPT = """
-MOVE(direction:str)
-direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
-"""
-    ROBOT_EXAMPLE_PROMPT = """
-MOVE,FORWARD
-MOVE,LEFT
-"""
-    ROBOT_FILENAME: str = "oop.py"
+MODELS: dict = import_models(args.model_api)
+ROBOT: dict = import_robot(args.robot)
 
 PERSONAS: list = [
     "You are the robot vision module. You prioritize visual exploration. Your vote is for looking at objects before moving.",
@@ -64,7 +30,7 @@ Give compliment on the previous action choice.
 
 async def _llm(prompt: str) -> [str, str]:
     try:
-        reply = llm(prompt)
+        reply = MODELS['llm'](prompt)
     except Exception as e:
         # print(e)
         return (
@@ -77,39 +43,18 @@ async def moe(state: str) -> [str, str, str]:
         *[
             _llm(
                 f"""
-
-{ROBOT_FUNC_PROMPT}
-Here is the robot log
-<robotlog>
-{state}
-</robotlog>
-Pick one of the functions and the args. Here are some example outputs:
-{ROBOT_EXAMPLE_PROMPT}
-Your response should be a single line with the chosen function code and arguments.
-"""
-            ),
-            _llm(
-                f"""
+{persona}
 Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
-{ROBOT_FUNC_PROMPT}
+{ROBOT['functions']}
 Here is the robot log
 <robotlog>
 {state}
 </robotlog>
 Pick one of the functions and the args. Here are some example outputs:
-{ROBOT_EXAMPLE_PROMPT}
+{ROBOT['examples']}
 Your response should be a single line with the chosen function code and arguments.
 """
-            ),
-            _llm(
-                f"""
-Summarize the robot log in a couple clever words, be brief but precise
-Here is the robot log
-<robotlog>
-{state}
-</robotlog>
-"""
-            ),
+            ) for persona in PERSONAS
         ]
     )
     func, code = results[0][1].split(",")
