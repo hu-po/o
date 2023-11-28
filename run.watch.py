@@ -13,15 +13,34 @@ from scipy.io.wavfile import write
 import sounddevice as sd
 
 from models import import_models
-from robots import import_robot
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--model_api", type=str, default="test")
-argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 
 MODELS: dict = import_models(args.model_api)
-ROBOT: dict = import_robot(args.robot)
+
+EMOJIS = {
+    "brain": "🧠",
+    "robot": "🤖",
+    "state": "📄",
+    "save": "💾",
+    "fail": "❌",
+    "success": "✅",
+    "born": "🐣",
+    "forget": "🗑️",
+    "vlm": "👁️‍🗨️",
+    "llm": "💬",
+    "tts": "🗣️",
+    "stt": "👂",
+    "time": "⏱️",
+    "move": "🦿",
+    "look": "📷",
+    "perform": "🦾",
+    "dead": "🪦",
+    "poem": "📜",
+    "plan": "🤔",
+}
 
 BIRTHDAY: datetime = datetime.now()
 LIFESPAN: timedelta = timedelta(minutes=4)  # How long the robot will live
@@ -29,8 +48,6 @@ MEMORY: int = 32  # How many characters worth of state to keep in memory
 FORGET: int = 8  # How many characters worth of state to forget
 
 BLIND: bool = False  # Do not use see (VLM)
-MUTE: bool = False  # Do not speak (TTS)
-DEAF: bool = False  # Do not listen for audio input
 LAME: bool = False  # Do not use robot commands (move, look, perform)
 
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
