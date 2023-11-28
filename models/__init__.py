@@ -1,48 +1,25 @@
 import base64
-from datetime import datetime, timedelta
 import hashlib
 import os
+from filelock import FileLock
+import time
 
 from pydub import AudioSegment
 from pydub.playback import play
 from scipy.io.wavfile import write
 import sounddevice as sd
 
-EMOJIS = {
-    "vlm": "👁️‍🗨️",
-    "llm": "💬",
-    "tts": "🗣️",
-    "stt": "👂",
-    "fail": "❌",
-    "success": "✅",
 
-    "brain": "🧠",
-    "robot": "🤖",
-    "state": "📄",
-    "save": "💾",
-    "born": "🐣",
-    "forget": "🗑️",
-    "time": "⏱️",
-    "move": "🦿",
-    "look": "📷",
-    "perform": "🦾",
-    "dead": "🪦",
-    "poem": "📜",
-    "plan": "🤔",
-}
-IMAGE_PATH = "/tmp/image.jpg"  # Image is constantly overwritten
+IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
+IMAGE_LOCK_PATH = "/tmp/o.image.lock" # Lock prevents reading while writing
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
 AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
-IMAGE_OUTPUT_PATH: str = "/tmp/image.jpg"  # captured image is constantly overwritten
 
-def import_models(api: str = "test") -> dict:
-    if api == "test":
-        from test import llm, vlm, tts, stt
-        from test import LLM, VLM, TTS, STT
 
-    elif api == "gpt":
+def import_models(api: str) -> dict:
+    if api == "gpt":
         from gpt import llm, vlm, tts, stt
         from gpt import LLM, VLM, TTS, STT
 
@@ -51,34 +28,46 @@ def import_models(api: str = "test") -> dict:
         from rep import LLM, VLM, TTS, STT
 
     else:
-        raise Exception(f"Unknown model api {api}")
+        from test import llm, vlm, tts, stt
+        from test import LLM, VLM, TTS, STT
     print(f"@@@@@@@@@ Importing Models {api}")
-    print(f"LLM {EMOJIS['llm']}: {LLM}")
-    print(f"VLM {EMOJIS['vlm']}: {VLM}")
-    print(f"TTS {EMOJIS['tts']}: {TTS}")
-    print(f"STT {EMOJIS['stt']}: {STT}")
+    print(f"LLM 💬: {LLM}")
+    print(f"VLM 👁️‍🗨️: {VLM}")
+    print(f"TTS 🗣️: {TTS}")
+    print(f"STT 👂: {STT}")
     print("@@@@@@@@@@@")
+
+    def timed(f: callable):
+        async def _(*args, **kwargs):
+            _s = time.time()
+            log, result = await f(*args, **kwargs)
+            log += f", took {time.time() - _s:.2f}s⏱️"
+            return log, result
+
+        return _
 
     async def async_llm(prompt: str) -> [str, str]:
         try:
             reply = llm(prompt)
         except Exception as e:
-            # print(e)
-            return (
-                f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
-            )
-        return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
+            print("@@@@@@@@@@@ Exception in LLM")
+            print(e)
+            print("@@@@@@@@@@@")
+            return "💬❌ error with llm", None
+        return f"💬✅ llm reply [{reply}]", reply
 
     async def async_vlm(prompt: str) -> str:
         try:
-            with open(IMAGE_PATH, "rb") as f:
-                base64_image = base64.b64encode(f.read()).decode("utf-8")
-                description = vlm(prompt, base64_image)
+            with FileLock(IMAGE_LOCK_PATH):
+                with open(IMAGE_PATH, "rb") as f:
+                    base64_image = base64.b64encode(f.read()).decode("utf-8")
+            description = vlm(prompt, base64_image)
         except Exception as e:
-            # print(e)
-            return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, {e.__class__.__name__}"
-        return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
-
+            print("@@@@@@@@@@@ Exception in VLM")
+            print(e)
+            print("@@@@@@@@@@@")
+            return "👁️‍🗨️❌ error with vlm", None
+        return f"👁️‍🗨️✅ vlm saw [{description}]", description
 
     async def async_tts(text: str) -> str:
         try:
@@ -89,12 +78,11 @@ def import_models(api: str = "test") -> dict:
             seg = AudioSegment.from_file(file_name, format="mp3")
             play(seg)
         except Exception as e:
+            print("@@@@@@@@@@@ Exception in TTS")
             print(e)
-            return (
-                f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
-            )
-        return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
-
+            print("@@@@@@@@@@@")
+            return "🗣️❌ error with tts", None
+        return f"🗣️✅ tts said {text}", text
 
     async def async_stt() -> str:
         try:
@@ -107,10 +95,15 @@ def import_models(api: str = "test") -> dict:
             write(AUDIO_OUTPUT_PATH, AUDIO_SAMPLE_RATE, audio_data)
             transcript = stt(AUDIO_OUTPUT_PATH)
         except Exception as e:
-            # print(e)
-            return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, {e.__class__.__name__}"
-        return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
+            print("@@@@@@@@@@@ Exception in STT")
+            print(e)
+            print("@@@@@@@@@@@")
+            return "👂❌ error with stt", None
+        return f"👂✅ stt heard {transcript}", transcript
 
-
-    return {'llm': async_llm, 'vlm': async_vlm, 'tts': async_tts, 'stt': async_stt}
-
+    return {
+        "llm": timed(async_llm),
+        "vlm": timed(async_vlm),
+        "tts": timed(async_tts),
+        "stt": timed(async_stt),
+    }

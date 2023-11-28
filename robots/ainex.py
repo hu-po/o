@@ -6,10 +6,10 @@ import cv2
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from filelock import FileLock
 
 from ainex_kinematics.gait_manager import GaitManager
 from ainex_kinematics.motion_manager import MotionManager
-from util import timeit, EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
@@ -25,8 +25,8 @@ LOOK_DIRECTIONS: dict = {
     "DOWN": [[23, 500], [24, 400]],
 }
 DEFAULT_LOOK_DIRECTION: str = "FORWARD"
-# Image is constantly overwritten
-IMAGE_OUTPUT_FILENAME: str = "/tmp/image.jpg"
+IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
+IMAGE_LOCK_PATH = "/tmp/o.image.lock" # Lock prevents reading while writing
 CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 
@@ -83,7 +83,6 @@ LOOK,up
 MOVE,forward
 """
 
-@timeit
 def move(
     direction: str = DEFAULT_MOVE_DIRECTION,
     directions: dict = MOVE_DIRECTIONS,
@@ -115,7 +114,6 @@ def move(
         return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} unknown move direction {direction}"
 
 
-@timeit
 def play(
     action: str = DEFAULT_ACTION_NAME,
     actions: dict = ACTION_NAMES,
@@ -132,17 +130,17 @@ def play(
 def image_callback(msg):
     bridge = CvBridge()
     cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
-    cv2.imwrite(IMAGE_OUTPUT_FILENAME, cv_image)
+    with FileLock(IMAGE_LOCK_PATH):
+        cv2.imwrite(IMAGE_PATH, cv_image)
     rospy.signal_shutdown("Image saved")
 
 
-def save_one_image(rostopic: str = CAMERA_ROS_TOPIC):
+def save_one_image():
     rospy.init_node("save_one_image")
-    rospy.Subscriber(rostopic, Image, image_callback)
+    rospy.Subscriber(CAMERA_ROS_TOPIC, Image, image_callback)
     rospy.spin()
 
 
-@timeit
 def look(
     direction: str = DEFAULT_LOOK_DIRECTION,
     directions: list = LOOK_DIRECTIONS,

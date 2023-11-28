@@ -1,17 +1,9 @@
 import argparse
 import asyncio
-import base64
 from collections import deque
-from datetime import datetime, timedelta
-import hashlib
-import os
-import subprocess
 
-from pydub import AudioSegment
-from pydub.playback import play
-from scipy.io.wavfile import write
-import sounddevice as sd
 
+from ego import is_alive, get_log, write_log
 from models import import_models
 from robots import import_robot
 
@@ -88,13 +80,9 @@ Here is the robot log
     return func, code, speech
 
 
-state = deque([f"{EMOJIS['born']} robot is alive"], maxlen=MEMORY)
-while datetime.now() - BIRTHDAY < LIFESPAN:
-    if len(state) >= MEMORY:
-        for _ in range(FORGET):
-            state.popleft()
-        state.appendleft(f"{EMOJIS['forget']} memory erased")
-    for s in asyncio.run(sense()):
+while is_alive():
+
+    for s in asyncio.run(MODELS['llm']
         state.append(s)
     state_str = "\n".join([str(item) for item in state])
     print(f"*********** {EMOJIS['state']} age {datetime.now() - BIRTHDAY}")
