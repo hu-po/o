@@ -82,6 +82,8 @@ PLAY,greet
 LOOK,up
 MOVE,forward
 """
+DEFAULT_FUNC: str = "MOVE"
+DEFAULT_CODE: str = "FORWARD"
 
 def move(
     direction: str = DEFAULT_MOVE_DIRECTION,
@@ -109,9 +111,9 @@ def move(
             step_num=step_num,
         )
         gait_manager.stop()
-        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['success']} moved {direction}"
+        return f"🦿✅ moved {direction}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} unknown move direction {direction}"
+        return f"🦿❌ unknown move direction {direction}"
 
 
 def play(
@@ -122,9 +124,9 @@ def play(
     action = actions.get(action.upper(), None)
     if action:
         motion_manager.run_action(action)
-        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['success']} performed {action}"
+        return f"🦾✅ performed {action}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['fail']} unknown action {action}"
+        return f"🦾❌ unknown action {action}"
 
 
 def image_callback(msg):
@@ -152,10 +154,10 @@ def look(
         rospy.sleep(0.2)
         save_one_image()
         return (
-            f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['success']} looked {direction}"
+            f"📷✅ looked {direction}"
         )
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['fail']} unknown look direction {direction}"
+        return f"📷❌ unknown look direction {direction}"
 
 
 if __name__ == "__main__":
@@ -167,4 +169,4 @@ if __name__ == "__main__":
     elif args.func.upper() == "MOVE":
         print(move(direction=args.code))
     else:
-        print(f"Unknown func {args.func} code {args.code}")
+        raise ValueError(f" unknown func {args.func} code {args.code}")

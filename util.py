@@ -18,6 +18,7 @@ EMOJIS = {
     "look": "📷",
     "perform": "🦾",
     "dead": "🪦",
+    "start": "🏁",
     "poem": "📜",
     "plan": "🤔",
 }

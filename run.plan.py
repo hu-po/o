@@ -34,9 +34,9 @@ async def _llm(prompt: str) -> [str, str]:
     except Exception as e:
         # print(e)
         return (
-            f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
+            f"{EMOJIS['llm']}❌ could not think, {e.__class__.__name__}"
         )
-    return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
+    return f"{EMOJIS['llm']}✅ {reply}", reply
 
 async def moe(state: str) -> [str, str, str]:
     results = await asyncio.gather(

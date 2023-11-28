@@ -63,14 +63,14 @@ async def _llm(prompt: str) -> [str, str]:
     except Exception as e:
         # print(e)
         return (
-            f"{EMOJIS['llm']}{EMOJIS['fail']} could not think, {e.__class__.__name__}"
+            f"{EMOJIS['llm']}❌ could not think, {e.__class__.__name__}"
         )
-    return f"{EMOJIS['llm']}{EMOJIS['success']} {reply}", reply
+    return f"{EMOJIS['llm']}✅ {reply}", reply
 
 
 async def _vlm() -> str:
     if BLIND:
-        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, robot is blind"
+        return f"{EMOJIS['vlm']}❌ could not see, robot is blind"
     try:
         prompt = """
 Describe the scene, objects, and characters
@@ -90,13 +90,13 @@ Your reponse should not contain any special characters
             description = MODELS["vlm"](prompt, base64_image)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['vlm']}{EMOJIS['fail']} could not see, {e.__class__.__name__}"
-    return f"{EMOJIS['vlm']}{EMOJIS['success']} saw {description}"
+        return f"{EMOJIS['vlm']}❌ could not see, {e.__class__.__name__}"
+    return f"{EMOJIS['vlm']}✅ saw {description}"
 
 
 async def _tts(text: str) -> str:
     if MUTE:
-        return f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, robot is on mute"
+        return f"{EMOJIS['tts']}❌ could not speak, robot is on mute"
     try:
         file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
         if not os.path.exists(file_name):
@@ -107,14 +107,14 @@ async def _tts(text: str) -> str:
     except Exception as e:
         print(e)
         return (
-            f"{EMOJIS['tts']}{EMOJIS['fail']} could not speak, {e.__class__.__name__}"
+            f"{EMOJIS['tts']}❌ could not speak, {e.__class__.__name__}"
         )
-    return f"{EMOJIS['tts']}{EMOJIS['success']} said '{text}'"
+    return f"{EMOJIS['tts']}✅ said '{text}'"
 
 
 async def _stt() -> str:
     if DEAF:
-        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, robot is deaf"
+        return f"{EMOJIS['stt']}❌ could not hear, robot is deaf"
     try:
         audio_data = sd.rec(
             int(AUDIO_RECORD_TIME * AUDIO_SAMPLE_RATE),
@@ -126,13 +126,13 @@ async def _stt() -> str:
         transcript = MODELS["stt"](AUDIO_OUTPUT_PATH)
     except Exception as e:
         # print(e)
-        return f"{EMOJIS['stt']}{EMOJIS['fail']} could not hear, {e.__class__.__name__}"
-    return f"{EMOJIS['stt']}{EMOJIS['success']} heard {transcript}"
+        return f"{EMOJIS['stt']}❌ could not hear, {e.__class__.__name__}"
+    return f"{EMOJIS['stt']}✅ heard {transcript}"
 
 
 async def _act(func: str, code: str) -> str:
     if LAME:
-        return f"{EMOJIS['robot']}{EMOJIS['fail']} cannot act, robot is lame"
+        return f"🤖❌ cannot act, robot is lame"
     _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), ROBOT["filename"])
     try:
         proc = subprocess.Popen(
@@ -144,7 +144,7 @@ async def _act(func: str, code: str) -> str:
         stdout, stderr = proc.communicate()
     except Exception as e:
         # print(f"{e}, {stderr}")
-        return f"{EMOJIS['robot']}{EMOJIS['fail']} robot failed on {func} {code}"
+        return f"🤖❌ robot failed on {func} {code}"
     return stdout
 
 
