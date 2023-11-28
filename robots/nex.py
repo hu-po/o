@@ -69,7 +69,7 @@ ARM_SWING_DEGREE: int = 24  # Highest I see in examples is 30
 # Number of steps to take in each movement, default is 1.
 STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
 
-ROBOT_FUNC_PROMPT = f"""
+FUNCTIONS = f"""
 MOVE(direction:str)
   direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]
 PLAY(action:str)
@@ -77,7 +77,7 @@ PLAY(action:str)
 LOOK(direction:str)
   direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
 """
-ROBOT_EXAMPLE_PROMPT = """
+SUGGESTIONS = """
 PLAY,greet
 LOOK,up
 MOVE,forward

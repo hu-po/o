@@ -12,7 +12,8 @@ from pydub.playback import play
 from scipy.io.wavfile import write
 import sounddevice as sd
 
-from util import EMOJIS, import_models, import_robot
+from models import import_models
+from robots import import_robot
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--model_api", type=str, default="test")
