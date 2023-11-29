@@ -37,7 +37,7 @@ The human might mention the robot memory:
         else:
             tasks.append(MODELS["llm"](
                 f"""
-Summarize the more recent (bottom) robot memories.
+Describe what the robot sees and any future plans.
 Be short, laconic, and witty in your reply.
 {memstr}
                 """))   
