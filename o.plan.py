@@ -9,11 +9,10 @@ argparser.add_argument("--model_api", type=str, default="test")
 args = argparser.parse_args()
 
 MODELS: dict = import_models(args.model_api)
-
 GOALS: dict = {
     "🔭": "visual exploration, looking before moving",
-    "📣": "performing and entertaining the human",
-    "📝": "making plans for the future",
+    "🤪": "performing and entertaining the human",
+    "🤔": "making plans for the future",
 }
 
 async def loop():

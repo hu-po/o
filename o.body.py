@@ -37,7 +37,7 @@ Your response should be a single line with the chosen function code and argument
             add_memory(log),
         )
         func, code = reply.split(",")
-        log = f"{llm_log}\n{robot_log}\n"
+        log = f"{llm_log}{robot_log}"
 
 
 if __name__ == "__main__":

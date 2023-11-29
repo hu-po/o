@@ -12,9 +12,9 @@ MODELS: dict = import_models(args.model_api)
 
 
 async def loop():
-    log = "🧐 look started"
+    vlm_log = "🧐 look started"
     while check_alive('🧐'):
-        (vlm_log, _), mem_log = await asyncio.gather(MODELS["vlm"](
+        (vlm_log, _), _ = await asyncio.gather(MODELS["vlm"](
             """
 Describe the scene, objects, and characters
 You are a robot vision module
@@ -29,8 +29,7 @@ Your response will be read out by the robot speech module
 Your reponse should not contain any special characters
 """
         ),
-        add_memory(log))
-        log = f"{vlm_log}\n{mem_log}"
+        add_memory(vlm_log))
 
 
 if __name__ == "__main__":

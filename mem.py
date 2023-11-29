@@ -58,10 +58,10 @@ async def get_memory() -> (str, str):
     return log, f"Here is the robot memory:\n<memory>\n{memraw}\n</memory"
 
 
-async def add_memory(log: str) -> str:
+async def add_memory(txt: str) -> str:
     log = await check_memory()
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "a") as f:
-            f.write(timestamp(log))
+            f.write(timestamp(txt))
             f.write("\n")
     return log

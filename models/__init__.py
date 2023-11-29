@@ -60,7 +60,7 @@ def import_models(api: str) -> dict:
     async def async_vlm(prompt: str) -> str:
         try:
             if not os.path.exists(IMAGE_PATH):
-                asyncio.sleep(1.0)
+                await asyncio.sleep(1.0)
                 return "👁️‍🗨️❌ no image found", None
             with FileLock(IMAGE_LOCK_PATH):
                 with open(IMAGE_PATH, "rb") as f:
