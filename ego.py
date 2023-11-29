@@ -10,19 +10,10 @@ DEATH_TIME: timedelta = timedelta(minutes=4)  # How long the robot will live
 MEMORY: int = 32  # How many characters worth of state to keep in memory
 FORGET: int = 8  # How many characters worth of state to forget
 
-
 MEMORY_PATH = "/tmp/o.📜"
 MEMORY_LOCK_PATH = "/tmp/o.log.lock"
 
-def init():
-    birthdate = datetime.now()
-    print(f"🏁 starting {}")
-    return birthdate
-
-    "state": "📄",
-    "save": "💾",
-
-def is_alive():
+async def check_alive():
 
     # if len(state) >= MEMORY:
     #     for _ in range(FORGET):
@@ -44,6 +35,7 @@ async def add_memory(log: str) -> None:
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "a") as f:
             f.write(log)
+            f.write("\n")
 
 async def forget() -> None:
     

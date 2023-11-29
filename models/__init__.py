@@ -20,16 +20,16 @@ AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwr
 
 def import_models(api: str) -> dict:
     if api == "gpt":
-        from gpt import llm, vlm, tts, stt
-        from gpt import LLM, VLM, TTS, STT
+        from models.gpt import llm, vlm, tts, stt
+        from models.gpt import LLM, VLM, TTS, STT
 
     elif api == "rep":
-        from rep import llm, vlm, tts, stt
-        from rep import LLM, VLM, TTS, STT
+        from models.rep import llm, vlm, tts, stt
+        from models.rep import LLM, VLM, TTS, STT
 
     else:
-        from test import llm, vlm, tts, stt
-        from test import LLM, VLM, TTS, STT
+        from models.test import llm, vlm, tts, stt
+        from models.test import LLM, VLM, TTS, STT
     print(f"@@@@@@@@@ Importing Models {api}")
     print(f"LLM 💬: {LLM}")
     print(f"VLM 👁️‍🗨️: {VLM}")

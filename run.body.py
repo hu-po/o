@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from ego import is_alive, get_memory, add_memory
+from ego import check_alive, get_memory, add_memory
 from models import import_models
 from robots import import_robot
 
@@ -15,26 +15,27 @@ ROBOT: dict = import_robot(args.robot)
 
 
 async def loop():
-    state = await get_memory()
+    memory = await get_memory()
     func, code = ROBOT["default_func"], ROBOT["default_code"]
-    while is_alive():
+    while check_alive():
         llm_result, robot_log = asyncio.gather(
-            *[
-                MODELS["llm"](
-                    f"""
-    Pick a function based on the robot log. Always pick a function and provide any args required. Here are the functions:
-    {ROBOT['functions']}
-    Here is the robot log
-    <robotlog>
-    {state}
-    </robotlog>
-    Pick one of the functions and the args. Here are some example outputs:
-    {ROBOT['examples']}
-    Your response should be a single line with the chosen function code and arguments.
-    """
-                ),
-                ROBOT["act"](func, code),
-            ]
+            MODELS["llm"](
+                f"""
+Pick a function based on the robot log.
+Always pick a function and provide any args required.
+Here are the functions:
+{ROBOT['functions']}
+Here is the robot log:
+<robotlog>
+{memory}
+</robotlog>
+Pick one of the functions and the args.
+Here are some example outputs:
+{ROBOT['examples']}
+Your response should be a single line with the chosen function code and arguments.
+                """
+            ),
+            ROBOT["act"](func, code),
         )
         llm_log, reply = llm_result
         func, code = reply.split(",")
