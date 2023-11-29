@@ -5,11 +5,11 @@ STT = "test stt"
 
 
 def llm(x):
-    return "test llm reply,"
+    return "MOVE,FORWARD"
 
 
 def vlm(x, y):
-    return "test vlm reply"
+    return "I see darkness"
 
 
 def tts(x):
@@ -17,4 +17,4 @@ def tts(x):
 
 
 def stt(x):
-    return "test tts reply"
+    return "I hear nothing"

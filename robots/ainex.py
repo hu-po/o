@@ -27,7 +27,7 @@ LOOK_DIRECTIONS: dict = {
 DEFAULT_LOOK_DIRECTION: str = "FORWARD"
 IMAGE_SLEEP: float = 0.1  # Sleep while saving image to preven motion blur
 IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
-IMAGE_LOCK_PATH = "/tmp/o.image.🔒 " # Lock prevents reading while writing
+IMAGE_LOCK_PATH = "/tmp/o.image.lock " # Lock prevents reading while writing
 CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 

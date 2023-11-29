@@ -6,9 +6,9 @@ from filelock import FileLock
 START_TIME: datetime = datetime.now()
 DEATH_TIME: timedelta = timedelta(minutes=4)  # How long the robot will live
 
-MEMORY_PATH = "/tmp/o.📜"
-MEMORY_LOCK_PATH = "/tmp/o.memory.🔒"
-MEMORY_MAX_SIZE = 1024 * 1024  # 1MB
+MEMORY_PATH = "/tmp/o.memory.txt"
+MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
+MEMORY_MAX_SIZE = 1024  # 1KB
 
 
 def check_alive():
@@ -21,7 +21,15 @@ def timestamp(log: str) -> str:
     return f"{datetime.utcnow().timestamp()} {log}"
 
 
+def _check_memory_exists():
+    if not os.path.exists(MEMORY_PATH):
+        print("📜 Memory file not found, creating")
+        with open(MEMORY_PATH, "w") as f:
+            f.write("")
+
+
 async def get_memory() -> str:
+    _check_memory_exists()
     with FileLock(MEMORY_LOCK_PATH):
         mem_size = os.path.getsize(MEMORY_PATH)
         print(f"💾 Reading memory, current size {mem_size} bytes")
@@ -38,13 +46,8 @@ async def get_memory() -> str:
 
 
 async def add_memory(log: str) -> None:
+    _check_memory_exists()
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "a") as f:
             f.write(timestamp(log))
             f.write("\n")
-
-
-async def forget() -> None:
-    with FileLock(MEMORY_LOCK_PATH):
-        with open(MEMORY_PATH, "w") as f:
-            f.write("")
