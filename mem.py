@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from filelock import FileLock
 
 START: datetime = datetime.utcnow()
-DEATH: timedelta = timedelta(seconds=int(os.getenv("DEATH", 6)))
+DEATH: timedelta = timedelta(seconds=int(os.getenv("DEATH", 10)))
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
 MEMORY_MAX_SIZE = 4096  # bytes

@@ -16,9 +16,9 @@ ROBOT: dict = import_robot(args.robot)
 
 async def loop():
     log = "🤸 body started"
-    (_, memstr) = await get_memory()
     func, code = ROBOT["default_func"], ROBOT["default_code"]
     while check_alive('🤸'):
+        (_, memstr) = await get_memory()
         (llm_log, reply), robot_log, _ = await asyncio.gather(
             MODELS["llm"](
                 f"""

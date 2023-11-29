@@ -88,7 +88,7 @@ def import_models(api: str) -> dict:
             return "🗣️❌ error with tts", None
         return f"🗣️✅ tts said {text}", text
 
-    async def async_stt() -> str:
+    async def async_stt() -> (str, str):
         try:
             audio_data = sd.rec(
                 int(AUDIO_RECORD_TIME * AUDIO_SAMPLE_RATE),
@@ -102,7 +102,7 @@ def import_models(api: str) -> dict:
             print("@@@@@@@@@@@ Exception in STT")
             print(e)
             print("@@@@@@@@@@@")
-            return "👂❌ error with stt", None
+            return "👂❌ error with stt", ""
         return f"👂✅ stt heard {transcript}", transcript
 
     return {

@@ -11,22 +11,26 @@ args = argparser.parse_args()
 MODELS: dict = import_models(args.model_api)
 
 async def loop():
-    speech = "hello world"
+    log = "📣 talk started"
+    speak = "hello world"
+    heard = ""
     while check_alive('📣'):
         (_, memstr), (tts_log, _) = await asyncio.gather(
             get_memory(),
-            MODELS["tts"](speech),
+            MODELS["tts"](speak),
         )
-        (llm_log, speech), _ = await asyncio.gather(
+        (llm_log, speak), (stt_log, heard), _ = await asyncio.gather(
             MODELS["llm"](f"""
 Pick a reply to speak out based on the robot log.
 Reply to the human if anything is heard with stt.
+You most recently heard [{heard}].
 Be short and minimal with your replies.
 {memstr}
                 """),
-                add_memory(tts_log),
+            MODELS["stt"](),
+            add_memory(log),
         )
-        await add_memory(llm_log)
+        log = f"{tts_log}{llm_log}{stt_log}"
 
 
 if __name__ == "__main__":
