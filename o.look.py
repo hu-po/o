@@ -13,7 +13,7 @@ MODELS: dict = import_models(args.model_api)
 
 async def loop():
     log = "🧐 look started"
-    while check_alive():
+    while check_alive('🧐'):
         (vlm_log, _), mem_log = await asyncio.gather(MODELS["vlm"](
             """
 Describe the scene, objects, and characters

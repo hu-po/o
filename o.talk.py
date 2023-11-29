@@ -12,7 +12,7 @@ MODELS: dict = import_models(args.model_api)
 
 async def loop():
     speech = "hello world"
-    while check_alive():
+    while check_alive('🗣'):
         (_, memstr), (tts_log, _) = await asyncio.gather(
             get_memory(),
             MODELS["tts"](speech),

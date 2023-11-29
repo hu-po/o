@@ -20,7 +20,7 @@ async def loop():
     log = "📝 plan started, my goals are:"
     log += "\n".join([f"{k} {v}" for k, v in GOALS.items()])
     (_, memstr) = await get_memory()
-    while check_alive():
+    while check_alive('📝'):
         tasks = []
         for name, opinion in GOALS.items():
             tasks.append(MODELS["llm"](
