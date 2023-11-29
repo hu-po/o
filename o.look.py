@@ -12,8 +12,9 @@ MODELS: dict = import_models(args.model_api)
 
 
 async def loop():
+    log = "👁️‍🗨️ vlm started"
     while check_alive():
-        vlm_result = await MODELS["vlm"](
+        (vlm_log, _), (mem_log, _) = await asyncio.gather(MODELS["vlm"](
             """
 Describe the scene, objects, and characters
 You are a robot vision module
@@ -27,9 +28,9 @@ Do not use punctuation
 Your response will be read out by the robot speech module
 Your reponse should not contain any special characters
 """
-        )
-        vlm_log, _ = vlm_result
-        await add_memory(vlm_log)
+        ),
+        add_memory(log))
+        log = f"{vlm_log}\n{mem_log}"
 
 
 if __name__ == "__main__":
@@ -37,6 +38,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(loop())
     except KeyboardInterrupt:
-        print("🪦 body interrupted by user")
+        print("🪦 look interrupted by user")
         exit(0)
-    print("🪦 body dead")
+    print("🪦 look dead")

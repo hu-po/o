@@ -32,7 +32,7 @@ def import_robot(robot: str = "test") -> dict:
             print(f"{e}, {stderr}")
             print("@@@@@@@@@@@")
             log = f"❌ failed on {func}({code})"
-        return f"🤖{log}, took {time.time() - _s:.2f}s⏱️"
+        return f"🤖{log[:-1]}, took {time.time() - _s:.2f}s⏱️"
 
     return {
         "functions": FUNCTIONS,

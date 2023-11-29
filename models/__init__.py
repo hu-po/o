@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import hashlib
 import os
@@ -58,6 +59,9 @@ def import_models(api: str) -> dict:
 
     async def async_vlm(prompt: str) -> str:
         try:
+            if not os.path.exists(IMAGE_PATH):
+                asyncio.sleep(1.0)
+                return "👁️‍🗨️❌ no image found", None
             with FileLock(IMAGE_LOCK_PATH):
                 with open(IMAGE_PATH, "rb") as f:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")

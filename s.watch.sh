@@ -1,10 +1,14 @@
 get_formatted_output() {
     echo "@@@@@@@@@@@"
-    echo "🖥️ o python ps:"
+    echo " 🖥️"
+    echo "Running python3 instances:"
+    # Using ps with custom format to show memory usage (%mem) and elapsed time (etime)
+    ps aux --sort=-%mem | awk '/python3 o\..*/ && !/grep/ {print $0, "Memory:", $4"%", "Duration:", $10}'
     echo "@@@@@@@@@@@"
-    ps aux | grep "python3" | grep -v grep
+    cat /tmp/o.memory.txt
     echo "@@@@@@@@@@@"
 }
+
 while true; do
     clear
     get_formatted_output

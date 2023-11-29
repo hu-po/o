@@ -15,10 +15,11 @@ ROBOT: dict = import_robot(args.robot)
 
 
 async def loop():
-    memstr = await get_memory()
+    log = "🤸 body started"
+    (_, memstr) = await get_memory()
     func, code = ROBOT["default_func"], ROBOT["default_code"]
     while check_alive():
-        llm_result, robot_log = await asyncio.gather(
+        (llm_log, reply), robot_log, _ = await asyncio.gather(
             MODELS["llm"](
                 f"""
 Pick a function based on the robot log.
@@ -33,11 +34,10 @@ Your response should be a single line with the chosen function code and argument
                 """
             ),
             ROBOT["act"](func, code),
+            add_memory(log),
         )
-        llm_log, reply = llm_result
         func, code = reply.split(",")
-        await add_memory(robot_log)
-        await add_memory(llm_log)
+        log = f"{llm_log}\n{robot_log}\n"
 
 
 if __name__ == "__main__":
