@@ -90,6 +90,13 @@ seg = AudioSegment.from_file("/tmp/tmp0e449aae8f.mp3", "mp3")
 play(seg)
 ```
 
+New multi-node requires filelock
+
+```
+pip install filelock
+sh s.test.sh
+```
+
 ## Reddit Post
 
 [r/Robotics](https://www.reddit.com/r/robotics/comments/1818x5t/zeroshot_autonomous_humanoid/)

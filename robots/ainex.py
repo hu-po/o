@@ -79,12 +79,12 @@ LOOK(direction:str)
   direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
 """
 SUGGESTIONS = """
-PLAY,greet
-LOOK,up
-MOVE,forward
+PLAY,GREET
+LOOK,UP
+MOVE,FORWARD
 """
-DEFAULT_FUNC: str = "MOVE"
-DEFAULT_CODE: str = "FORWARD"
+DEFAULT_FUNC: str = "LOOK"
+DEFAULT_CODE: str = "UP"
 
 
 def image_callback(msg):
