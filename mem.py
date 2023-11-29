@@ -4,20 +4,29 @@ from datetime import datetime, timedelta
 from filelock import FileLock
 
 START: datetime = datetime.utcnow()
-DEATH: timedelta = timedelta(seconds=int(os.getenv('DEATH', 6)))
+DEATH: timedelta = timedelta(seconds=int(os.getenv("DEATH", 6)))
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
-MEMORY_MAX_SIZE = 4096 # bytes
-
-
-def check_alive():
-    if datetime.utcnow() - START > DEATH:
-        return False
-    return True
+MEMORY_MAX_SIZE = 4096  # bytes
+MAX_STEPS = 100
+STEPS = 0
 
 
 def timestamp(log: str) -> str:
-    return f"{datetime.utcnow().timestamp()} {log}"
+    return f"{datetime.utcnow().timestamp()}{log}"
+
+
+def check_alive(name: str):
+    global STEPS
+    print(timestamp(f"{name} step {STEPS} of {MAX_STEPS}"))
+    STEPS += 1
+    if STEPS > MAX_STEPS:
+        print(timestamp(f"{name} max steps {MAX_STEPS} exceeded"))
+        return False
+    if datetime.utcnow() - START > DEATH:
+        print(timestamp(f"{name} death seconds {DEATH} exceeded"))
+        return False
+    return True
 
 
 async def check_memory() -> str:
@@ -38,7 +47,7 @@ async def check_memory() -> str:
                 with open(MEMORY_PATH, "w") as file:
                     file.writelines(lines[half_index:])
     # print(log)
-    return log           
+    return log
 
 
 async def get_memory() -> (str, str):
@@ -48,10 +57,11 @@ async def get_memory() -> (str, str):
             memraw = f.read()
     return log, f"Here is the robot memory:\n<memory>\n{memraw}\n</memory"
 
-async def add_memory(log: str) -> (str, str):
+
+async def add_memory(log: str) -> str:
     log = await check_memory()
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "a") as f:
             f.write(timestamp(log))
             f.write("\n")
-    return log, None
+    return log

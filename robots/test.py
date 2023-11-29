@@ -16,7 +16,7 @@ DEFAULT_FUNC: str = "MOVE"
 DEFAULT_CODE: str = "FORWARD"
 
 def move(direction: str) -> str:
-    return f"moving {direction}"
+    return f"🦿✅ moved {direction}"
 
 if __name__ == "__main__":
     args = argparser.parse_args()

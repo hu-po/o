@@ -12,9 +12,9 @@ MODELS: dict = import_models(args.model_api)
 
 
 async def loop():
-    log = "👁️‍🗨️ vlm started"
+    log = "🧐 look started"
     while check_alive():
-        (vlm_log, _), (mem_log, _) = await asyncio.gather(MODELS["vlm"](
+        (vlm_log, _), mem_log = await asyncio.gather(MODELS["vlm"](
             """
 Describe the scene, objects, and characters
 You are a robot vision module
