@@ -1,3 +1,4 @@
+pkill -f 'python3 run.*'
 rm /tmp/o.memory.txt
 rm /tmp/o.memory.lock
 python3 run.talk.py --model_api test &
