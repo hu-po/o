@@ -92,6 +92,6 @@ if __name__ == "__main__":
 
     import base64
 
-    with open("/tmp/image.jpg", "rb") as f:
+    with open("/tmp/o.image.jpg", "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")
     print(vlm("what do you see?"))

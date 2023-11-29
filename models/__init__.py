@@ -15,7 +15,7 @@ IMAGE_LOCK_PATH = "/tmp/o.image.lock" # Lock prevents reading while writing
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
-AUDIO_OUTPUT_PATH: str = "/tmp/audio.wav"  # recorded audio is constantly overwritten
+AUDIO_OUTPUT_PATH: str = "/tmp/o.audio.wav"  # recorded audio is constantly overwritten
 
 
 def import_models(api: str) -> dict:
@@ -71,7 +71,7 @@ def import_models(api: str) -> dict:
 
     async def async_tts(text: str) -> str:
         try:
-            file_name = f"/tmp/tmp{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
+            file_name = f"/tmp/o.audio.{hashlib.sha256(text.encode()).hexdigest()[:10]}.mp3"
             if not os.path.exists(file_name):
                 seg: AudioSegment = tts(text)
                 seg.export(file_name, format="mp3")

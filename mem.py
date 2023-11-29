@@ -3,16 +3,15 @@ import os
 from datetime import datetime, timedelta
 from filelock import FileLock
 
-START_TIME: datetime = datetime.now()
-DEATH_TIME: timedelta = timedelta(minutes=4)  # How long the robot will live
-
+STARTON: datetime = datetime.utcnow()
+DEATH_TIME: timedelta = timedelta(seconds=int(os.getenv('DEATH_TIME', 6)))  # How long the robot will live
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
 MEMORY_MAX_SIZE = 1024  # 1KB
 
 
 def check_alive():
-    if datetime.now() - START_TIME > DEATH_TIME:
+    if datetime.now() - STARTON > DEATH_TIME:
         return False
     return True
 

@@ -12,7 +12,7 @@ autonomous humanoid robot, uses APIs for vlm, tts, stt, llm
 ```
 pip install openai==1.1.1
 export OPENAI_API_KEY=...
-python run.py --model_api gpt
+python o.py --model_api gpt
 ```
 
 ## Replicate API (Open Source)
@@ -25,7 +25,7 @@ python run.py --model_api gpt
 ```
 pip install replicate==0.20.0
 export REPLICATE_API_TOKEN=...
-python run.py --model_api rep
+python o.py --model_api rep
 ```
 
 ## Robot
@@ -51,10 +51,10 @@ pip install pydub==0.25.1
 To autostart script on robot boot use crontab (sleep for some time to allow ROS to spin up):
 
 ```
-chmod +x /home/ubuntu/o/run.sh
+chmod +x /home/ubuntu/o/o.sh
 crontab -e
-@reboot sh /home/ubuntu/o/run.sh
-*/5 * * * * /home/ubuntu/o/run.sh
+@reboot sh /home/ubuntu/o/o.sh
+*/5 * * * * /home/ubuntu/o/o.sh
 ```
 
 Only a USB microphone works, set the volume with:

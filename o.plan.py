@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from memory import check_alive, add_memory, get_memory
+from mem import check_alive, add_memory, get_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -35,5 +35,9 @@ You are {name}, you prefer {opinion}
 
 if __name__ == "__main__":
     print("🏁 plan born")
-    asyncio.run(loop())
+    try:
+        asyncio.run(loop())
+    except KeyboardInterrupt:
+        print("🪦 plan interrupted by user")
+        exit(0)
     print("🪦 plan dead")

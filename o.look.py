@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from memory import check_alive, add_memory
+from mem import check_alive, add_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -34,5 +34,9 @@ Your reponse should not contain any special characters
 
 if __name__ == "__main__":
     print("🏁 look born")
-    asyncio.run(loop())
-    print("🪦 look dead")
+    try:
+        asyncio.run(loop())
+    except KeyboardInterrupt:
+        print("🪦 body interrupted by user")
+        exit(0)
+    print("🪦 body dead")

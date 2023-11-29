@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from memory import check_alive, get_memory, add_memory
+from mem import check_alive, get_memory, add_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -33,5 +33,9 @@ Be short and minimal with your replies.
 
 if __name__ == "__main__":
     print("🏁 talk born")
-    asyncio.run(loop())
+    try:
+        asyncio.run(loop())
+    except KeyboardInterrupt:
+        print("🪦 talk interrupted by user")
+        exit(0)
     print("🪦 talk dead")
