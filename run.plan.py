@@ -33,7 +33,7 @@ Here is the robot log:
             ) for name, opinion in PERSONAS.items()])
         for persona, result in zip(PERSONAS.keys(), results):
             llm_log, reply = result
-            await add_memory(f"{persona} votes for {reply}")
+            await add_memory(f"{persona} votes for [{reply}]")
 
 
 if __name__ == "__main__":
