@@ -19,18 +19,29 @@ async def loop():
             get_memory(),
             MODELS["tts"](speak),
         )
-        (llm_log, speak), (stt_log, heard), _, _ = await asyncio.gather(
-            MODELS["llm"](f"""
-Write a short reply based on the robot memory.
-Reply to the human if anything is heard with stt.
-You most recently heard [{heard}].
-Be short and minimal with your reply.
-{memstr}
-                """),
-            MODELS["stt"](),
+        tasks = [
+            # Say "o" outloud so we know when listening
             MODELS["tts"]("o"),
+            MODELS["stt"](),
             add_memory(log),
-        )
+        ]
+        if heard:
+            tasks.append(MODELS["llm"](
+                f"""
+Reply to the human.
+The human said: [{heard}].
+Be short, laconic, and witty in your reply.
+The human might mention the robot memory:
+{memstr}
+                """))
+        else:
+            tasks.append(MODELS["llm"](
+                f"""
+Summarize the more recent (bottom) robot memories.
+Be short, laconic, and witty in your reply.
+{memstr}
+                """))   
+        (tts_log, _), (stt_log, heard), _, (llm_log, speak)= await asyncio.gather(*tasks)
         log = f"{tts_log}{llm_log}{stt_log}"
 
 

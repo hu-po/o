@@ -35,9 +35,9 @@ def import_robot(robot: str = "test") -> dict:
         return f"🤖{log[:-1]}, took {time.time() - _s:.2f}s⏱️"
 
     return {
-        "functions": FUNCTIONS,
-        "examples": SUGGESTIONS,
-        "default_func": DEFAULT_FUNC,
-        "default_code": DEFAULT_CODE,
         "act": async_act,
+        "FUNCTIONS": FUNCTIONS,
+        "SUGGESTIONS": SUGGESTIONS,
+        "DEFAULT_FUNC": DEFAULT_FUNC,
+        "DEFAULT_CODE": DEFAULT_CODE,
     }

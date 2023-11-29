@@ -33,7 +33,7 @@ CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 # Key-frame-y animations in a custom .d6a format
 ACTION_NAMES: dict = {
-    "GREET": "greet",
+    "WAVE_AND_GREET": "greet",
     "WAGGLE_DANCE": "wave",
     "GRAB_LEFT_HAND": "left_hand_put_block",
     "GRAB_RIGHT_HAND": "right_hand_put_block",
@@ -51,8 +51,8 @@ DEFAULT_ACTION_NAME: str = "GREET"
 MOVE_DIRECTIONS = {
     "FORWARD": [1, 0, 0],
     "BACKWARD": [-1, 0, 0],
-    "LEFT": [0, 1, 0],
-    "RIGHT": [0, -1, 0],
+    "SHUFFLE_LEFT": [0, 1, 0],
+    "SHUFFLE_RIGHT": [0, -1, 0],
     "ROTATE_LEFT": [0, 0, 1],
     "ROTATE_RIGHT": [0, 0, -1],
 }
@@ -84,7 +84,7 @@ LOOK,UP
 MOVE,FORWARD
 """
 DEFAULT_FUNC: str = "LOOK"
-DEFAULT_CODE: str = "UP"
+DEFAULT_CODE: str = "FORWARD"
 
 
 def image_callback(msg):

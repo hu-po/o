@@ -16,7 +16,7 @@ ROBOT: dict = import_robot(args.robot)
 
 async def loop():
     log = "🤸 body started"
-    func, code = ROBOT["default_func"], ROBOT["default_code"]
+    func, code = ROBOT["DEFAULT_FUNC"], ROBOT["DEFAULT_CODE"]
     while check_alive('🤸'):
         (_, memstr) = await get_memory()
         (llm_log, reply), robot_log, _ = await asyncio.gather(
@@ -25,11 +25,11 @@ async def loop():
 Pick a function based on the robot log.
 Always pick a function and provide any args required.
 Here are the functions:
-{ROBOT['functions']}
+{ROBOT['FUNCTIONS']}
 {memstr}
 Pick one of the functions and the args.
 Here are some example outputs:
-{ROBOT['examples']}
+{ROBOT['SUGGESTIONS']}
 Your response should be a single line with the chosen function code and arguments.
                 """
             ),
