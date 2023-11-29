@@ -86,7 +86,7 @@ def import_models(api: str) -> dict:
             print(e)
             print("@@@@@@@@@@@")
             return "🗣️❌ error with tts", None
-        return f"🗣️✅ tts said {text}", text
+        return f"🗣️✅ tts said [{text}]", text
 
     async def async_stt() -> (str, str):
         try:
@@ -103,7 +103,7 @@ def import_models(api: str) -> dict:
             print(e)
             print("@@@@@@@@@@@")
             return "👂❌ error with stt", ""
-        return f"👂✅ stt heard {transcript}", transcript
+        return f"👂✅ stt heard [{transcript}]", transcript
 
     return {
         "llm": timed(async_llm),

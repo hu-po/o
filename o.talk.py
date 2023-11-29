@@ -19,15 +19,16 @@ async def loop():
             get_memory(),
             MODELS["tts"](speak),
         )
-        (llm_log, speak), (stt_log, heard), _ = await asyncio.gather(
+        (llm_log, speak), (stt_log, heard), _, _ = await asyncio.gather(
             MODELS["llm"](f"""
-Pick a reply to speak out based on the robot log.
+Write a short reply based on the robot memory.
 Reply to the human if anything is heard with stt.
 You most recently heard [{heard}].
-Be short and minimal with your replies.
+Be short and minimal with your reply.
 {memstr}
                 """),
             MODELS["stt"](),
+            MODELS["tts"]("o"),
             add_memory(log),
         )
         log = f"{tts_log}{llm_log}{stt_log}"

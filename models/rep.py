@@ -11,7 +11,7 @@ LLM_TEMPERATURE: float = 0.01
 VLM: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_MAX_TOKENS: int = 24
 TTS: str = "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"
-VOICE: str = "en_speaker_8"  # 9 total english speakers available
+VOICE: str = "en_speaker_3"  # 9 total english speakers available
 TTS_AUDIO_PATH: str = "/tmp/audio.wav"  # audio is constantly overwritten
 STT: str = "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"
 
