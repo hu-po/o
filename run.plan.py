@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from ego import check_alive, add_memory, get_memory
+from memory import check_alive, add_memory, get_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -17,22 +17,19 @@ PERSONAS: dict = {
 }
 
 async def loop():
-    memory = await get_memory()
+    memstr = await get_memory()
     while check_alive():
-        results = asyncio.gather(
+        results = await asyncio.gather(
             *[MODELS["llm"](
                 f"""
-Help vote on what the robot should do next based on the robot log.
+Help vote on what the robot should do next based on the robot memory.
 Reply with your opinion in a single line of text.
 You are {name}, you prefer {opinion}
-Here is the robot log:
-<robotlog>
-{memory}
-</robotlog>
+{memstr}
                 """
             ) for name, opinion in PERSONAS.items()])
         for persona, result in zip(PERSONAS.keys(), results):
-            llm_log, reply = result
+            _, reply = result
             await add_memory(f"{persona} votes for [{reply}]")
 
 

@@ -25,8 +25,9 @@ LOOK_DIRECTIONS: dict = {
     "DOWN": [[23, 500], [24, 400]],
 }
 DEFAULT_LOOK_DIRECTION: str = "FORWARD"
+IMAGE_SLEEP: float = 0.1  # Sleep while saving image to preven motion blur
 IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
-IMAGE_LOCK_PATH = "/tmp/o.image.lock" # Lock prevents reading while writing
+IMAGE_LOCK_PATH = "/tmp/o.image.🔒 " # Lock prevents reading while writing
 CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 
@@ -85,6 +86,22 @@ MOVE,forward
 DEFAULT_FUNC: str = "MOVE"
 DEFAULT_CODE: str = "FORWARD"
 
+
+def image_callback(msg):
+    bridge = CvBridge()
+    cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
+    with FileLock(IMAGE_LOCK_PATH):
+        cv2.imwrite(IMAGE_PATH, cv_image)
+    rospy.signal_shutdown("Image saved")
+
+
+def save_one_image():
+    rospy.sleep(IMAGE_SLEEP)
+    rospy.init_node("save_one_image")
+    rospy.Subscriber(CAMERA_ROS_TOPIC, Image, image_callback)
+    rospy.spin()
+
+
 def move(
     direction: str = DEFAULT_MOVE_DIRECTION,
     directions: dict = MOVE_DIRECTIONS,
@@ -111,6 +128,7 @@ def move(
             step_num=step_num,
         )
         gait_manager.stop()
+        save_one_image()
         return f"🦿✅ moved {direction}"
     else:
         return f"🦿❌ unknown move direction {direction}"
@@ -124,23 +142,10 @@ def play(
     action = actions.get(action.upper(), None)
     if action:
         motion_manager.run_action(action)
+        save_one_image()
         return f"🦾✅ performed {action}"
     else:
         return f"🦾❌ unknown action {action}"
-
-
-def image_callback(msg):
-    bridge = CvBridge()
-    cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
-    with FileLock(IMAGE_LOCK_PATH):
-        cv2.imwrite(IMAGE_PATH, cv_image)
-    rospy.signal_shutdown("Image saved")
-
-
-def save_one_image():
-    rospy.init_node("save_one_image")
-    rospy.Subscriber(CAMERA_ROS_TOPIC, Image, image_callback)
-    rospy.spin()
 
 
 def look(
@@ -151,13 +156,10 @@ def look(
     servo_pos = directions.get(direction.upper(), None)
     if servo_pos:
         motion_manager.set_servos_position(500, servo_pos)
-        rospy.sleep(0.2)
         save_one_image()
-        return (
-            f"📷✅ looked {direction}"
-        )
+        return f"👀✅ looked {direction}"
     else:
-        return f"📷❌ unknown look direction {direction}"
+        return f"👀❌ unknown look direction {direction}"
 
 
 if __name__ == "__main__":

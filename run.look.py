@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from ego import check_alive, add_memory
+from memory import check_alive, add_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -10,9 +10,11 @@ args = argparser.parse_args()
 
 MODELS: dict = import_models(args.model_api)
 
+
 async def loop():
     while check_alive():
-        vlm_result = await MODELS["vlm"]("""
+        vlm_result = await MODELS["vlm"](
+            """
 Describe the scene, objects, and characters
 You are a robot vision module
 You are small and only 20 centimeters off the ground

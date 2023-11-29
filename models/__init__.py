@@ -11,7 +11,7 @@ import sounddevice as sd
 
 
 IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
-IMAGE_LOCK_PATH = "/tmp/o.image.lock" # Lock prevents reading while writing
+IMAGE_LOCK_PATH = "/tmp/o.image.🔒" # Lock prevents reading while writing
 AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
 AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
 AUDIO_CHANNELS: int = 1  # mono
