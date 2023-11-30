@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 import argparse
+import os
 import cv2
-
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
@@ -57,6 +57,7 @@ MOVE_DIRECTIONS = {
     "ROTATE_RIGHT": [0, 0, -1],
 }
 DEFAULT_MOVE_DIRECTION: str = "FORWARD"
+O_NEX_MOVE_ENABLED: bool = os.getenv("O_NEX_MOVE_ENABLED", 1)
 # Speed selection has three levels: 1, 2, 3, and 4, with speed decreasing from fast to slow.
 SPEED: int = 3  # Integer in range [1, 4] slow to fast
 # Step stride in the x direction (meters).
@@ -112,6 +113,8 @@ def move(
     arm_swing_degree: int = ARM_SWING_DEGREE,
     step_num: int = STEP_NUM,
 ) -> str:
+    if not O_NEX_MOVE_ENABLED:
+        return "🦿❌ move is disabled"
     rospy.init_node("simple_gait_control_demo")
     gait_manager = GaitManager()
     modifiers = directions.get(direction.upper(), None)
