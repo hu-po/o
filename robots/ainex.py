@@ -33,7 +33,7 @@ CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 # Key-frame-y animations in a custom .d6a format
 ACTION_NAMES: dict = {
-    "WAVE_AND_GREET": "greet",
+    "ARM_WAVE_GREET": "greet",
     "WAGGLE_DANCE": "wave",
     "GRAB_LEFT_HAND": "left_hand_put_block",
     "GRAB_RIGHT_HAND": "right_hand_put_block",

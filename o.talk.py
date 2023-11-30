@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from mem import heartbeat, get_memory, add_memory
+from o import heartbeat, get_memory, add_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
@@ -12,7 +12,7 @@ models: dict = import_models(args.model_api)
 
 
 async def loop(models: dict):
-    log = "📣 talk started"
+    log = "📣 talk started (chatty, talks about everything)"
     speak = "hello world"
     heard = ""
     while  True:

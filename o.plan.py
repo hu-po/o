@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from mem import heartbeat, add_memory, get_memory
+from o import heartbeat, add_memory, get_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
