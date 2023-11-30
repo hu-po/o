@@ -24,7 +24,6 @@ async def loop(models: dict):
         (_, memstr) = await get_memory()
         tasks = []
         for name, opinion in GOALS.items():
-# TODO: Voting on which emoji to amplify and which to suppress?
             tasks.append(models["llm"](
                 f"""
 You prioritize robot goals based on a robot memory.

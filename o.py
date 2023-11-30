@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 from filelock import FileLock
 
-START: datetime = datetime.utcnow()
+O_START: datetime = os.getenv("O_START", datetime.utcnow())
 O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
@@ -23,7 +23,7 @@ def heartbeat(name: str) -> (str, bool):
     if STEPS > MAX_STEPS:
         log += timestamp(f"{name} max steps {MAX_STEPS} exceeded")
         return log, False
-    if datetime.utcnow() - START > O_DEATH:
+    if datetime.utcnow() - O_START > O_DEATH:
         log += timestamp(f"{name} death {O_DEATH} exceeded")
         return log, False
     return log, True
@@ -55,7 +55,14 @@ async def get_memory() -> (str, str):
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "r") as f:
             memraw = f.read()
-    return log, f"Here is the robot memory (the more recent robot memories are at the bottom):\n<memory>\n{memraw}\n</memory"
+    return log, f"""
+Each line in the robot memory is the output of one node.
+There are many nodes running asynchronously.
+Each line in the robot memory contains UTC timestamps.
+<robot_memory>
+{memraw}
+</robot_memory>
+"""
 
 
 async def add_memory(txt: str) -> str:
@@ -65,3 +72,18 @@ async def add_memory(txt: str) -> str:
             f.write(timestamp(txt))
             f.write("\n")
     return log
+
+async def remember(lines: list) -> str:
+    log = await check_memory()
+    to_add = [] * len(lines)
+    with FileLock(MEMORY_LOCK_PATH):
+        with open(MEMORY_PATH, "r") as f:
+            for i, line in f.readlines():
+                if i in lines:
+                    to_add.append(line)
+    log += f"🧠 remembered {len(to_add)} lines"
+    with FileLock(MEMORY_LOCK_PATH):
+        with open(MEMORY_PATH, "a") as f:
+            f.write("\n".join(to_add))
+    return log
+    

@@ -17,7 +17,6 @@ MOVE,LEFT
 """
 DEFAULT_FUNC: str = "MOVE"
 DEFAULT_CODE: str = "FORWARD"
-
 VIDEO_DEVICE = 0
 IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
 IMAGE_LOCK_PATH = "/tmp/o.image.lock "  # Lock prevents reading while writing

@@ -2,16 +2,6 @@
 
 Zero-Shot Autonomous Humanoid Robot. Talks with TTS and STT, sees with VLM, and thinks with LLM.
 
-## What is this repo structure?
-
-Scripts inteded to be run are called `s.*.sh`, so for example `s.test.sh` is for testing, `s.watch.sh` is a live barebones visualizer, and `s.nex.gpt.sh` runs the AiNex robot with the OpenAI API.
-
-Python scripts `o.*.py` are repeating asynchronous loops, kind of like mini ROS nodes. They run in parallel and communicate via a shared files in `/tmp/`.
-
-`models` contains model api code, `models/rep.py` is for the open source Replicate API, and `models/gpt.py` is for the OpenAI API.
-
-`robots` contains robot code, `robots/nex.py` is for the HiWonder AiNex humanoid robot.
-
 ## OpenAI API
 
 - **LLM:** `gpt-4-1106-preview`
@@ -37,6 +27,16 @@ pip install replicate==0.20.0
 export REPLICATE_API_TOKEN=...
 python3 o.look.py --model_api rep
 ```
+
+## What is this repo structure?
+
+Scripts inteded to be run are called `s.*.sh`, so for example `s.test.sh` is for testing, `s.watch.sh` is a live barebones visualizer, and `s.nex.gpt.sh` runs the AiNex robot with the OpenAI API.
+
+Python scripts `o.*.py` are repeating asynchronous loops, kind of like mini ROS nodes. They run in parallel and communicate via a shared files in `/tmp/`. File locking ensures no corrupted reads and writes. It isn't efficient but because the API calls are the bottleneck it doesnt matter.
+
+`models` contains model api code, `models/rep.py` is for the open source Replicate API, and `models/gpt.py` is for the OpenAI API.
+
+`robots` contains robot code, `robots/nex.py` is for the HiWonder AiNex humanoid robot.
 
 ## AiNex Robot Setup
 
