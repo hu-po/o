@@ -12,7 +12,7 @@ autonomous humanoid robot, uses APIs for vlm, tts, stt, llm
 ```
 pip install openai==1.1.1
 export OPENAI_API_KEY=...
-python o.py --model_api gpt
+python3 o.look.py --model_api gpt
 ```
 
 ## Replicate API (Open Source)
@@ -25,7 +25,7 @@ python o.py --model_api gpt
 ```
 pip install replicate==0.20.0
 export REPLICATE_API_TOKEN=...
-python o.py --model_api rep
+python3 o.look.py --model_api rep
 ```
 
 ## Robot
@@ -139,3 +139,18 @@ OpenAI Mode:
 - VLM: gpt-4-vision-preview
 - TTS: tts-1
 - STT: whisper-1
+
+## Emojis
+
+Great emoji database https://emojidb.org/
+
+## Citation
+
+```
+@misc{zero-shot-humanoid-2023,
+  title={Zero-Shot Autonomous Humanoid Robot},
+  author={Hugo Ponte},
+  year={2023},
+  url={https://github.com/hu-po/o}
+}
+```
