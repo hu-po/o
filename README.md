@@ -1,6 +1,16 @@
 # o
 
-autonomous humanoid robot, uses APIs for vlm, tts, stt, llm
+Zero-Shot Autonomous Humanoid Robot. Talks with TTS and STT, sees with VLM, and thinks with LLM.
+
+## What is this repo structure?
+
+Scripts inteded to be run are called `s.*.sh`, so for example `s.test.sh` is for testing, `s.watch.sh` is a live barebones visualizer, and `s.nex.gpt.sh` runs the AiNex robot with the OpenAI API.
+
+Python scripts `o.*.py` are repeating asynchronous loops, kind of like mini ROS nodes. They run in parallel and communicate via a single shared memory txt file.
+
+`models` contains model api code, `models/rep.py` is for the open source Replicate API, and `models/gpt.py` is for the OpenAI API.
+
+`robots` contains robot code, `robots/nex.py` is for the HiWonder AiNex humanoid robot.
 
 ## OpenAI API
 
@@ -12,7 +22,7 @@ autonomous humanoid robot, uses APIs for vlm, tts, stt, llm
 ```
 pip install openai==1.1.1
 export OPENAI_API_KEY=...
-python run.py --model_api gpt
+python3 o.look.py --model_api gpt
 ```
 
 ## Replicate API (Open Source)
@@ -25,10 +35,10 @@ python run.py --model_api gpt
 ```
 pip install replicate==0.20.0
 export REPLICATE_API_TOKEN=...
-python run.py --model_api rep
+python3 o.look.py --model_api rep
 ```
 
-## Robot
+## AiNex Robot Setup
 
 Robot is a HiWonder AiNex humanoid running ROS on a Raspberry Pi 4B
 
@@ -51,10 +61,10 @@ pip install pydub==0.25.1
 To autostart script on robot boot use crontab (sleep for some time to allow ROS to spin up):
 
 ```
-chmod +x /home/ubuntu/o/run.sh
+chmod +x /home/ubuntu/o/o.sh
 crontab -e
-@reboot sh /home/ubuntu/o/run.sh
-*/5 * * * * /home/ubuntu/o/run.sh
+@reboot sh /home/ubuntu/o/o.sh
+*/5 * * * * /home/ubuntu/o/o.sh
 ```
 
 Only a USB microphone works, set the volume with:
@@ -88,6 +98,13 @@ from pydub import AudioSegment
 from pydub.playback import play
 seg = AudioSegment.from_file("/tmp/tmp0e449aae8f.mp3", "mp3")
 play(seg)
+```
+
+New multi-node requires filelock
+
+```
+pip install filelock
+sh s.test.sh
 ```
 
 ## Reddit Post
@@ -132,3 +149,18 @@ OpenAI Mode:
 - VLM: gpt-4-vision-preview
 - TTS: tts-1
 - STT: whisper-1
+
+## Emojis
+
+Great emoji database https://emojidb.org/
+
+## Citation
+
+```
+@misc{zero-shot-humanoid-2023,
+  title={Zero-Shot Autonomous Humanoid Robot},
+  author={Hugo Ponte},
+  year={2023},
+  url={https://github.com/hu-po/o}
+}
+```

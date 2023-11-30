@@ -3,7 +3,6 @@ import requests
 from pydub import AudioSegment
 import replicate
 
-from util import timeit
 
 LLM: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
 # LLM: str = "mistralai/mistral-7b-instruct-v0.1:83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70"
@@ -12,12 +11,11 @@ LLM_TEMPERATURE: float = 0.01
 VLM: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
 VLM_MAX_TOKENS: int = 24
 TTS: str = "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"
-VOICE: str = "en_speaker_0"  # 9 total english speakers available
+VOICE: str = "en_speaker_3"  # 9 total english speakers available
 TTS_AUDIO_PATH: str = "/tmp/audio.wav"  # audio is constantly overwritten
 STT: str = "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"
 
 
-@timeit
 def llm(
     prompt: str,
     model: str = LLM,
@@ -36,7 +34,6 @@ def llm(
     return "".join(output)
 
 
-@timeit
 def vlm(
     prompt: str,
     base64_image: str,
@@ -55,7 +52,6 @@ def vlm(
     return "".join(output)
 
 
-@timeit
 def tts(
     text: str,
     model: str = TTS,
@@ -75,7 +71,6 @@ def tts(
     return AudioSegment.from_wav(tmp_path)
 
 
-@timeit
 def stt(audio_path: str, model: str = STT) -> str:
     # https://replicate.com/openai/whisper
     output = replicate.run(

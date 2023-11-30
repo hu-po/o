@@ -6,10 +6,10 @@ import cv2
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from filelock import FileLock
 
 from ainex_kinematics.gait_manager import GaitManager
 from ainex_kinematics.motion_manager import MotionManager
-from util import timeit, EMOJIS
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
@@ -25,15 +25,16 @@ LOOK_DIRECTIONS: dict = {
     "DOWN": [[23, 500], [24, 400]],
 }
 DEFAULT_LOOK_DIRECTION: str = "FORWARD"
-# Image is constantly overwritten
-IMAGE_OUTPUT_FILENAME: str = "/tmp/image.jpg"
+IMAGE_SLEEP: float = 0.1  # Sleep while saving image to preven motion blur
+IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
+IMAGE_LOCK_PATH = "/tmp/o.image.lock " # Lock prevents reading while writing
 CAMERA_ROS_TOPIC: str = "/camera/image_rect_color"
 
 
 # Key-frame-y animations in a custom .d6a format
 ACTION_NAMES: dict = {
-    "GREET": "greet",
-    "HAPPY_DANCE": "wave",
+    "WAVE_AND_GREET": "greet",
+    "WAGGLE_DANCE": "wave",
     "GRAB_LEFT_HAND": "left_hand_put_block",
     "GRAB_RIGHT_HAND": "right_hand_put_block",
     "CROUCH": "stand_low",
@@ -50,8 +51,8 @@ DEFAULT_ACTION_NAME: str = "GREET"
 MOVE_DIRECTIONS = {
     "FORWARD": [1, 0, 0],
     "BACKWARD": [-1, 0, 0],
-    "LEFT": [0, 1, 0],
-    "RIGHT": [0, -1, 0],
+    "SHUFFLE_LEFT": [0, 1, 0],
+    "SHUFFLE_RIGHT": [0, -1, 0],
     "ROTATE_LEFT": [0, 0, 1],
     "ROTATE_RIGHT": [0, 0, -1],
 }
@@ -69,7 +70,7 @@ ARM_SWING_DEGREE: int = 24  # Highest I see in examples is 30
 # Number of steps to take in each movement, default is 1.
 STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
 
-ROBOT_FUNC_PROMPT = f"""
+FUNCTIONS = f"""
 MOVE(direction:str)
   direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]
 PLAY(action:str)
@@ -77,13 +78,30 @@ PLAY(action:str)
 LOOK(direction:str)
   direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
 """
-ROBOT_EXAMPLE_PROMPT = """
-PLAY,greet
-LOOK,up
-MOVE,forward
+SUGGESTIONS = """
+PLAY,GREET
+LOOK,UP
+MOVE,FORWARD
 """
+DEFAULT_FUNC: str = "LOOK"
+DEFAULT_CODE: str = "FORWARD"
 
-@timeit
+
+def image_callback(msg):
+    bridge = CvBridge()
+    cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
+    with FileLock(IMAGE_LOCK_PATH):
+        cv2.imwrite(IMAGE_PATH, cv_image)
+    rospy.signal_shutdown("Image saved")
+
+
+def save_one_image():
+    rospy.sleep(IMAGE_SLEEP)
+    rospy.init_node("save_one_image")
+    rospy.Subscriber(CAMERA_ROS_TOPIC, Image, image_callback)
+    rospy.spin()
+
+
 def move(
     direction: str = DEFAULT_MOVE_DIRECTION,
     directions: dict = MOVE_DIRECTIONS,
@@ -110,12 +128,12 @@ def move(
             step_num=step_num,
         )
         gait_manager.stop()
-        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['success']} moved {direction}"
+        save_one_image()
+        return f"🦿✅ moved {direction}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['move']}{EMOJIS['fail']} unknown move direction {direction}"
+        return f"🦿❌ unknown move direction {direction}"
 
 
-@timeit
 def play(
     action: str = DEFAULT_ACTION_NAME,
     actions: dict = ACTION_NAMES,
@@ -124,25 +142,12 @@ def play(
     action = actions.get(action.upper(), None)
     if action:
         motion_manager.run_action(action)
-        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['success']} performed {action}"
+        save_one_image()
+        return f"🦾✅ performed {action}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['perform']}{EMOJIS['fail']} unknown action {action}"
+        return f"🦾❌ unknown action {action}"
 
 
-def image_callback(msg):
-    bridge = CvBridge()
-    cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
-    cv2.imwrite(IMAGE_OUTPUT_FILENAME, cv_image)
-    rospy.signal_shutdown("Image saved")
-
-
-def save_one_image(rostopic: str = CAMERA_ROS_TOPIC):
-    rospy.init_node("save_one_image")
-    rospy.Subscriber(rostopic, Image, image_callback)
-    rospy.spin()
-
-
-@timeit
 def look(
     direction: str = DEFAULT_LOOK_DIRECTION,
     directions: list = LOOK_DIRECTIONS,
@@ -151,13 +156,10 @@ def look(
     servo_pos = directions.get(direction.upper(), None)
     if servo_pos:
         motion_manager.set_servos_position(500, servo_pos)
-        rospy.sleep(0.2)
         save_one_image()
-        return (
-            f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['success']} looked {direction}"
-        )
+        return f"👀✅ looked {direction}"
     else:
-        return f"{EMOJIS['robot']}{EMOJIS['look']}{EMOJIS['fail']} unknown look direction {direction}"
+        return f"👀❌ unknown look direction {direction}"
 
 
 if __name__ == "__main__":
@@ -169,4 +171,4 @@ if __name__ == "__main__":
     elif args.func.upper() == "MOVE":
         print(move(direction=args.code))
     else:
-        print(f"Unknown func {args.func} code {args.code}")
+        raise ValueError(f" unknown func {args.func} code {args.code}")

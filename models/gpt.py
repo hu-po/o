@@ -5,7 +5,6 @@ import requests
 from pydub import AudioSegment
 from openai import OpenAI
 
-from util import timeit
 
 client = OpenAI()
 
@@ -15,11 +14,10 @@ LLM_TEMPERATURE: float = 0.0
 VLM: str = "gpt-4-vision-preview"
 VLM_MAX_TOKENS: int = 24
 TTS: str = "tts-1"
-VOICE: str = "echo"  # (alloy, echo, fable, onyx, nova, and shimmer)
+VOICE: str = "onyx"  # (alloy, echo, fable, onyx, nova, and shimmer)
 STT: str = "whisper-1"
 
 
-@timeit
 def llm(
     prompt: str,
     model: str = LLM,
@@ -39,7 +37,6 @@ def llm(
     return reply
 
 
-@timeit
 def vlm(
     prompt: str,
     base64_image: str,
@@ -73,14 +70,12 @@ def vlm(
     return content
 
 
-@timeit
 def tts(text: str, model: str = TTS, voice: str = VOICE) -> AudioSegment:
     response = client.audio.speech.create(model=model, voice=voice, input=text)
     byte_stream = io.BytesIO(response.content)
     return AudioSegment.from_file(byte_stream, format="mp3")
 
 
-@timeit
 def stt(audio_path: str, model: str = STT) -> str:
     with open(audio_path, "rb") as f:
         transcript = client.audio.transcriptions.create(
@@ -95,7 +90,8 @@ if __name__ == "__main__":
     print(stt("/tmp/test.mp3"))
     print(llm("hello"))
 
-    import base64 
-    with open("/tmp/image.jpg", "rb") as f:
+    import base64
+
+    with open("/tmp/o.image.jpg", "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")
     print(vlm("what do you see?"))
