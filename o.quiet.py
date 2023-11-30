@@ -18,12 +18,12 @@ async def loop(models: dict):
         log, is_alive = heartbeat('🙊')
         if not is_alive:
             break
-        (_, memstr), _, (stt_log, heard) = await asyncio.gather(
+        (_, memstr), (stt_log, heard) = await asyncio.gather(
             get_memory(),
-            add_memory(log),
+            add_memory(log)
             models["stt"](),
         )
-        log += stt_log
+        log = stt_log
         if heard:
             (llm_log, speak) = await models["llm"](
                     f"""
@@ -39,7 +39,7 @@ The human might mention the robot memory:
             log += tts_log
         else:
             log += "🙊 heard nothing"
-        
+        await add_memory(log)
 
 
 if __name__ == "__main__":

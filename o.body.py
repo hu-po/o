@@ -35,12 +35,12 @@ Your response should be a single line with the chosen function code and argument
             robot["act"](func, code),
             add_memory(log),
         )
+        log = llm_log + robot_log
         try:
             func, code = reply.split(",")
         except ValueError:
             func, code = robot["DEFAULT_FUNC"], robot["DEFAULT_CODE"]
-        log += llm_log
-        log += robot_log
+        await add_memory(log)
 
 
 if __name__ == "__main__":
