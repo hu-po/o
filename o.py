@@ -32,14 +32,14 @@ def heartbeat(name: str) -> (str, bool):
 async def check_memory() -> str:
     log = ""
     if not os.path.exists(MEMORY_PATH):
-        # log += timestamp("📜 Memory file not found, creating ...")
+        log += timestamp("📜 Memory file not found, creating ...")
         with open(MEMORY_PATH, "w") as f:
             f.write("")
     else:
         mem_size = os.path.getsize(MEMORY_PATH)
         # log += timestamp(f"💾 Current memory size is {mem_size} bytes")
         if mem_size > MEMORY_MAX_SIZE:
-            # log += timestamp(f"🗑️ Memory limit {MEMORY_MAX_SIZE} exceeded, truncating past")
+            log += timestamp(f"🗑️ Memory limit {MEMORY_MAX_SIZE} exceeded, truncating past")
             with FileLock(MEMORY_LOCK_PATH):
                 with open(MEMORY_PATH, "r") as file:
                     lines = file.readlines()
@@ -72,6 +72,7 @@ async def add_memory(txt: str) -> str:
             f.write(timestamp(txt))
             f.write("\n")
     return log
+
 
 async def remember(lines: list) -> str:
     log = await check_memory()

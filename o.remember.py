@@ -18,9 +18,9 @@ NUM_EDITS: int = 3
 
 
 async def loop(models: dict):
-    log = f"🎯 goals are: {GOALS}"
+    log = f"🧠🎯 goals are: {GOALS}"
     while True:
-        log, is_alive = heartbeat("🗳️")
+        log, is_alive = heartbeat("🧠")
         if not is_alive:
             break
         (_, memstr), _ = await asyncio.gather(get_memory(), add_memory(log))
