@@ -20,7 +20,7 @@ async def loop(models: dict):
             break
         (_, memstr), _, (stt_log, heard) = await asyncio.gather(
             get_memory(),
-            add_memory(log)
+            add_memory(log),
             models["stt"](),
         )
         log = stt_log
