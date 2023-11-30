@@ -38,6 +38,8 @@ The human might mention the robot memory:
             log += llm_log
             (tts_log, _) = await models["tts"](speak)
             log += tts_log
+        else:
+            log += "🙊 heard nothing"
         
 
 
