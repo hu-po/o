@@ -18,7 +18,7 @@ async def loop(models: dict):
         log, is_alive = heartbeat('🙊')
         if not is_alive:
             break
-        (_, memstr), (stt_log, heard) = await asyncio.gather(
+        (_, memstr), _, (stt_log, heard) = await asyncio.gather(
             get_memory(),
             add_memory(log)
             models["stt"](),
