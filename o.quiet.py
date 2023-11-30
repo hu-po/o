@@ -12,7 +12,6 @@ models: dict = import_models(args.model_api)
 
 
 async def loop(models: dict):
-    log = "🙊 quiet started (tends to listen, rarely speaks)"
     speak = "hey there"
     heard = ""
     while  True:
@@ -24,7 +23,7 @@ async def loop(models: dict):
             add_memory(log),
             models["stt"](),
         )
-        log = stt_log
+        log += stt_log
         if heard:
             (llm_log, speak) = await models["llm"](
                     f"""

@@ -12,7 +12,6 @@ args = argparser.parse_args()
 
 
 async def loop(models: dict, robot: dict):
-    log = "🤸 body started"
     func, code = robot["DEFAULT_FUNC"], robot["DEFAULT_CODE"]
     while True:
         log, is_alive = heartbeat('🤸')
@@ -40,7 +39,8 @@ Your response should be a single line with the chosen function code and argument
             func, code = reply.split(",")
         except ValueError:
             func, code = robot["DEFAULT_FUNC"], robot["DEFAULT_CODE"]
-        log = f"{llm_log}{robot_log}"
+        log += llm_log
+        log += robot_log
 
 
 if __name__ == "__main__":
