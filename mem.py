@@ -16,17 +16,17 @@ def timestamp(log: str) -> str:
     return f"{datetime.utcnow().timestamp()}{log}"
 
 
-def check_alive(name: str):
+def heartbeat(name: str) -> (str, bool):
     global STEPS
-    print(timestamp(f"{name} step {STEPS} of {MAX_STEPS}"))
+    log = timestamp(f"{name} step {STEPS} of {MAX_STEPS}")
     STEPS += 1
     if STEPS > MAX_STEPS:
-        print(timestamp(f"{name} max steps {MAX_STEPS} exceeded"))
-        return False
+        log += timestamp(f"{name} max steps {MAX_STEPS} exceeded")
+        return log, False
     if datetime.utcnow() - START > O_DEATH:
-        print(timestamp(f"{name} death seconds {O_DEATH} exceeded"))
-        return False
-    return True
+        log += timestamp(f"{name} death {O_DEATH} exceeded")
+        return log, False
+    return log, True
 
 
 async def check_memory() -> str:

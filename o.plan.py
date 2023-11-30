@@ -1,28 +1,31 @@
 import argparse
 import asyncio
 
-from mem import check_alive, add_memory, get_memory
+from mem import heartbeat, add_memory, get_memory
 from models import import_models
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--model_api", type=str, default="test")
 args = argparser.parse_args()
 
-MODELS: dict = import_models(args.model_api)
 GOALS: dict = {
     "🔭": "visual exploration, looking before moving",
     "🤪": "performing and entertaining the human",
     "🤔": "making plans for the future",
 }
 
-async def loop():
+async def loop(models: dict):
     log = "📝 plan started, my goals are:"
     log += "\n".join([f"{k} {v}" for k, v in GOALS.items()])
-    while check_alive('📝'):
+    while  True:
+        log, is_alive = heartbeat('📝')
+        if not is_alive:
+            break
         (_, memstr) = await get_memory()
         tasks = []
         for name, opinion in GOALS.items():
-            tasks.append(MODELS["llm"](
+# TODO: Voting on which emoji to amplify and which to suppress?
+            tasks.append(models["llm"](
                 f"""
 You prioritize robot goals based on a robot memory.
 You are part of a collective with different goals.
@@ -42,10 +45,7 @@ You represent the goal of {opinion}.
         await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
-    print("🏁 plan born")
-    try:
-        asyncio.run(loop())
-    except KeyboardInterrupt:
-        print("🪦 plan interrupted by user")
-        exit(0)
-    print("🪦 plan dead")
+    asyncio.run(loop(
+        models=import_models(args.model_api),
+    ))
+    print("o.plan.py: done")

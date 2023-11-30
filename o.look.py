@@ -1,20 +1,22 @@
 import argparse
 import asyncio
 
-from mem import check_alive, add_memory
+from mem import heartbeat, add_memory
 from models import import_models
+from robots import import_robot
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--model_api", type=str, default="test")
+argparser.add_argument("--robot", type=str, default="test")
 args = argparser.parse_args()
 
-MODELS: dict = import_models(args.model_api)
-
-
-async def loop():
+async def loop(models: dict, robot: dict):
     vlm_log = "🧐 look started"
-    while check_alive('🧐'):
-        (vlm_log, _), _ = await asyncio.gather(MODELS["vlm"](
+    while  True:
+        log, is_alive = heartbeat('🧐')
+        if not is_alive:
+            break
+        (vlm_log, _), _ = await asyncio.gather(models["vlm"](
             """
 Describe the scene, objects, and characters
 You are a robot vision module
@@ -33,10 +35,8 @@ Your reponse should not contain any special characters
 
 
 if __name__ == "__main__":
-    print("🏁 look born")
-    try:
-        asyncio.run(loop())
-    except KeyboardInterrupt:
-        print("🪦 look interrupted by user")
-        exit(0)
-    print("🪦 look dead")
+    asyncio.run(loop(
+        models=import_models(args.model_api),
+        robot=import_robot(args.robot),
+    ))
+    print("o.look.py: done")
