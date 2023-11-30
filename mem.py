@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from filelock import FileLock
 
 START: datetime = datetime.utcnow()
-DEATH: timedelta = timedelta(seconds=int(os.getenv("DEATH", 10)))
+O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
 MEMORY_MAX_SIZE = 4096  # bytes
@@ -23,8 +23,8 @@ def check_alive(name: str):
     if STEPS > MAX_STEPS:
         print(timestamp(f"{name} max steps {MAX_STEPS} exceeded"))
         return False
-    if datetime.utcnow() - START > DEATH:
-        print(timestamp(f"{name} death seconds {DEATH} exceeded"))
+    if datetime.utcnow() - START > O_DEATH:
+        print(timestamp(f"{name} death seconds {O_DEATH} exceeded"))
         return False
     return True
 
