@@ -5,11 +5,12 @@ from filelock import FileLock
 
 O_START: datetime = os.getenv("O_START", datetime.utcnow())
 O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
+O_STEPS: int = os.getenv("O_STEPS", 0)
+O_MAX_STEPS: int = os.getenv("O_MAX_STEPS", 40)
+
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
 MEMORY_MAX_SIZE = 4096  # bytes
-MAX_STEPS = 100
-STEPS = 0
 
 def timestamp(log: str) -> str:
     elapsed_time = datetime.utcnow() - O_START
@@ -17,11 +18,11 @@ def timestamp(log: str) -> str:
     return f"⏱️{int(minutes)}m:{seconds:.3f}s {log}"
 
 def heartbeat(name: str) -> (str, bool):
-    global STEPS
-    STEPS += 1
-    log = timestamp(f"{name} step {STEPS} of {MAX_STEPS}")
-    if STEPS > MAX_STEPS:
-        log += timestamp(f"{name} max steps {MAX_STEPS} exceeded")
+    global O_STEPS
+    O_STEPS += 1
+    log = timestamp(f"{name} step {O_STEPS} of {O_MAX_STEPS}")
+    if O_STEPS > O_MAX_STEPS:
+        log += timestamp(f"{name} max steps {O_MAX_STEPS} exceeded")
         return log, False
     if datetime.utcnow() - O_START > O_DEATH:
         log += timestamp(f"{name} death {O_DEATH}s exceeded")
