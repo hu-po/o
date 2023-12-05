@@ -18,13 +18,13 @@ def timestamp(log: str) -> str:
 
 def heartbeat(name: str) -> (str, bool):
     global STEPS
-    log = timestamp(f"{name} step {STEPS} of {MAX_STEPS}")
     STEPS += 1
+    log = timestamp(f"{name} step {STEPS} of {MAX_STEPS}")
     if STEPS > MAX_STEPS:
         log += timestamp(f"{name} max steps {MAX_STEPS} exceeded")
         return log, False
     if datetime.utcnow() - O_START > O_DEATH:
-        log += timestamp(f"{name} death {O_DEATH} exceeded")
+        log += timestamp(f"{name} death {O_DEATH}s exceeded")
         return log, False
     return log, True
 
