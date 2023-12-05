@@ -1,6 +1,5 @@
 import argparse
 import time
-from dataclasses import dataclass
 
 from .test import capture_and_save_image
 from dynamixel_sdk import (
@@ -37,42 +36,11 @@ LOOK_DIRECTIONS = {
     "UP": [0, 0, 0],
     "DOWN": [0, 0, 0],
 }
-
-
-@dataclass
-class Servo:
-    id: int  # dynamixel id for servo
-    range: [int, int]  # (min, max) position values for servos (0, 4095)
-    desc: str  # description of servo for llm use
-
-
-SERVOS = {
-    "roll": Servo(1, (1761, 2499), "rolls the neck left and right, roll"),
-    "tilt": Servo(2, (979, 2223), "tilts the head up and down vertically, pitch"),
-    "pan": Servo(3, (988, 3007), "pans the head side to side horizontally, yaw"),
-}
-
-
-@dataclass
-class Pose:
-    angles: list  # list of int angles in degrees (0, 360) describing static pose
-    desc: str  # description of static pose for llm use
-
-
-set_servo_speed: int = 64  # degrees per move duration
-set_servo_timeout: float = 3  # seconds
-set_servo_sleep: float = 0.01  # seconds
-
-# Raw servo parameters
-protocol_version: float = 2.0
-baudrate: int = 57600
-device_name: str = "/dev/ttyUSB0"
-addr_torque_enable: int = 64
-addr_goal_position: int = 116
-addr_present_position: int = 132
-torque_enable: int = 1
-torque_disable: int = 0
-
+SERVOS: list = [
+    (1, (1761, 2499)),
+    (2, (979, 2223)),
+    (3, (988, 3007)),
+]
 
 # Convert servo units into degrees for readability
 # Max for units is 4095, which is 360 degrees
@@ -90,73 +58,51 @@ def units_to_degrees(position: int) -> int:
 class Servos:
     def __init__(
         self,
-        servos: dict = SERVOS,
-        protocol_version: float = 2.0,
-        baudrate: int = 57600,
-        device_name: str = "/dev/ttyUSB0",
-        addr_torque_enable: int = 64,
-        addr_goal_position: int = 116,
-        addr_present_position: int = 132,
-        torque_enable: int = 1,
-        torque_disable: int = 0,
+        servos: list = SERVOS,
+        protocol_version: float = 2.0,  # DYNAMIXEL Protocol version (1.0 or 2.0)
+        baudrate: int = 57600,  # Baudrate for DYNAMIXEL communication
+        device_name: str = "/dev/ttyUSB0",  # Name of the device (port) where DYNAMIXELs are connected
+        addr_torque_enable: int = 64,  # Address for Torque Enable control table in DYNAMIXEL
+        addr_goal_position: int = 116,  # Address for Goal Position control table in DYNAMIXEL
+        addr_present_position: int = 132,  # Address for Present Position control table in DYNAMIXEL
+        torque_enable: int = 1,  # Value to enable the torque
+        torque_disable: int = 0,  # Value to disable the torque
     ):
-        self.servos: list = []
-        for name, servo in servos.items():
-            print(f"---- Initialize servo {name} ----")
-            print(f"id: {servo.id}")
-            print(f"range: {servo.range}")
-            print(f"description: {servo.desc}")
-            self.servos.append(servo)
-        self.num_servos: int = len(self.servos)  # Number of servos to control
-
-        # Dynamixel communication parameters
-        self.protocol_version = (
-            protocol_version  # DYNAMIXEL Protocol version (1.0 or 2.0)
-        )
-        self.baudrate = baudrate  # Baudrate for DYNAMIXEL communication
-        self.device_name = (
-            device_name  # Name of the device (port) where DYNAMIXELs are connected
-        )
-        self.addr_torque_enable = (
-            addr_torque_enable  # Address for Torque Enable control table in DYNAMIXEL
-        )
-        self.addr_goal_position = (
-            addr_goal_position  # Address for Goal Position control table in DYNAMIXEL
-        )
-        self.addr_present_position = addr_present_position  # Address for Present Position control table in DYNAMIXEL
-        self.torque_enable = torque_enable  # Value to enable the torque
-        self.torque_disable = torque_disable  # Value to disable the torque
-
-        # Initialize DYNAMIXEL communication
+        self.num_servos: int = len(servos)
+        self.servo_ids: list = []
+        self.servo_ranges: list = []
+        for id, range in servos:
+            self.servo_ids.append(id)
+            self.servo_ranges.append(range)
+        self.protocol_version = protocol_version
+        self.baudrate = baudrate
+        self.device_name = device_name
+        self.addr_torque_enable = addr_torque_enable
+        self.addr_goal_position = addr_goal_position
+        self.addr_present_position = addr_present_position
+        self.torque_enable = torque_enable
+        self.torque_disable = torque_disable
         self.port_handler = PortHandler(self.device_name)
         self.packet_handler = PacketHandler(self.protocol_version)
         if not self.port_handler.openPort():
-            print("Failed to open the port")
-            exit()
+            raise Exception("Failed to open the port")
         if not self.port_handler.setBaudRate(self.baudrate):
-            print("Failed to change the baudrate")
-            exit()
+            raise Exception("Failed to change the baudrate")
         self.group_bulk_write = GroupBulkWrite(self.port_handler, self.packet_handler)
         self.group_bulk_read = GroupBulkRead(self.port_handler, self.packet_handler)
 
-    def _write_position(self, positions: list) -> str:
-        msg: str = ""
-        # Enable torque for all servos and add goal position to the bulk write parameter storage
+    def _write_position(self, positions: list):
         for i, pos in enumerate(positions):
             pos = degrees_to_units(pos)
-            dxl_id = self.servos[i].id
-            clipped = min(max(pos, self.servos[i].range[0]), self.servos[i].range[1])
-
+            dxl_id = self.servo_ids[i]
+            clipped = min(max(pos, self.servo_ranges[i][0]), self.servo_ranges[i][1])
             dxl_comm_result, dxl_error = self.packet_handler.write1ByteTxRx(
                 self.port_handler, dxl_id, self.addr_torque_enable, self.torque_enable
             )
             if dxl_comm_result != COMM_SUCCESS:
-                msg += f"ERROR: {self.packet_handler.getTxRxResult(dxl_comm_result)}"
-                raise Exception(msg)
+                raise Exception(self.packet_handler.getTxRxResult(dxl_comm_result))
             elif dxl_error != 0:
-                msg += f"ERROR: {self.packet_handler.getRxPacketError(dxl_error)}"
-                raise Exception(msg)
-
+                raise Exception(self.packet_handler.getRxPacketError(dxl_error))
             self.group_bulk_write.addParam(
                 dxl_id,
                 self.addr_goal_position,
@@ -168,53 +114,40 @@ class Servos:
                     DXL_HIBYTE(DXL_HIWORD(clipped)),
                 ],
             )
-
-        # Write goal position
         dxl_comm_result = self.group_bulk_write.txPacket()
         if dxl_comm_result != COMM_SUCCESS:
-            msg += f"ERROR: {self.packet_handler.getTxRxResult(dxl_comm_result)}"
-            raise Exception(msg)
-
-        # Clear bulk write parameter storage
+            raise Exception(self.packet_handler.getTxRxResult(dxl_comm_result))
         self.group_bulk_write.clearParam()
 
     def _read_pos(self) -> list:
-        msg: str = ""
-        # Add present position value to the bulk read parameter storage
         for i in range(self.num_servos):
-            dxl_id = self.servos[i].id
+            dxl_id = self.servo_ids[i]
             dxl_addparam_result = self.group_bulk_read.addParam(
                 dxl_id, self.addr_present_position, 4
             )
             if not dxl_addparam_result:
-                msg += f"ERROR: [ID:{dxl_id}] groupBulkRead addparam failed\n"
-                raise Exception(msg)
-
+                raise Exception(f"[ID:{dxl_id}] groupBulkRead addparam failed")
         # Read present position
         dxl_comm_result = self.group_bulk_read.txRxPacket()
         if dxl_comm_result != COMM_SUCCESS:
-            msg += f"ERROR: {self.packet_handler.getTxRxResult(dxl_comm_result)}\n"
-            raise Exception(msg)
-
+            raise Exception(self.packet_handler.getTxRxResult(dxl_comm_result))
         # Get present position value
         positions = []
         for i in range(self.num_servos):
-            dxl_id = self.servos[i].id
+            dxl_id = self.servo_ids[i]
             dxl_present_position = self.group_bulk_read.getData(
                 dxl_id, self.addr_present_position, 4
             )
             positions.append(units_to_degrees(dxl_present_position))
-
         # Clear bulk read parameter storage
         self.group_bulk_read.clearParam()
-
         return positions
 
     def _disable_torque(self) -> None:
-        for servo in self.servos:
+        for id in self.servo_ids:
             dxl_comm_result, dxl_error = self.packet_handler.write1ByteTxRx(
                 self.port_handler,
-                servo.id,
+                id,
                 self.addr_torque_enable,
                 self.torque_disable,
             )
