@@ -11,10 +11,10 @@ MEMORY_MAX_SIZE = 4096  # bytes
 MAX_STEPS = 100
 STEPS = 0
 
-
 def timestamp(log: str) -> str:
-    return f"{datetime.utcnow().timestamp()}{log}"
-
+    elapsed_time = datetime.utcnow() - O_START
+    minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
+    return f"⏱️{int(minutes)}m:{seconds:.3f}s {log}"
 
 def heartbeat(name: str) -> (str, bool):
     global STEPS
@@ -28,7 +28,7 @@ def heartbeat(name: str) -> (str, bool):
         return log, False
     return log, True
 
-
+# TODO: Make this a specific file, keep handles to uuid named tmp files in memory
 async def check_memory() -> str:
     log = ""
     if not os.path.exists(MEMORY_PATH):
