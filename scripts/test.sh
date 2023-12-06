@@ -1,22 +1,14 @@
 set -e
 
-echo "🖥️ testing with test model_api and test robot"
-export O_DEATH=3
-export O_MAX_STEPS=3
-sh s.nuke.sh
-python3 o.node.py --node test --model_api test --robot test
+model_apis=("test" "gpt" "rep")
 
-echo "🖥️ testing with gpt model_api and test robot"
-export O_DEATH=8
-export O_MAX_STEPS=3
-sh s.nuke.sh
-python3 o.node.py --node test --model_api gpt --robot test
-
-echo "🖥️ testing with rep model_api and test robot"
-export O_DEATH=8
-export O_MAX_STEPS=3
-sh s.nuke.sh
-python3 o.node.py --node test --model_api rep --robot test
+for model_api in "${model_apis[@]}"; do
+    echo "🖥️ testing with $model_api model_api"
+    export O_DEATH=3
+    export O_MAX_STEPS=3
+    sh scripts/nuke.sh
+    python3 o.py --node test --model_api $model_api --robot test
+done
 
 status=$?
 if [ $status -ne 0 ]; then

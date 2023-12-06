@@ -1,8 +1,7 @@
 echo "🖥️ killing python3 instances"
 pkill -f 'python3 o\..*'
 echo "🖥️ removing temporary files"
-rm /tmp/o.memory.txt
-rm /tmp/o.memory.lock
+rm /tmp/o.text.*
 rm /tmp/o.image.*
 rm /tmp/o.audio.*
 echo "🖥️ removing environment variables"

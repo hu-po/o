@@ -13,17 +13,17 @@ argparser.add_argument("--node", type=str, default="test")
 argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 
-O_START: datetime = os.getenv("O_START", datetime.utcnow())
+O_START: datetime = datetime.now()
 O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
-O_STEPS: int = os.getenv("O_STEPS", 0)
-O_MAX_STEPS: int = os.getenv("O_MAX_STEPS", 40)
+O_STEPS: int = int(os.getenv("O_STEPS", 0))
+O_MAX_STEPS: int = int(os.getenv("O_MAX_STEPS", 40))
 
 MEMORY_PATH = "/tmp/o.memory.txt"
 MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
 MEMORY_MAX_SIZE = 4096  # bytes
 
 def timestamp(log: str) -> str:
-    elapsed_time = datetime.utcnow() - O_START
+    elapsed_time = datetime.now() - O_START
     minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
     return f"⏱️{int(minutes)}m:{seconds:.3f}s {log}"
 
@@ -34,7 +34,7 @@ def heartbeat(name: str) -> (str, bool):
     if O_STEPS > O_MAX_STEPS:
         log += timestamp(f"{name} max steps {O_MAX_STEPS} exceeded")
         return log, False
-    if datetime.utcnow() - O_START > O_DEATH:
+    if datetime.now() - O_START > O_DEATH:
         log += timestamp(f"{name} death {O_DEATH}s exceeded")
         return log, False
     return log, True
