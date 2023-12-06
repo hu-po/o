@@ -1,28 +1,24 @@
 # o
 
-**Zero-Shot Autonomous Humanoid Robot**
+**o** stands for Zer**o**-Sh**o**t Aut**o**n**o**m**o**us R**o**b**o**ts.
 
 Talks with TTS and STT, sees with VLM, and thinks with LLM.
 
-## What is this repo structure?
+To get started [follow the setup guide](docs/setup.md).
 
-Scripts inteded to be run are called `s.*.sh`, so for example `s.test.sh` is for testing, `s.watch.sh` is a live barebones visualizer, and `s.nex.gpt.sh` runs the AiNex robot with the OpenAI API.
+The `models` module contains code for different model apis. For example `models/rep.py` is for the open source Replicate API, and `models/gpt.py` is for the OpenAI API. [More info on models](docs/models.md).
 
-Python scripts `o.*.py` are repeating asynchronous loops, kind of like mini ROS nodes. They run in parallel and communicate via a shared files in `/tmp/`. File locking ensures no corrupted reads and writes. It isn't efficient but because the API calls are the bottleneck it doesnt matter.
+The `robots` module contains code for different robots. For example `robots/nex.py` is for the HiWonder AiNex Humanoid. [More info on robots](docs/robots.md).
 
-`models` contains model api code, `models/rep.py` is for the open source Replicate API, and `models/gpt.py` is for the OpenAI API.
+The `nodes` module contains code for different nodes. For example `nodes/look.py` contains the loop used vision with the VLM. [More info on nodes](docs/nodes.md).
 
-`robots` contains robot code, `robots/nex.py` is for the HiWonder AiNex humanoid robot.
-
-## Emojis
-
-Great emoji database https://emojidb.org/
+If you are interested in contributing, please read the [contributing guide](docs/contributing.md).
 
 ## Citation
 
 ```
 @misc{zero-shot-humanoid-2023,
-  title={Zero-Shot Autonomous Humanoid Robot},
+  title={Zero-Shot Autonomous Robots},
   author={Hugo Ponte},
   year={2023},
   url={https://github.com/hu-po/o}

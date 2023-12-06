@@ -9,9 +9,9 @@ from robots import import_robot
 from nodes import import_node
 
 argparser = argparse.ArgumentParser()
+argparser.add_argument("--node", type=str, default="test")
 argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
-argparser.add_argument("--node", type=str, default="test")
 
 O_START: datetime = os.getenv("O_START", datetime.utcnow())
 O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
