@@ -8,9 +8,9 @@ def import_robot(robot: str) -> dict:
         from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
         from robots.nex import __file__ as _file
 
-    elif robot == "iggi":
-        from robots.iggi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
-        from robots.iggi import __file__ as _file
+    elif robot == "igi":
+        from robots.igi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.igi import __file__ as _file
 
     else:
         from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE

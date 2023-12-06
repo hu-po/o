@@ -2,9 +2,9 @@
 
 You can optionally use different robot backends with the `--robot` flag.
 
-## AiNex Humanoid `--robot nex`
+## Nex Humanoid `--robot nex`
 
-Robot is a HiWonder AiNex humanoid running ROS on a Raspberry Pi 4B. You will need to install some dependencies in the base system python3 env:
+Nex is a HiWonder AiNex Humanoid running ROS+Ubuntu on a Raspberry Pi 4B. You will need to install some dependencies in the base system python3 env:
 
 ```
 pip install opencv-python==4.8.1.78
@@ -65,4 +65,6 @@ seg = AudioSegment.from_file("/tmp/tmp0e449aae8f.mp3", "mp3")
 play(seg)
 ```
 
-## Igigi `--robot igi`
+## Igi Observer `--robot igi`
+
+Igi is a stationary observer robot running Debian on a Raspberry Pi 4B. It uses three Dynamixel servos for pan-tilt-yaw and `cv2` to capture stereo images.

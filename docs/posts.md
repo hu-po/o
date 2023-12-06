@@ -1,3 +1,7 @@
+# Posts
+
+Below are social media posts related to this project.
+
 ## Reddit Post
 
 [r/Robotics](https://www.reddit.com/r/robotics/comments/1818x5t/zeroshot_autonomous_humanoid/)
