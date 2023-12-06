@@ -5,12 +5,12 @@ import time
 
 def import_robot(robot: str) -> dict:
     if robot == "nex":
-        from robots.ainex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
-        from robots.ainex import __file__ as _file
+        from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.nex import __file__ as _file
 
-    elif robot == "igigi":
-        from robots.igigi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
-        from robots.igigi import __file__ as _file
+    elif robot == "iggi":
+        from robots.iggi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.iggi import __file__ as _file
 
     else:
         from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
