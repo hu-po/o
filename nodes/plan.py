@@ -11,7 +11,7 @@ async def loop(models: dict, robot: dict, utils: dict):
     log = "📝 plan started, my goals are:"
     log += "\n".join([f"{k} {v}" for k, v in GOALS.items()])
     while  True:
-        log, is_alive = models['heartbeat'](EMOJI)
+        log, is_alive = utils['heartbeat'](EMOJI)
         if not is_alive:
             break
         (_, memstr) = await utils['get_memory']()
