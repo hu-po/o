@@ -9,8 +9,8 @@ argparser.add_argument("code", type=str)
 
 FUNCTIONS = """
 MOVE(direction:str)
-\t🦿📷
-\tdirection must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+  direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+  🦿📷
 """
 SUGGESTIONS = """
 MOVE,FORWARD

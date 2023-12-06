@@ -20,8 +20,8 @@ argparser.add_argument("code", type=str)
 
 FUNCTIONS = """
 LOOK(direction:str)
-\t📷👀
-\tdirection must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
+  direction must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
+  📷👀
 """
 SUGGESTIONS = """
 LOOK,LEFT

@@ -1,10 +1,10 @@
-echo "🖥️ killing python3 instances"
+echo "  🖥️    killing python3 instances"
 pkill -f 'python3 o\..*'
-echo "🖥️ removing temporary files"
+echo "  🖥️    removing temporary files"
 rm /tmp/o.text.*
 rm /tmp/o.image.*
 rm /tmp/o.audio.*
-echo "🖥️ removing environment variables"
+echo "  🖥️    removing environment variables"
 printenv | grep '^O_' | while read -r line; do
     var_name=$(echo "$line" | cut -d'=' -f1)
     unset "$var_name"
