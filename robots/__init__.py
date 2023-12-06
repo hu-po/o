@@ -17,7 +17,7 @@ def import_robot(robot: str) -> dict:
         from robots.test import __file__ as _file
 
     print(f"🖥️ using robot {robot}")
-    print(f"\t FUNCTIONS: {FUNCTIONS}")
+    print(f"🖥️ available functions\n{FUNCTIONS}")
 
     async def async_act(func: str, code: str) -> str:
         _s = time.time()
