@@ -2,6 +2,8 @@
 
 **o** stands for Zer**o**-Sh**o**t Aut**o**n**o**m**o**us R**o**b**o**ts.
 
+![o](docs/cover.jpeg)
+
 This repo uses model APIs to create a Zero-Shot Autonomous Robot. Individual robot behaviors are wrapped in asynchronous nodes (python) which are launched via scripts (bash). It's kind of like a more minimalist and simpler ROS. Four main types of models are used:
 
 - **LLM** (Language Language Model) a `text2text` model used for planning, reasoning, dialogue, and more!
@@ -15,14 +17,14 @@ The `models` module contains code for different model apis. For example `models/
 
 The `robots` module contains code for different robots. For example `robots/nex.py` is for the HiWonder AiNex Humanoid. [More info on robots](docs/robots.md).
 
-The `nodes` module contains code for different nodes. For example `nodes/look.py` contains the loop used vision with the VLM. [More info on nodes](docs/nodes.md).
+The `nodes` module contains code for different nodes. For example `nodes/look.py` contains the loop used vision with a Vision Language Model. [More info on nodes](docs/nodes.md).
 
 If you are interested in contributing, please read the [contributing guide](docs/contributing.md).
 
 ## Citation
 
 ```
-@misc{zero-shot-humanoid-2023,
+@misc{zero-shot-robot-2023,
   title={Zero-Shot Autonomous Robots},
   author={Hugo Ponte},
   year={2023},
