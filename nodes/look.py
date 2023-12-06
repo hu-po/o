@@ -1,19 +1,11 @@
-import argparse
 import asyncio
 
-from o import heartbeat, add_memory
-from models import import_models
-from robots import import_robot
+EMOJI = "🧐"
 
-argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="test")
-argparser.add_argument("--robot", type=str, default="test")
-args = argparser.parse_args()
-
-async def loop(models: dict, robot: dict):
+async def loop(models: dict, robot: dict, utils: dict):
     vlm_log = "🧐 look started"
     while  True:
-        log, is_alive = heartbeat('🧐')
+        log, is_alive = utils['heartbeat'](EMOJI)
         if not is_alive:
             break
         (vlm_log, _), _ = await asyncio.gather(models["vlm"](
@@ -31,12 +23,4 @@ Your response will be read out by the robot speech module
 Your reponse should not contain any special characters
 """
         ),
-        add_memory(vlm_log))
-
-
-if __name__ == "__main__":
-    asyncio.run(loop(
-        models=import_models(args.model_api),
-        robot=import_robot(args.robot),
-    ))
-    print("o.look.py: done")
+        utils['add_memory'](vlm_log))

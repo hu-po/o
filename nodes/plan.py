@@ -1,27 +1,20 @@
-import argparse
 import asyncio
 
-from o import heartbeat, add_memory, get_memory
-from models import import_models
-
-argparser = argparse.ArgumentParser()
-argparser.add_argument("--model_api", type=str, default="test")
-args = argparser.parse_args()
-
+EMOJI = "📝"
 GOALS: dict = {
     "🔭": "visual exploration, looking before moving",
     "🤪": "performing and entertaining the human",
     "🤔": "making plans for the future",
 }
 
-async def loop(models: dict):
+async def loop(models: dict, robot: dict, utils: dict):
     log = "📝 plan started, my goals are:"
     log += "\n".join([f"{k} {v}" for k, v in GOALS.items()])
     while  True:
-        log, is_alive = heartbeat('📝')
+        log, is_alive = utils['heartbeat'](EMOJI)
         if not is_alive:
             break
-        (_, memstr) = await get_memory()
+        (_, memstr) = await utils['get_memory']()
         tasks = []
         for name, opinion in GOALS.items():
             tasks.append(models["llm"](
@@ -40,11 +33,5 @@ You represent the goal of {opinion}.
         tasks = []
         for persona, result in zip(GOALS.keys(), results):
             _, reply = result
-            tasks.append(add_memory(f"{persona} votes for [{reply}]"))
+            tasks.append(utils['add_memory'](f"{persona} votes for [{reply}]"))
         await asyncio.gather(*tasks)
-
-if __name__ == "__main__":
-    asyncio.run(loop(
-        models=import_models(args.model_api),
-    ))
-    print("o.plan.py: done")
