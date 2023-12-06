@@ -1,24 +1,24 @@
 set -e
 
-echo "🖥️ testing with gpt model_api and nex robot"
+echo "🖥️ testing with model_api gpt and robot nex"
+sh nuke.sh
 export O_DEATH=20
 export O_MAX_STEPS=3
 export O_NEX_MOVE_ENABLED=0
-sh nuke.sh
-python3 ../o.py --node body --model_api gpt --robot nex &
-python3 ../o.py --node look --model_api gpt &
-python3 ../o.py --node plan --model_api gpt &
-python3 ../o.py --node talk --model_api gpt
+python3 o.py --node body --model_api gpt --robot nex &
+python3 o.py --node look --model_api gpt --robot nex &
+python3 o.py --node plan --model_api gpt --robot nex &
+python3 o.py --node talk --model_api gpt --robot nex 
 
-echo "🖥️ testing with rep model_api and nex robot"
+echo "🖥️ testing with model_api rep and robot nex"
+sh nuke.sh
 export O_DEATH=20
 export O_MAX_STEPS=3
 export O_NEX_MOVE_ENABLED=0
-sh nuke.sh
-python3 ../o.py --node body --model_api rep --robot nex &
-python3 ../o.py --node look --model_api rep &
-python3 ../o.py --node plan --model_api rep &
-python3 ../o.py --node talk --model_api rep
+python3 o.py --node body --model_api rep --robot nex &
+python3 o.py --node look --model_api rep --robot nex &
+python3 o.py --node plan --model_api rep --robot nex &
+python3 o.py --node talk --model_api rep --robot nex 
 
 status=$?
 if [ $status -ne 0 ]; then

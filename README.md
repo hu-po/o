@@ -2,7 +2,12 @@
 
 **o** stands for Zer**o**-Sh**o**t Aut**o**n**o**m**o**us R**o**b**o**ts.
 
-Talks with TTS and STT, sees with VLM, and thinks with LLM.
+This repo uses model APIs to create a Zero-Shot Autonomous Robot. Individual robot behaviors are wrapped in asynchronous nodes (python) which are launched via scripts (bash). It's kind of like a more minimalist and simpler ROS. Four main types of models are used:
+
+- **LLM** (Language Language Model) a `text2text` model used for planning, reasoning, dialogue, and more!
+- **VLM** (Vision Language Model) - a `image2text` model used for scene understanding, object detection, and more!
+- **TTS** (Text-to-Speech) a `text2audio` model used for speech synthesis so the robot can talk.
+- **STT** (Speech-to-Text) a `audio2text` model used for speech recognition so the robot can listen.
 
 To get started [follow the setup guide](docs/setup.md).
 
