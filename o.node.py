@@ -1,7 +1,17 @@
 import os
-
+import argparse
+import asyncio
 from datetime import datetime, timedelta
 from filelock import FileLock
+
+from models import import_models
+from robots import import_robot
+from nodes import import_node
+
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--model_api", type=str, default="test")
+argparser.add_argument("--robot", type=str, default="test")
+argparser.add_argument("--node", type=str, default="test")
 
 O_START: datetime = os.getenv("O_START", datetime.utcnow())
 O_DEATH: timedelta = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
@@ -59,7 +69,7 @@ async def get_memory() -> (str, str):
     return log, f"""
 Each line in the robot memory is the output of one node.
 There are many nodes running asynchronously.
-Each line in the robot memory contains UTC timestamps.
+Each line in the robot memory contains a time since the start of the node.
 <robot_memory>
 {memraw}
 </robot_memory>
@@ -88,4 +98,18 @@ async def remember(lines: list) -> str:
         with open(MEMORY_PATH, "a") as f:
             f.write("\n".join(to_add))
     return log
-    
+
+if __name__ == "__main__":
+    args = argparser.parse_args()
+    models: dict = import_models(args.model_api)
+    robot: dict = import_robot(args.robot)
+    node: dict = import_node(args.node)
+    utils: dict = {
+        "heartbeat": heartbeat,
+        "get_memory": get_memory,
+        "add_memory": add_memory,
+        "remember": remember,
+    }
+    print(f"starting node: {node['emoji']}")
+    asyncio.run(node['loop'](models, robot, utils))
+    print(f"node {node['emoji']} completed")

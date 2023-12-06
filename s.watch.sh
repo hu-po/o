@@ -17,5 +17,5 @@ get_formatted_output() {
 while true; do
     clear
     get_formatted_output
-    sleep 0.5
+    sleep 0.3
 done

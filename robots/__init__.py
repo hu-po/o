@@ -3,7 +3,7 @@ import subprocess
 import time
 
 
-def import_robot(robot: str = "test") -> dict:
+def import_robot(robot: str) -> dict:
     if robot == "nex":
         from robots.ainex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
         from robots.ainex import __file__ as _file

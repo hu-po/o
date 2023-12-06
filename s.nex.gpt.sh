@@ -1,6 +1,6 @@
 export O_DEATH=20
 sh s.nuke.sh
-python3 o.body.py --model_api gpt --robot nex &
-python3 o.look.py --model_api gpt &
-python3 o.plan.py --model_api gpt &
-python3 o.talk.py --model_api gpt
+python3 o.node.py --node body --model_api gpt --robot nex &
+python3 o.node.py --node look --model_api gpt &
+python3 o.node.py --node plan --model_api gpt &
+python3 o.node.py --node talk --model_api gpt
