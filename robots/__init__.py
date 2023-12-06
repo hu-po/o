@@ -16,6 +16,9 @@ def import_robot(robot: str) -> dict:
         from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
         from robots.test import __file__ as _file
 
+    print(f"🖥️ using robot {robot}")
+    print(f"\t FUNCTIONS: {FUNCTIONS}")
+
     async def async_act(func: str, code: str) -> str:
         _s = time.time()
         _path = os.path.join(os.path.dirname(os.path.realpath(__file__)), _file)
@@ -28,9 +31,7 @@ def import_robot(robot: str) -> dict:
             )
             log, stderr = proc.communicate()
         except Exception as e:
-            print("@@@@@@@@@@@ Exception in Robot")
-            print(f"{e}, {stderr}")
-            print("@@@@@@@@@@@")
+            print(f"🖥️❌ exception in robot: {e}, {stderr}")
             log = f"❌ failed on {func}({code})."
         return f"🤖{log[:-1]}, took {time.time() - _s:.2f}s⏱️"
 

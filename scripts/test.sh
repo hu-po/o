@@ -7,13 +7,10 @@ for model_api in "${model_apis[@]}"; do
     export O_DEATH=3
     export O_MAX_STEPS=3
     sh scripts/nuke.sh
-    python3 o.py --node test --model_api $model_api --robot test
+    if ! python3 o.py --node test --model_api $model_api --robot test; then
+        echo "🖥️❌ testing failed with $model_api"
+        exit 1
+    fi
 done
 
-status=$?
-if [ $status -ne 0 ]; then
-    echo "🖥️❌ testing failed with exit status $status"
-    exit $status
-else
-    echo "🖥️✅ testing completed"
-fi
+echo "🖥️✅ testing completed"
