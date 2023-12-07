@@ -71,6 +71,11 @@ ARM_SWING_DEGREE: int = 24  # Highest I see in examples is 30
 # Number of steps to take in each movement, default is 1.
 STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
 
+# These are used inside prompts, so make them llm friendly
+DESCRIPTION = """
+You are a small humanoid robot with a monocular camera
+You are small and only 20cm off the ground
+"""
 FUNCTIONS = f"""
 MOVE(direction:str)
   direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]

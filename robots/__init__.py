@@ -5,15 +5,15 @@ import time
 
 def import_robot(robot: str) -> dict:
     if robot == "nex":
-        from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.nex import __file__ as _file
 
     elif robot == "igi":
-        from robots.igi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.igi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.igi import __file__ as _file
 
     else:
-        from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE
+        from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.test import __file__ as _file
 
     print(f"   🖥️   using robot {robot}")
@@ -41,4 +41,5 @@ def import_robot(robot: str) -> dict:
         "SUGGESTIONS": SUGGESTIONS,
         "DEFAULT_FUNC": DEFAULT_FUNC,
         "DEFAULT_CODE": DEFAULT_CODE,
+        "DESCRIPTION": DESCRIPTION,
     }

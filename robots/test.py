@@ -7,6 +7,8 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
+# These are used inside prompts, so make them llm friendly
+DESCRIPTION = """You are a test robot."""
 FUNCTIONS = """
 MOVE(direction:str)
   direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]

@@ -9,10 +9,9 @@ async def loop(models: dict, robot: dict, utils: dict):
         if not is_alive:
             break
         (vlm_log, _), _ = await asyncio.gather(models["vlm"](
-            """
+            f"""
 Describe the scene, objects, and characters
-You are a robot vision module
-You are small and only 20 centimeters off the ground
+{robot["DESCRIPTION"]}
 Focus on the most important things
 If there are humans mention them and their relative position
 Do not mention the image

@@ -18,6 +18,11 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
+# These are used inside prompts, so make them llm friendly
+DESCRIPTION = """
+You are a small robot with a stereo camera vision module
+Your vision module uses two cameras to infer 3d
+"""
 FUNCTIONS = """
 LOOK(direction:str)
   direction must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
@@ -30,6 +35,8 @@ LOOK,FORWARD
 """
 DEFAULT_FUNC: str = "LOOK"
 DEFAULT_CODE: str = "FORWARD"
+
+
 LOOK_DIRECTIONS = {
     "FORWARD": [0, 0, 0],
     "LEFT": [0, 0, 0],
