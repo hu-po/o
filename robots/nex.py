@@ -15,6 +15,31 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
+# These are used inside prompts, so make them llm friendly
+DESCRIPTION = os.getenv("O_DESCRIPTION", """
+You are a small humanoid robot with a monocular camera
+You are small and only 20cm off the ground
+""")
+FUNCTIONS = os.getenv("O_FUNCTIONS", """
+MOVE(direction:str)
+    direction must be one of [FORWARD, BACKWARD, SHUFFLE_LEFT, SHUFFLE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT]
+    🦿📷
+PLAY(action:str)
+    action must be one of [GREET, WAVE, LEFT_HAND_PUT_BLOCK, RIGHT_HAND_PUT_BLOCK, STAND_LOW, GO_FORWARD_LOW, LEFT_SHOT, RIGHT_SHOT, CLIMB_STAIRS, DESCEND_STAIRS, LIE_TO_STAND]
+    🦾📷
+LOOK(direction:str)
+    direction must be one of [FORWARD, LEFT, RIGHT, UP, DOWN]
+    👀📷
+""")
+SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
+PLAY,GREET
+LOOK,UP
+MOVE,FORWARD
+""")
+DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
+DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
+
+
 # Servo 23 is the rotation/pan neck servo range [300, 600]
 # Servo 24 is the tilt/vertical neck servo range [260, 650]
 LOOK_DIRECTIONS: dict = {
@@ -70,31 +95,6 @@ ROTATION_ANGLE: int = 12  # Highest I see in examples is 5, 8
 ARM_SWING_DEGREE: int = 24  # Highest I see in examples is 30
 # Number of steps to take in each movement, default is 1.
 STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
-
-# These are used inside prompts, so make them llm friendly
-DESCRIPTION = """
-You are a small humanoid robot with a monocular camera
-You are small and only 20cm off the ground
-"""
-FUNCTIONS = f"""
-MOVE(direction:str)
-  direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]
-  🦿📷
-PLAY(action:str)
-  action must be one of [{','.join(ACTION_NAMES.keys())}]
-  🦾📷
-LOOK(direction:str)
-  direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
-  👀📷
-"""
-SUGGESTIONS = """
-PLAY,GREET
-LOOK,UP
-MOVE,FORWARD
-"""
-DEFAULT_FUNC: str = "LOOK"
-DEFAULT_CODE: str = "FORWARD"
-
 
 def image_callback(msg):
     bridge = CvBridge()

@@ -1,9 +1,10 @@
+import os
 import time
 
-LLM = "test llm"
-VLM = "test vlm"
-TTS = "test tts"
-STT = "test stt"
+LLM = str(os.getenv("O_LLM", "test llm"))
+VLM = str(os.getenv("O_VLM", "test vlm"))
+TTS = str(os.getenv("O_TTS", "test tts"))
+STT = str(os.getenv("O_STT", "test stt"))
 
 
 def llm(x):

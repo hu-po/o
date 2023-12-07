@@ -19,6 +19,8 @@ The `robots` module contains code for different robots. For example `robots/nex.
 
 The `nodes` module contains code for different nodes. For example `nodes/look.py` contains the loop used vision with a Vision Language Model. [More info on nodes](docs/nodes.md).
 
+The `params` module contains code for different parameters. For example `params/nex.quiet.sh` will load environment variables (params) for Nex to sit still and quietly observe. [More info on params](docs/params.md).
+
 If you are interested in contributing, please read the [contributing guide](docs/contributing.md).
 
 ## Citation

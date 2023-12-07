@@ -6,7 +6,7 @@ get_formatted_output() {
     cat /tmp/o.memory.txt
     echo "  🖥️    files:"
     ls -lht /tmp/o.*
-    echo "  🖥️    environment variables:"
+    echo "  🖥️    params:"
     printenv | grep '^O_' | while read -r line; do
         echo "$line"
     done

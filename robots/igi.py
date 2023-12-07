@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 
 from .test import capture_and_save_image
@@ -18,23 +19,22 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
-# These are used inside prompts, so make them llm friendly
-DESCRIPTION = """
+DESCRIPTION = os.getenv("O_DESCRIPTION", """
 You are a small robot with a stereo camera vision module
 Your vision module uses two cameras to infer 3d
-"""
-FUNCTIONS = """
+""")
+FUNCTIONS = os.getenv("O_FUNCTIONS", """
 LOOK(direction:str)
-  direction must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
-  📷👀
-"""
-SUGGESTIONS = """
+    direction must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
+    📷👀
+""")
+SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
 LOOK,LEFT
 LOOK,UP
 LOOK,FORWARD
-"""
-DEFAULT_FUNC: str = "LOOK"
-DEFAULT_CODE: str = "FORWARD"
+""")
+DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
+DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
 
 
 LOOK_DIRECTIONS = {

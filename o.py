@@ -14,13 +14,12 @@ argparser.add_argument("--model_api", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 
 START = datetime.now()
-DEATH = timedelta(seconds=int(os.getenv("O_DEATH", 10)))
+DEATH = timedelta(seconds=int(os.getenv("O_DEATH", 3)))
 STEPS = int(os.getenv("O_STEPS", 0))
-MAX_STEPS: int = int(os.getenv("O_MAX_STEPS", 40))
-
-MEMORY_PATH = "/tmp/o.memory.txt"
-MEMORY_LOCK_PATH = "/tmp/o.memory.lock"
-MEMORY_MAX_SIZE = 4096  # bytes
+MAX_STEPS: int = int(os.getenv("O_MAX_STEPS", 1))
+MEMORY_PATH = str(os.getenv("O_MEMORY_PATH", "/tmp/o.memory.txt"))
+MEMORY_LOCK_PATH = str(os.getenv( "O_MEMORY_LOCK_PATH", "/tmp/o.memory.lock"))
+MEMORY_MAX_SIZE = int(os.getenv("O_MEMORY_MAX_SIZE", 4096))
 
 def timestamp(log: str) -> str:
     elapsed_time = datetime.now() - START
@@ -110,6 +109,6 @@ if __name__ == "__main__":
         "add_memory": add_memory,
         "remember": remember,
     }
-    print(f"starting node: {node['emoji']}")
+    print(f"      {node['emoji']}  starting node")
     asyncio.run(node['loop'](models, robot, utils))
-    print(f"node {node['emoji']} completed")
+    print(f"      {node['emoji']}✅  node finished")

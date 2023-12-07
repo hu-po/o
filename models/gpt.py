@@ -8,14 +8,14 @@ from openai import OpenAI
 
 client = OpenAI()
 
-LLM: str = "gpt-4-1106-preview"
+LLM = str(os.getenv("O_LLM", "gpt-4-1106-preview"))
 LLM_MAX_TOKENS = int(os.getenv("O_LLM_MAX_TOKENS", 16))
 LLM_TEMPERATURE = float(os.getenv("O_LLM_TEMPERATURE", 0.4))
-VLM: str = "gpt-4-vision-preview"
+VLM = str(os.getenv("O_VLM", "gpt-4-vision-preview"))
 VLM_MAX_TOKENS = int(os.getenv("O_VLM_MAX_TOKENS", 24))
-TTS: str = "tts-1"
-VOICE: str = "onyx"  # (alloy, echo, fable, onyx, nova, and shimmer)
-STT: str = "whisper-1"
+TTS = str(os.getenv("O_TTS", "tts-1"))
+VOICE = str(os.getenv("O_VOICE", "onyx"))  # (alloy, echo, fable, onyx, nova, and shimmer)
+STT = str(os.getenv("O_STT", "whisper-1"))
 
 
 def llm(prompt: str, model: str = LLM) -> str:

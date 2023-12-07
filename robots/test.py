@@ -1,5 +1,6 @@
 import argparse
 from filelock import FileLock
+import os
 
 import cv2
 
@@ -7,23 +8,21 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
-# These are used inside prompts, so make them llm friendly
-DESCRIPTION = """You are a test robot."""
-FUNCTIONS = """
+DESCRIPTION = os.getenv("O_DESCRIPTION", "You are a test robot.")
+FUNCTIONS = os.getenv("O_FUNCTIONS", """
 MOVE(direction:str)
-  direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
-  🦿📷
-"""
-SUGGESTIONS = """
+    direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+    🦿📷
+""")
+SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
 MOVE,FORWARD
 MOVE,LEFT
-"""
-DEFAULT_FUNC: str = "MOVE"
-DEFAULT_CODE: str = "FORWARD"
-VIDEO_DEVICE = 0
-IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
-IMAGE_LOCK_PATH = "/tmp/o.image.lock "  # Lock prevents reading while writing
-
+""")
+DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "MOVE")
+DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
+VIDEO_DEVICE = int(os.getenv("O_VIDEO_DEVICE", 0))
+IMAGE_PATH = os.getenv("O_IMAGE_PATH", "/tmp/o.image.jpeg")  # Image is constantly overwritten
+IMAGE_LOCK_PATH = os.getenv("O_IMAGE_LOCK_PATH", "/tmp/o.image.lock")  # Lock prevents reading while writing
 
 def capture_and_save_image() -> str:
     cap = cv2.VideoCapture(VIDEO_DEVICE)

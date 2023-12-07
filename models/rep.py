@@ -4,18 +4,15 @@ import requests
 from pydub import AudioSegment
 import replicate
 
-
-LLM: str = "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
-# LLM: str = "mistralai/mistral-7b-instruct-v0.1:83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70"
+LLM = str(os.getenv("O_LLM", "meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"))
 LLM_MAX_TOKENS = int(os.getenv("O_LLM_MAX_TOKENS", 16))
 LLM_TEMPERATURE = float(os.getenv("O_LLM_TEMPERATURE", 0.4))
-VLM: str = "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"
+VLM = str(os.getenv("O_VLM", "yorickvp/llava-13b:2facb4a474a0462c15041b78b1ad70952ea46b5ec6ad29583c0b29dbd4249591"))
 VLM_MAX_TOKENS = int(os.getenv("O_VLM_MAX_TOKENS", 24))
-TTS: str = "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"
-VOICE: str = "en_speaker_3"  # 9 total english speakers available
-TTS_AUDIO_PATH: str = "/tmp/audio.wav"  # audio is constantly overwritten
-STT: str = "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"
-
+TTS = str(os.getenv("O_TTS", "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787"))
+VOICE = str(os.getenv("O_VOICE", "en_speaker_3"))
+TTS_AUDIO_PATH: str = os.getenv("O_TTS_AUDIO_PATH", "/tmp/audio.wav")
+STT = str(os.getenv("O_STT", "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2"))
 
 def llm(prompt: str) -> str:
     # https://replicate.com/meta/llama-2-13b-chat
