@@ -31,11 +31,11 @@ def import_models(api: str) -> dict:
     else:
         from models.test import llm, vlm, tts, stt
         from models.test import LLM, VLM, TTS, STT
-    print(f"🖥️ using model_api {api}")
-    print(f"\t LLM 💬: {LLM}")
-    print(f"\t VLM 👁️‍🗨️: {VLM}")
-    print(f"\t TTS 🗣️: {TTS}")
-    print(f"\t STT 👂: {STT}")
+    print(f"   🖥️   using model_api {api}")
+    print(f"   LLM 💬: {LLM}")
+    print(f"   VLM 👁️‍🗨️: {VLM}")
+    print(f"   TTS 🗣️: {TTS}")
+    print(f"   STT 👂: {STT}")
 
     def timed(f: callable):
         async def _(*args, **kwargs):
@@ -50,7 +50,7 @@ def import_models(api: str) -> dict:
         try:
             reply = llm(prompt)
         except Exception as e:
-            print(f"🖥️❌ exception in LLM: {e}")
+            print(f"\t🖥️❌ exception in LLM: {e}")
             return "💬❌ error with llm", None
         return f"💬✅ llm reply [{reply}]", reply
 
@@ -64,7 +64,7 @@ def import_models(api: str) -> dict:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")
             description = vlm(prompt, base64_image)
         except Exception as e:
-            print(f"🖥️❌ exception in VLM: {e}")
+            print(f"\t🖥️❌ exception in VLM: {e}")
             return "👁️‍🗨️❌ error with vlm", None
         return f"👁️‍🗨️✅ vlm saw [{description}]", description
 
@@ -81,7 +81,7 @@ def import_models(api: str) -> dict:
             seg = AudioSegment.from_file(file_name, format="mp3")
             play(seg)
         except Exception as e:
-            print(f"🖥️❌ exception in TTS: {e}")
+            print(f"\t🖥️❌ exception in TTS: {e}")
             return "🗣️❌ error with tts", None
         return f"🗣️✅ tts said [{text}]", text
 
@@ -96,7 +96,7 @@ def import_models(api: str) -> dict:
             write(AUDIO_OUTPUT_PATH, AUDIO_SAMPLE_RATE, audio_data)
             transcript = stt(AUDIO_OUTPUT_PATH)
         except Exception as e:
-            print(f"🖥️❌ exception in STT: {e}")
+            print(f"\t🖥️❌ exception in STT: {e}")
             return "👂❌ error with stt", ""
         return f"👂✅ stt heard [{transcript}]", transcript
 

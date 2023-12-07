@@ -1,4 +1,4 @@
-echo "🖥️ running robot nex with model_api gpt"
+echo "  🖥️    running robot nex with model_api gpt"
 sh scripts/nuke.sh
 export O_DEATH=60
 export O_NEX_MOVE_ENABLED=0

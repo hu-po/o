@@ -1,6 +1,6 @@
 set -e
 
-echo "🖥️ testing with model_api gpt and robot nex"
+echo "  🖥️    testing with model_api gpt and robot nex"
 sh scripts/nuke.sh
 export O_DEATH=20
 export O_MAX_STEPS=3
@@ -10,7 +10,7 @@ python3 o.py --node look --model_api gpt --robot nex &
 python3 o.py --node plan --model_api gpt --robot nex &
 python3 o.py --node talk --model_api gpt --robot nex 
 
-echo "🖥️ testing with model_api rep and robot nex"
+echo "  🖥️    testing with model_api rep and robot nex"
 sh scripts/nuke.sh
 export O_DEATH=20
 export O_MAX_STEPS=3
@@ -22,8 +22,8 @@ python3 o.py --node talk --model_api rep --robot nex
 
 status=$?
 if [ $status -ne 0 ]; then
-    echo "🖥️❌ testing failed with exit status $status"
+    echo "  🖥️   ❌ testing failed with exit status $status"
     exit $status
 else
-    echo "🖥️✅ testing completed"
+    echo "  🖥️   ✅ testing completed"
 fi

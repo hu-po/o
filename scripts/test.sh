@@ -8,9 +8,9 @@ for model_api in "${model_apis[@]}"; do
     export O_MAX_STEPS=3
     sh scripts/nuke.sh
     if ! python3 o.py --node test --model_api $model_api --robot test; then
-        echo "🖥️❌ testing failed with $model_api"
+        echo "  🖥️   ❌ testing failed with $model_api"
         exit 1
     fi
 done
 
-echo "🖥️✅ testing completed"
+echo "  🖥️   ✅ testing completed"

@@ -9,7 +9,8 @@ argparser.add_argument("code", type=str)
 
 FUNCTIONS = """
 MOVE(direction:str)
-direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+  direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
+  🦿📷
 """
 SUGGESTIONS = """
 MOVE,FORWARD
@@ -38,7 +39,7 @@ def capture_and_save_image() -> str:
 
 def move(direction: str) -> str:
     log = capture_and_save_image()
-    return f"{log}🦿✅ moved {direction}"
+    return f"🦿✅ moved {direction}{log}"
 
 
 if __name__ == "__main__":

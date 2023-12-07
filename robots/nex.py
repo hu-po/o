@@ -74,10 +74,13 @@ STEP_NUM: int = 4  # I see numbers like 0 and 3 in the code
 FUNCTIONS = f"""
 MOVE(direction:str)
   direction must be one of [{','.join(MOVE_DIRECTIONS.keys())}]
+  🦿📷
 PLAY(action:str)
   action must be one of [{','.join(ACTION_NAMES.keys())}]
+  🦾📷
 LOOK(direction:str)
   direction must be one of [{','.join(LOOK_DIRECTIONS.keys())}]
+  👀📷
 """
 SUGGESTIONS = """
 PLAY,GREET
