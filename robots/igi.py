@@ -41,9 +41,9 @@ IMAGE_PATH = os.getenv("O_IMAGE_PATH", "/tmp/o.image.jpeg")  # Image is constant
 IMAGE_LOCK_PATH = os.getenv("O_IMAGE_LOCK_PATH", "/tmp/o.image.lock")  # Lock prevents reading while writing
 
 LOOK_DIRECTIONS = {
-    "FORWARD": [3000, 2830, 1800],
-    "LEFT": [3000, 2830, 1640],
-    "RIGHT": [3000, 2830, 2000],
+    "FORWARD": [3000, 2850, 1800],
+    "LEFT": [3000, 2850, 1640],
+    "RIGHT": [3000, 2850, 2000],
 }
 SERVOS: list = [
     (1, (2825, 3536)),  # Servo ID 1
