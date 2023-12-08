@@ -36,7 +36,7 @@ LOOK,FORWARD
 DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
 DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
 
-VIDEO_DEVICE = int(os.getenv("O_VIDEO_DEVICE", 0))
+VIDEO_DEVICE = str(os.getenv("O_VIDEO_DEVICE", "/dev/video0"))
 IMAGE_PATH = os.getenv("O_IMAGE_PATH", "/tmp/o.image.jpeg")  # Image is constantly overwritten
 IMAGE_LOCK_PATH = os.getenv("O_IMAGE_LOCK_PATH", "/tmp/o.image.lock")  # Lock prevents reading while writing
 

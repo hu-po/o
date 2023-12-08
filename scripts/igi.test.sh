@@ -1,6 +1,7 @@
 set -e
 echo "  🖥️   testing igi"
 export DISPLAY=:0
+xdotool key shift
 echo "  🖥️    testing with model_api gpt and robot igi"
 sh scripts/nuke.sh
 export O_DEATH=20
