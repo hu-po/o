@@ -1,5 +1,3 @@
-set -e
-
 echo "  🖥️    testing with model_api gpt and robot nex"
 source scripts/nuke.sh
 source params/nex.sh
