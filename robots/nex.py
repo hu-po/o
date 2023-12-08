@@ -82,7 +82,7 @@ MOVE_DIRECTIONS = {
     "ROTATE_RIGHT": [0, 0, -1],
 }
 DEFAULT_MOVE_DIRECTION: str = "FORWARD"
-O_NEX_MOVE_ENABLED: bool = os.getenv("O_NEX_MOVE_ENABLED", 1)
+O_NEX_MOVE_ENABLED: bool = os.getenv("O_NEX_MOVE_ENABLED", 0)
 # Speed selection has three levels: 1, 2, 3, and 4, with speed decreasing from fast to slow.
 SPEED: int = 3  # Integer in range [1, 4] slow to fast
 # Step stride in the x direction (meters).
