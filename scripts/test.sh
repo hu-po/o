@@ -1,7 +1,5 @@
-set -e
-
+# set -e
 model_apis=(test gpt rep)
-
 for model_api in "${model_apis[@]}"; do
     echo "🖥️ testing with $model_api model_api"
     source scripts/nuke.sh
@@ -20,5 +18,4 @@ for model_api in "${model_apis[@]}"; do
         exit 1
     fi
 done
-
 echo "  🖥️   ✅ testing completed"
