@@ -1,5 +1,5 @@
 echo "  🖥️    running robot nex with model_api gpt"
-bash scripts/nuke.sh
+source scripts/nuke.sh
 source params/nex.sh
 source params/gpt.sh
 export O_DEATH=20

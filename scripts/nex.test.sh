@@ -1,7 +1,7 @@
 set -e
 
 echo "  🖥️    testing with model_api gpt and robot nex"
-bash scripts/nuke.sh
+source scripts/nuke.sh
 source params/nex.sh
 source params/gpt.sh
 export O_DEATH=20
@@ -13,7 +13,7 @@ python3 o.py --node plan --model_api gpt --robot nex &
 python3 o.py --node talk --model_api gpt --robot nex 
 
 echo "  🖥️    testing with model_api rep and robot nex"
-bash scripts/nuke.sh
+source scripts/nuke.sh
 source params/nex.sh
 source params/gpt.sh
 export O_DEATH=20
