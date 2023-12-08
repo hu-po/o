@@ -12,8 +12,17 @@ get_formatted_output() {
     done
 }
 
+display_image() {
+    if command -v gpicview >/dev/null 2>&1; then
+        DISPLAY=:0 timeout 1 gpicview /tmp/o.image.jpeg
+    else
+        echo "gpicview is not installed."
+    fi
+}
+
 while true; do
     clear
     get_formatted_output
+    display_image
     sleep 4.2
 done
