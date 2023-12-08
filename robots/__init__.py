@@ -3,7 +3,7 @@ import subprocess
 import time
 
 
-def import_robot(robot: str) -> dict:
+def import_robot(robot: str, node: str) -> dict:
     if robot == "nex":
         from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.nex import __file__ as _file
@@ -16,8 +16,8 @@ def import_robot(robot: str) -> dict:
         from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.test import __file__ as _file
 
-    print(f"   🖥️   using robot {robot}")
-    print(f"   🖥️   available functions\n{FUNCTIONS}")
+    print(f"   🖥️{node}   using robot {robot}")
+    # print(f"   🖥️{node}   available functions\n{FUNCTIONS}")
 
     async def async_act(func: str, code: str) -> str:
         _s = time.time()

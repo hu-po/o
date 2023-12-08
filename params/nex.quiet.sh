@@ -1,3 +1,4 @@
+source params/defaults.sh
 source /home/ubuntu/o/params/nex.sh
 echo "🔠 loading robot nex quiet mode params"
 export O_DEATH=60

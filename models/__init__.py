@@ -17,7 +17,7 @@ AUDIO_SAMPLE_RATE = int(os.getenv('O_AUDIO_SAMPLE_RATE', 16000))
 AUDIO_CHANNELS = int(os.getenv('O_AUDIO_CHANNELS', 1))
 AUDIO_OUTPUT_PATH = os.getenv('O_AUDIO_OUTPUT_PATH', "/tmp/o.audio.wav")
 
-def import_models(api: str) -> dict:
+def import_models(api: str, node: str) -> dict:
     if api == "gpt":
         from models.gpt import llm, vlm, tts, stt
         from models.gpt import LLM, VLM, TTS, STT
@@ -29,11 +29,11 @@ def import_models(api: str) -> dict:
     else:
         from models.test import llm, vlm, tts, stt
         from models.test import LLM, VLM, TTS, STT
-    print(f"   🖥️   using model_api {api}")
-    print(f"   LLM 💬: {LLM}")
-    print(f"   VLM 👁️‍🗨️: {VLM}")
-    print(f"   TTS 🗣️: {TTS}")
-    print(f"   STT 👂: {STT}")
+    print(f"   🖥️{node} using model_api {api}")
+    # print(f"   LLM 💬: {LLM}")
+    # print(f"   VLM 👁️‍🗨️: {VLM}")
+    # print(f"   TTS 🗣️: {TTS}")
+    # print(f"   STT 👂: {STT}")
 
     def timed(f: callable):
         async def _(*args, **kwargs):
@@ -49,22 +49,22 @@ def import_models(api: str) -> dict:
             reply = llm(prompt)
         except Exception as e:
             print(f"\t🖥️❌ exception in LLM: {e}")
-            return "💬❌ error with llm", None
-        return f"💬✅ llm reply [{reply}]", reply
+            return f"{node}💬❌ error with llm", None
+        return f"{node}💬✅ llm reply [{reply}]", reply
 
     async def async_vlm(prompt: str) -> str:
         try:
             with FileLock(IMAGE_LOCK_PATH):
                 if not os.path.exists(IMAGE_PATH):
                     await asyncio.sleep(0.4)
-                    return "👁️‍🗨️❌ no image found", None
+                    return f"{node}👁️‍🗨️❌ no image found", None
                 with open(IMAGE_PATH, "rb") as f:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")
             description = vlm(prompt, base64_image)
         except Exception as e:
             print(f"\t🖥️❌ exception in VLM: {e}")
-            return "👁️‍🗨️❌ error with vlm", None
-        return f"👁️‍🗨️✅ vlm saw [{description}]", description
+            return f"{node}👁️‍🗨️❌ error with vlm", None
+        return f"{node}👁️‍🗨️✅ vlm saw [{description}]", description
 
     async def async_tts(text: str) -> str:
         try:
@@ -80,8 +80,8 @@ def import_models(api: str) -> dict:
             play(seg)
         except Exception as e:
             print(f"\t🖥️❌ exception in TTS: {e}")
-            return "🗣️❌ error with tts", None
-        return f"🗣️✅ tts said [{text}]", text
+            return "{node}🗣️❌ error with tts", None
+        return f"{node}🗣️✅ tts said [{text}]", text
 
     async def async_stt() -> (str, str):
         try:

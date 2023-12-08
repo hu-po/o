@@ -13,4 +13,3 @@ printenv | grep '^O_' | while read -r line; do
     unset $var_name
     counter=$((counter+1))
 done
-source params/defaults.sh

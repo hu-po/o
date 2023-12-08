@@ -100,9 +100,9 @@ async def remember(lines: list) -> str:
 
 if __name__ == "__main__":
     args = argparser.parse_args()
-    models: dict = import_models(args.model_api)
-    robot: dict = import_robot(args.robot)
     node: dict = import_node(args.node)
+    robot: dict = import_robot(args.robot, node['emoji'])
+    models: dict = import_models(args.model_api, node['emoji'])
     utils: dict = {
         "heartbeat": heartbeat,
         "get_memory": get_memory,
