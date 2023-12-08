@@ -29,7 +29,7 @@ def import_models(api: str, node: str) -> dict:
     else:
         from models.test import llm, vlm, tts, stt
         from models.test import LLM, VLM, TTS, STT
-    print(f"   🖥️{node} using model_api {api}")
+    print(f"   🖥️ {node} using model_api {api}")
     # print(f"   LLM 💬: {LLM}")
     # print(f"   VLM 👁️‍🗨️: {VLM}")
     # print(f"   TTS 🗣️: {TTS}")
@@ -48,7 +48,7 @@ def import_models(api: str, node: str) -> dict:
         try:
             reply = llm(prompt)
         except Exception as e:
-            print(f"\t🖥️❌ exception in LLM: {e}")
+            print(f"\t{node}🖥️❌ exception in LLM: {e}")
             return f"{node}💬❌ error with llm", None
         return f"{node}💬✅ llm reply [{reply}]", reply
 
@@ -62,7 +62,7 @@ def import_models(api: str, node: str) -> dict:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")
             description = vlm(prompt, base64_image)
         except Exception as e:
-            print(f"\t🖥️❌ exception in VLM: {e}")
+            print(f"\t{node}🖥️❌ exception in VLM: {e}")
             return f"{node}👁️‍🗨️❌ error with vlm", None
         return f"{node}👁️‍🗨️✅ vlm saw [{description}]", description
 
@@ -79,8 +79,8 @@ def import_models(api: str, node: str) -> dict:
             seg = AudioSegment.from_file(file_name, format="mp3")
             play(seg)
         except Exception as e:
-            print(f"\t🖥️❌ exception in TTS: {e}")
-            return "{node}🗣️❌ error with tts", None
+            print(f"\t{node}🖥️❌ exception in TTS: {e}")
+            return f"{node}🗣️❌ error with tts", None
         return f"{node}🗣️✅ tts said [{text}]", text
 
     async def async_stt() -> (str, str):
@@ -94,9 +94,9 @@ def import_models(api: str, node: str) -> dict:
             write(AUDIO_OUTPUT_PATH, AUDIO_SAMPLE_RATE, audio_data)
             transcript = stt(AUDIO_OUTPUT_PATH)
         except Exception as e:
-            print(f"\t🖥️❌ exception in STT: {e}")
-            return "👂❌ error with stt", ""
-        return f"👂✅ stt heard [{transcript}]", transcript
+            print(f"\t{node}🖥️❌ exception in STT: {e}")
+            return f"{node}👂❌ error with stt", ""
+        return f"{node}👂✅ stt heard [{transcript}]", transcript
 
     return {
         "llm": timed(async_llm),
