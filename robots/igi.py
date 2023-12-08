@@ -25,12 +25,11 @@ Your vision module uses two cameras to infer 3d
 """)
 FUNCTIONS = os.getenv("O_FUNCTIONS", """
 LOOK(direction:str)
-    direction must be one of ["FORWARD", "LEFT", "RIGHT", "UP", "DOWN"]
+    direction must be one of ["FORWARD", "LEFT", "RIGHT"]
     📷👀
 """)
 SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
 LOOK,LEFT
-LOOK,UP
 LOOK,FORWARD
 """)
 DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
