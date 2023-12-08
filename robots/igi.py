@@ -1,8 +1,9 @@
 import argparse
+from filelock import FileLock
 import os
 import time
 
-from .test import capture_and_save_image
+import cv2
 from dynamixel_sdk import (
     PortHandler,
     PacketHandler,
@@ -35,6 +36,9 @@ LOOK,FORWARD
 DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
 DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
 
+VIDEO_DEVICE = int(os.getenv("O_VIDEO_DEVICE", 0))
+IMAGE_PATH = os.getenv("O_IMAGE_PATH", "/tmp/o.image.jpeg")  # Image is constantly overwritten
+IMAGE_LOCK_PATH = os.getenv("O_IMAGE_LOCK_PATH", "/tmp/o.image.lock")  # Lock prevents reading while writing
 
 LOOK_DIRECTIONS = {
     "FORWARD": [3000, 2840, 1800],
@@ -163,6 +167,19 @@ class Servos:
     def __del__(self, *args, **kwargs) -> None:
         self._disable_torque()
         self.port_handler.closePort()
+
+def capture_and_save_image() -> str:
+    cap = cv2.VideoCapture(VIDEO_DEVICE)
+    if not cap.isOpened():
+        return "📷❌ cv2 error: no video device"
+    ret, frame = cap.read()
+    if not ret:
+        cap.release()
+        return "📷❌ cv2 error: on read"
+    with FileLock(IMAGE_LOCK_PATH):
+        cv2.imwrite(IMAGE_PATH, frame)
+    cap.release()
+    return "📷✅ new image"
 
 
 def look(

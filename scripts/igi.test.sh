@@ -7,8 +7,7 @@ export O_MAX_STEPS=3
 export O_NEX_MOVE_ENABLED=0
 python3 o.py --node body --model_api gpt --robot igi &
 python3 o.py --node look --model_api gpt --robot igi &
-python3 o.py --node plan --model_api gpt --robot igi &
-python3 o.py --node talk --model_api gpt --robot igi
+python3 o.py --node quiet --model_api gpt --robot igi
 
 echo "  🖥️    testing with model_api rep and robot igi"
 sh scripts/nuke.sh
@@ -17,8 +16,7 @@ export O_MAX_STEPS=3
 export O_NEX_MOVE_ENABLED=0
 python3 o.py --node body --model_api rep --robot igi &
 python3 o.py --node look --model_api rep --robot igi &
-python3 o.py --node plan --model_api rep --robot igi &
-python3 o.py --node talk --model_api rep --robot igi
+python3 o.py --node quiet --model_api rep --robot igi
 
 status=$?
 if [ $status -ne 0 ]; then
