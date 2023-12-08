@@ -38,16 +38,14 @@ DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")
 
 
 LOOK_DIRECTIONS = {
-    "FORWARD": [0, 0, 0],
-    "LEFT": [0, 0, 0],
-    "RIGHT": [0, 0, 0],
-    "UP": [0, 0, 0],
-    "DOWN": [0, 0, 0],
+    "FORWARD": [3000, 2840, 1800],
+    "LEFT": [2980, 2830, 1640],
+    "RIGHT": [3020, 2838, 2000],
 }
 SERVOS: list = [
-    (1, (1761, 2499)),
-    (2, (979, 2223)),
-    (3, (988, 3007)),
+    (1, (2825, 3536)),  # Servo ID 1
+    (2, (2827, 2850)),  # Servo ID 2
+    (3, (1648, 2333)),  # Servo ID 3
 ]
 
 # Convert servo units into degrees for readability
@@ -101,7 +99,6 @@ class Servos:
 
     def _write_position(self, positions: list):
         for i, pos in enumerate(positions):
-            pos = degrees_to_units(pos)
             dxl_id = self.servo_ids[i]
             clipped = min(max(pos, self.servo_ranges[i][0]), self.servo_ranges[i][1])
             dxl_comm_result, dxl_error = self.packet_handler.write1ByteTxRx(
