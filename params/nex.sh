@@ -1,4 +1,4 @@
-echo "🔠 loading robot igi test params"
+echo "🔠 loading robot nex test params"
 export O_DESCRIPTION="You are a small humanoid robot with a monocular camera
 You are small and only 20cm off the ground"
 export O_FUNCTIONS="MOVE(direction:str)
@@ -15,3 +15,4 @@ LOOK,UP
 MOVE,FORWARD"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="FORWARD"
+export O_VIDEO_DEVICE=0

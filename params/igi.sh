@@ -1,4 +1,4 @@
-echo "🔠 loading robot nex test params"
+echo "🔠 loading robot igi test params"
 export O_DESCRIPTION="You are a small robot with a stereo camera vision module
 Your vision module uses two cameras to infer 3d"
 export O_FUNCTIONS="LOOK(direction:str)
@@ -9,4 +9,3 @@ LOOK,UP
 LOOK,FORWARD"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="FORWARD"
-export O_VIDEO_DEVICE=0
