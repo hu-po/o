@@ -4,10 +4,12 @@ for model_api in "${model_apis[@]}"; do
     echo "🖥️ testing with $model_api model_api"
     source scripts/nuke.sh
     if [ "$model_api" = "test" ]; then
-        echo ""
+        source params/test.sh
     elif [ "$model_api" = "gpt" ]; then
+        source params/test.sh
         source params/gpt.sh
     elif [ "$model_api" = "rep" ]; then
+        source params/test.sh
         source params/rep.sh
     else
         echo "  🖥️   ❌ no tests for model_api $model_api"

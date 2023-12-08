@@ -3,7 +3,7 @@ get_formatted_output() {
     # Using ps with custom format to show memory usage (%mem) and elapsed time (etime)
     ps aux --sort=-%mem | awk '/python3 o\..*/ && !/grep/ {print $0, "Memory:", $4"%", "Duration:", $10}'
     echo "  🖥️    memory:"
-    cat /tmp/o.memory.txt
+    cat $O_MEMORY_PATH
     echo "  🖥️    files:"
     ls -lht /tmp/o.*
     echo "  🖥️    params:"
@@ -13,8 +13,11 @@ get_formatted_output() {
 }
 
 display_image() {
+    echo "  🖥️    display image for 2 seconds"
     if command -v gpicview >/dev/null 2>&1; then
-        DISPLAY=:0 timeout 1 gpicview /tmp/o.image.jpeg
+        DISPLAY=:0 timeout 2 gpicview $O_IMAGE_PATH
+    elif command -v eog >/dev/null 2>&1; then
+        timeout 2 eog $O_IMAGE_PATH
     else
         echo "gpicview is not installed."
     fi
@@ -24,5 +27,5 @@ while true; do
     clear
     get_formatted_output
     display_image
-    sleep 4.2
+    sleep 2
 done

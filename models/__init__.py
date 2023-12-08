@@ -54,10 +54,10 @@ def import_models(api: str, node: str) -> dict:
 
     async def async_vlm(prompt: str) -> str:
         try:
+            if not os.path.exists(IMAGE_PATH):
+                await asyncio.sleep(0.4)
+                return f"{node}👁️‍🗨️❌ no image found", None
             with FileLock(IMAGE_LOCK_PATH):
-                if not os.path.exists(IMAGE_PATH):
-                    await asyncio.sleep(0.4)
-                    return f"{node}👁️‍🗨️❌ no image found", None
                 with open(IMAGE_PATH, "rb") as f:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")
             description = vlm(prompt, base64_image)
