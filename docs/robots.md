@@ -28,8 +28,8 @@ To autostart script on robot boot use crontab (sleep for some time to allow ROS 
 ```
 chmod +x /home/ubuntu/o/o.sh
 crontab -e
-@reboot sh /home/ubuntu/o/o.sh
-*/5 * * * * /home/ubuntu/o/o.sh
+@reboot bash /home/ubuntu/o/scripts/nex.quiet.sh
+*/5 * * * * /home/ubuntu/o/scripts/nex.quiet.sh
 ```
 
 Only a USB microphone works, set the volume with:

@@ -10,14 +10,12 @@ from pydub.playback import play
 from scipy.io.wavfile import write
 import sounddevice as sd
 
-
-IMAGE_PATH = "/tmp/o.image.jpeg"  # Image is constantly overwritten
-IMAGE_LOCK_PATH = "/tmp/o.image.lock"  # Lock prevents reading while writing
-AUDIO_RECORD_TIME: int = 3  # Duration for audio recording
-AUDIO_SAMPLE_RATE: int = 16000  # Sample rate for speedy audio recording
-AUDIO_CHANNELS: int = 1  # mono
-AUDIO_OUTPUT_PATH: str = "/tmp/o.audio.wav"  # recorded audio is constantly overwritten
-
+IMAGE_PATH = os.getenv('O_IMAGE_PATH', "/tmp/o.image.jpeg")
+IMAGE_LOCK_PATH = os.getenv('O_IMAGE_LOCK_PATH', "/tmp/o.image.lock")
+AUDIO_RECORD_TIME = int(os.getenv('O_AUDIO_RECORD_TIME', 3))
+AUDIO_SAMPLE_RATE = int(os.getenv('O_AUDIO_SAMPLE_RATE', 16000))
+AUDIO_CHANNELS = int(os.getenv('O_AUDIO_CHANNELS', 1))
+AUDIO_OUTPUT_PATH = os.getenv('O_AUDIO_OUTPUT_PATH', "/tmp/o.audio.wav")
 
 def import_models(api: str) -> dict:
     if api == "gpt":
@@ -56,10 +54,10 @@ def import_models(api: str) -> dict:
 
     async def async_vlm(prompt: str) -> str:
         try:
-            if not os.path.exists(IMAGE_PATH):
-                await asyncio.sleep(1.0)
-                return "👁️‍🗨️❌ no image found", None
             with FileLock(IMAGE_LOCK_PATH):
+                if not os.path.exists(IMAGE_PATH):
+                    await asyncio.sleep(0.4)
+                    return "👁️‍🗨️❌ no image found", None
                 with open(IMAGE_PATH, "rb") as f:
                     base64_image = base64.b64encode(f.read()).decode("utf-8")
             description = vlm(prompt, base64_image)
