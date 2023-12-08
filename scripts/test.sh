@@ -8,9 +8,9 @@ for model_api in "${model_apis[@]}"; do
     if [ "$model_api" = "test" ]; then
         echo ""
     elif [ "$model_api" = "gpt" ]; then
-        bash params/gpt.sh
+        source params/gpt.sh
     elif [ "$model_api" = "rep" ]; then
-        bash params/rep.sh
+        source params/rep.sh
     else
         echo "  🖥️   ❌ no tests for model_api $model_api"
         exit 1

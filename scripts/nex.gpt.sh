@@ -1,7 +1,7 @@
 echo "  🖥️    running robot nex with model_api gpt"
 bash scripts/nuke.sh
-bash params/nex.sh
-bash params/gpt.sh
+source params/nex.sh
+source params/gpt.sh
 export O_DEATH=20
 python3 o.py --node body --model_api gpt --robot nex &
 python3 o.py --node look --model_api gpt --robot nex &
