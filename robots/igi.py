@@ -176,6 +176,7 @@ def capture_and_save_image() -> str:
     if not ret:
         cap.release()
         return "📷❌ cv2 error: on read"
+    frame = cv2.flip(frame, 0)  # Flip the image vertically
     with FileLock(IMAGE_LOCK_PATH):
         cv2.imwrite(IMAGE_PATH, frame)
     cap.release()
