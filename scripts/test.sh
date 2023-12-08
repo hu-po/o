@@ -5,6 +5,8 @@ model_apis=(test gpt rep)
 for model_api in "${model_apis[@]}"; do
     echo "🖥️ testing with $model_api model_api"
     bash scripts/nuke.sh
+    if [ "$model_api" = "test" ]; then
+        echo ""
     elif [ "$model_api" = "gpt" ]; then
         bash params/gpt.sh
     elif [ "$model_api" = "rep" ]; then
