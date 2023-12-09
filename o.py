@@ -24,7 +24,7 @@ MEMORY_MAX_SIZE = int(os.getenv("O_MEMORY_MAX_SIZE", 4096))
 def timestamp(log: str) -> str:
     elapsed_time = datetime.now() - START
     minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
-    return f"⏱️{int(minutes)}m:{seconds:.3f}s {log}"
+    return f"⏱️  {int(minutes)}m:{seconds:.2f}s {log}"
 
 def heartbeat(name: str) -> (str, bool):
     global STEPS
@@ -80,7 +80,6 @@ async def add_memory(txt: str) -> str:
     with FileLock(MEMORY_LOCK_PATH):
         with open(MEMORY_PATH, "a") as f:
             f.write(timestamp(txt))
-            f.write("\n")
     return log
 
 
