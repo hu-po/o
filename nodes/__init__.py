@@ -7,6 +7,8 @@ def import_node(name: str) -> dict:
         from nodes.plan import EMOJI, loop
     elif name == "quiet":
         from nodes.quiet import EMOJI, loop
+    elif name == "listen":
+        from nodes.listen import EMOJI, loop
     elif name == "talk":
         from nodes.talk import EMOJI, loop
     else:

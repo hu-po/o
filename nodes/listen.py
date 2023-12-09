@@ -17,8 +17,7 @@ async def loop(models: dict, robot: dict, utils: dict):
             _, (stt_log, heard), (llm_log, _) = await asyncio.gather(
                 utils['add_memory'](log),
                 models["stt"](),
-                models["llm"](
-                    f"""
+                models["llm"](f"""
 Interpret this audio transcript: [{heard}].
 It might have errors with clipping around the edges, or missing sections.
 Try to reply with a restoration of the full transcript:
