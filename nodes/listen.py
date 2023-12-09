@@ -19,9 +19,9 @@ async def loop(models: dict, robot: dict, utils: dict):
                 models["stt"](),
                 models["llm"](
                     f"""
-Interpret this transcript: [{heard}].
-Does it contain any direct commands intended for a robot?
-Condense the most important concepts into a single sentence.
+Interpret this audio transcript: [{heard}].
+It might have errors with clipping around the edges, or missing sections.
+Try to reply with a restoration of the full transcript:
                 """
                 ))
             log += f"🎧 heard [{heard}]"

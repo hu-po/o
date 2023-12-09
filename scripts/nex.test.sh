@@ -13,7 +13,7 @@ python3 o.py --node talk --model_api gpt --robot nex
 echo "  🖥️    testing with model_api rep and robot nex"
 source scripts/nuke.sh
 source params/nex.sh
-source params/gpt.sh
+source params/rep.sh
 export O_DEATH=20
 export O_MAX_STEPS=3
 export O_NEX_MOVE_ENABLED=0
