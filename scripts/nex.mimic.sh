@@ -15,6 +15,8 @@ export O_SUGGESTIONS="LOOK,RIGHT
 PLAY,ARM_WAVE_GREET"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="FORWARD"
-O_DEATH=60 python3 o.py --node body --model_api gpt --robot nex &
-O_DEATH=24 python3 o.py --node look --model_api gpt --robot nex &
-O_DEATH=60 python3 o.py --node listen --model_api gpt --robot nex
+export O_DEATH=60
+export O_MAX_STEPS=12
+python3 o.py --node body --model_api gpt --robot nex &
+python3 o.py --node look --model_api gpt --robot nex &
+python3 o.py --node listen --model_api gpt --robot nex
