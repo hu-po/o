@@ -3,8 +3,8 @@ export O_DEATH=6
 export O_STEPS=0
 export O_MAX_STEPS=3
 
-export O_MEM_PATH="/tmp/o.memory.txt"
-export O_MEM_LOCK_PATH="/tmp/o.memory.lock"
+export O_MEM_ID=0
+export O_MEM_MAX_NUM=0
 export O_MEM_MAX_SIZE=4096
 
 export O_LLM="test llm"

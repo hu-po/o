@@ -23,6 +23,7 @@ display_image() {
     fi
 }
 
+source params/default.sh
 while true; do
     clear
     get_formatted_output
