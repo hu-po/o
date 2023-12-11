@@ -16,6 +16,7 @@ AUDIO_RECORD_TIME = int(os.getenv('O_AUDIO_RECORD_TIME', 3))
 AUDIO_SAMPLE_RATE = int(os.getenv('O_AUDIO_SAMPLE_RATE', 16000))
 AUDIO_CHANNELS = int(os.getenv('O_AUDIO_CHANNELS', 1))
 AUDIO_OUTPUT_PATH = os.getenv('O_AUDIO_OUTPUT_PATH', "/tmp/o.audio.wav")
+AUDIO_LOCK_PATH = os.getenv('O_SPEAKING_LOCK_PATH', "/tmp/o.audio.lock")
 
 def import_models(api: str, node: str) -> dict:
     if api == "gpt":
@@ -77,7 +78,8 @@ def import_models(api: str, node: str) -> dict:
                     return "🗣️✅ tts in test mode", None
                 seg.export(file_name, format="mp3")
             seg = AudioSegment.from_file(file_name, format="mp3")
-            play(seg)
+            with FileLock(AUDIO_LOCK_PATH):
+                play(seg)
         except Exception as e:
             print(f"\t{node}🖥️❌ exception in TTS: {e}")
             return f"{node}🗣️❌ error with tts", None

@@ -29,3 +29,4 @@ export O_AUDIO_RECORD_TIME=3
 export O_AUDIO_SAMPLE_RATE=16000
 export O_AUDIO_CHANNELS=1
 export O_AUDIO_OUTPUT_PATH="/tmp/o.audio.wav"
+export O_AUDIO_LOCK_PATH="/tmp/o.audio.lock"
