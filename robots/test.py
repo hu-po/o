@@ -8,13 +8,13 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("func", type=str)
 argparser.add_argument("code", type=str)
 
-DESCRIPTION = os.getenv("O_DESCRIPTION", "You are a test robot.")
-FUNCTIONS = os.getenv("O_FUNCTIONS", """
+DESCRIPTION = os.getenv("O_DESCRIPTION", """
+You are a test robot
 MOVE(direction:str)
     direction must be one of ["FORWARD", "BACKWARD", "LEFT", "RIGHT"]
     🦿📷
-""")
-SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
+Pick one of the functions and the args.
+Here are some example outputs:
 MOVE,FORWARD
 MOVE,LEFT
 """)

@@ -5,19 +5,18 @@ import time
 
 def import_robot(robot: str, node: str) -> dict:
     if robot == "nex":
-        from robots.nex import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
+        from robots.nex import DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.nex import __file__ as _file
 
     elif robot == "igi":
-        from robots.igi import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
+        from robots.igi import DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.igi import __file__ as _file
 
     else:
-        from robots.test import FUNCTIONS, SUGGESTIONS, DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
+        from robots.test import DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.test import __file__ as _file
 
     print(f"   🖥️{node}   using robot {robot}")
-    # print(f"   🖥️{node}   available functions\n{FUNCTIONS}")
 
     async def async_act(func: str, code: str) -> str:
         _s = time.time()
@@ -37,9 +36,7 @@ def import_robot(robot: str, node: str) -> dict:
 
     return {
         "act": async_act,
-        "FUNCTIONS": FUNCTIONS,
-        "SUGGESTIONS": SUGGESTIONS,
+        "DESCRIPTION": DESCRIPTION,
         "DEFAULT_FUNC": DEFAULT_FUNC,
         "DEFAULT_CODE": DEFAULT_CODE,
-        "DESCRIPTION": DESCRIPTION,
     }

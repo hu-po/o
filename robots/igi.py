@@ -23,15 +23,17 @@ argparser.add_argument("code", type=str)
 DESCRIPTION = os.getenv("O_DESCRIPTION", """
 You are a small robot with a stereo camera vision module
 Your vision module uses two cameras to infer 3d
-""")
-FUNCTIONS = os.getenv("O_FUNCTIONS", """
+Pick a function based on the robot log.
+Always pick a function and provide any args required.
+Here are the functions:
 LOOK(direction:str)
     direction must be one of ["FORWARD", "LEFT", "RIGHT"]
     📷👀
-""")
-SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
+Pick one of the functions and the args.
+Here are some example outputs:
 LOOK,LEFT
 LOOK,FORWARD
+Your response should be a single line with the chosen function code and arguments.
 """)
 DEFAULT_FUNC: str = os.getenv("O_DEFAULT_FUNC", "LOOK")
 DEFAULT_CODE: str = os.getenv("O_DEFAULT_CODE", "FORWARD")

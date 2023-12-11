@@ -17,9 +17,9 @@ START = datetime.now()
 DEATH = timedelta(seconds=int(os.getenv("O_DEATH", 3)))
 STEPS = int(os.getenv("O_STEPS", 0))
 MAX_STEPS: int = int(os.getenv("O_MAX_STEPS", 1))
-MEMORY_PATH = str(os.getenv("O_MEMORY_PATH", "/tmp/o.memory.txt"))
-MEMORY_LOCK_PATH = str(os.getenv( "O_MEMORY_LOCK_PATH", "/tmp/o.memory.lock"))
-MEMORY_MAX_SIZE = int(os.getenv("O_MEMORY_MAX_SIZE", 4096))
+MEM_PATH = str(os.getenv("O_MEM_PATH", "/tmp/o.memory.txt"))
+MEM_LOCK_PATH = str(os.getenv( "O_MEM_LOCK_PATH", "/tmp/o.memory.lock"))
+MEM_MAX_SIZE = int(os.getenv("O_MEM_MAX_SIZE", 4096))
 
 def timestamp(log: str) -> str:
     elapsed_time = datetime.now() - START
@@ -41,20 +41,20 @@ def heartbeat(name: str) -> (str, bool):
 # TODO: Make this a specific file, keep handles to uuid named tmp files in memory
 async def check_memory() -> str:
     log = ""
-    if not os.path.exists(MEMORY_PATH):
+    if not os.path.exists(MEM_PATH):
         log += timestamp("📜 Memory file not found, creating ...")
-        with open(MEMORY_PATH, "w") as f:
+        with open(MEM_PATH, "w") as f:
             f.write("")
     else:
-        mem_size = os.path.getsize(MEMORY_PATH)
+        mem_size = os.path.getsize(MEM_PATH)
         # log += timestamp(f"💾 Current memory size is {mem_size} bytes")
-        if mem_size > MEMORY_MAX_SIZE:
-            log += timestamp(f"🗑️ Memory limit {MEMORY_MAX_SIZE} exceeded, truncating past")
-            with FileLock(MEMORY_LOCK_PATH):
-                with open(MEMORY_PATH, "r") as file:
+        if mem_size > MEM_MAX_SIZE:
+            log += timestamp(f"🗑️ Memory limit {MEM_MAX_SIZE} exceeded, truncating past")
+            with FileLock(MEM_LOCK_PATH):
+                with open(MEM_PATH, "r") as file:
                     lines = file.readlines()
                 half_index = len(lines) // 2
-                with open(MEMORY_PATH, "w") as file:
+                with open(MEM_PATH, "w") as file:
                     file.writelines(lines[half_index:])
     # print(log)
     return log
@@ -62,8 +62,8 @@ async def check_memory() -> str:
 
 async def get_memory() -> (str, str):
     log = await check_memory()
-    with FileLock(MEMORY_LOCK_PATH):
-        with open(MEMORY_PATH, "r") as f:
+    with FileLock(MEM_LOCK_PATH):
+        with open(MEM_PATH, "r") as f:
             memraw = f.read()
     return log, f"""
 Each line in the robot memory is the output of one node.
@@ -77,8 +77,8 @@ Each line in the robot memory contains a time since the start of the node.
 
 async def add_memory(txt: str) -> str:
     log = await check_memory()
-    with FileLock(MEMORY_LOCK_PATH):
-        with open(MEMORY_PATH, "a") as f:
+    with FileLock(MEM_LOCK_PATH):
+        with open(MEM_PATH, "a") as f:
             f.write(timestamp(txt))
     return log
 
@@ -86,14 +86,14 @@ async def add_memory(txt: str) -> str:
 async def remember(lines: list) -> str:
     log = await check_memory()
     to_add = [] * len(lines)
-    with FileLock(MEMORY_LOCK_PATH):
-        with open(MEMORY_PATH, "r") as f:
+    with FileLock(MEM_LOCK_PATH):
+        with open(MEM_PATH, "r") as f:
             for i, line in f.readlines():
                 if i in lines:
                     to_add.append(line)
     log += f"🧠 remembered {len(to_add)} lines"
-    with FileLock(MEMORY_LOCK_PATH):
-        with open(MEMORY_PATH, "a") as f:
+    with FileLock(MEM_LOCK_PATH):
+        with open(MEM_PATH, "a") as f:
             f.write("\n".join(to_add))
     return log
 

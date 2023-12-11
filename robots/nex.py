@@ -19,8 +19,9 @@ argparser.add_argument("code", type=str)
 DESCRIPTION = os.getenv("O_DESCRIPTION", """
 You are a small humanoid robot with a monocular camera
 You are small and only 20cm off the ground
-""")
-FUNCTIONS = os.getenv("O_FUNCTIONS", """
+Pick a function based on the robot log.
+Always pick a function and provide any args required.
+Here are the functions:
 MOVE(direction:str)
     direction must be one of [FORWARD, BACKWARD, SHUFFLE_LEFT, SHUFFLE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT]
     🦿📷
@@ -30,8 +31,8 @@ PLAY(action:str)
 LOOK(direction:str)
     direction must be one of [FORWARD, LEFT, RIGHT, UP, DOWN]
     👀📷
-""")
-SUGGESTIONS = os.getenv("O_SUGGESTIONS", """
+Pick one of the functions and the args.
+Here are some example outputs:
 PLAY,GREET
 LOOK,UP
 MOVE,FORWARD

@@ -3,7 +3,7 @@ get_formatted_output() {
     # Using ps with custom format to show memory usage (%mem) and elapsed time (etime)
     ps aux --sort=-%mem | awk '/python3 o\..*/ && !/grep/ {print $0, "Memory:", $4"%", "Duration:", $10}'
     echo "  🖥️    memory:"
-    cat $O_MEMORY_PATH
+    cat $O_MEM_PATH
     echo "  🖥️    files:"
     ls -lht /tmp/o.*
     echo "  🖥️    params:"

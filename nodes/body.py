@@ -10,19 +10,7 @@ async def loop(models: dict, robot: dict, utils: dict):
             break
         (_, memstr) = await utils['get_memory']()
         (llm_log, reply), robot_log, _ = await asyncio.gather(
-            models["llm"](
-                f"""
-Pick a function based on the robot log.
-Always pick a function and provide any args required.
-Here are the functions:
-{robot['FUNCTIONS']}
-{memstr}
-Pick one of the functions and the args.
-Here are some example outputs:
-{robot['SUGGESTIONS']}
-Your response should be a single line with the chosen function code and arguments.
-                """
-            ),
+            models["llm"](f"{memstr}{robot["DESCRIPTION"]}"),
             robot["act"](func, code),
             utils['add_memory'](log),
         )
