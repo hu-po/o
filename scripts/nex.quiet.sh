@@ -1,4 +1,4 @@
-echo "🖥️    running robot nex with model_api gpt"
+echo "🖥️   running robot nex with model_api gpt"
 source scripts/nuke.sh
 source params/nex.sh
 source params/gpt.sh

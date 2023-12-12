@@ -1,4 +1,4 @@
-echo "🖥️    running robot nex with model_api gpt"
+echo "🖥️   running robot nex with model_api gpt"
 source scripts/nuke.sh
 source params/gpt.sh
 export O_DESCRIPTION="You are a small humanoid robot with a monocular camera
