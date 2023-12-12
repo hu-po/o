@@ -20,6 +20,7 @@ export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="FORWARD"
 export O_DEATH=120
 export O_MAX_STEPS=12
+export O_MUTE_MODE=1
 python3 o.py --node body --model_api gpt --robot nex &
 python3 o.py --node look --model_api gpt --robot nex &
-python3 o.py --node listen --model_api gpt --robot nex
+python3 o.py --node talk --model_api gpt --robot nex

@@ -28,7 +28,9 @@ Be concise
 Do not use punctuation
 Your response will be read out by the robot speech module
 Your reponse should not contain any special characters"
-export O_TALK_PROMPT="Reply to the human"
+export O_TALK_PROMPT="Respond to the human in a few words.
+Be short, laconic, and witty in your reply."
+export O_MUTE_MODE=0
 export O_DEATH=120
 export O_MAX_STEPS=12
 python3 o.py --node body --model_api gpt --robot igi &
