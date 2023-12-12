@@ -30,7 +30,7 @@ def import_models(api: str, node: str) -> dict:
     else:
         from models.test import llm, vlm, tts, stt
         from models.test import LLM, VLM, TTS, STT
-    print(f" 🖥️ {node} using model_api {api}")
+    print(f"🖥️ {node} using model_api {api}")
     # print(f"   LLM 💬: {LLM}")
     # print(f"   VLM 👁️‍🗨️: {VLM}")
     # print(f"   TTS 🗣️: {TTS}")

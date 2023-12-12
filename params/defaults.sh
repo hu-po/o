@@ -1,4 +1,4 @@
-echo "🔠 loading test params"
+echo "🔠 loading default params"
 export O_DEATH=6
 export O_STEPS=0
 export O_MAX_STEPS=3
