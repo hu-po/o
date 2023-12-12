@@ -1,13 +1,13 @@
-import os
 import argparse
 import asyncio
-import random
 from datetime import datetime, timedelta
 from filelock import FileLock
+import os
+import random
 
 from models import import_models
-from robots import import_robot
 from nodes import import_node
+from robots import import_robot
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--node", type=str, default="test")
@@ -24,6 +24,26 @@ MEM_MAX_SIZE = int(os.getenv("O_MEM_MAX_SIZE", 4096))
 MEM_MAX_NUM = int(os.getenv("O_MEM_MAX_NUM", 8))
 
 
+def timestamp(s: str) -> str:
+    elapsed_time = datetime.now() - START
+    minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
+    return f"⏱️time({int(minutes)}m:{seconds:.2f}s){s}"
+
+
+def heartbeat(name: str) -> (str, bool):
+    global STEPS
+    STEPS += 1
+    os.environ["O_STEPS"] = str(STEPS)
+    log = f"{name} step {STEPS} of {MAX_STEPS}"
+    if STEPS > MAX_STEPS:
+        log += f"{name} max steps {MAX_STEPS} exceeded"
+        return timestamp(log), False
+    if datetime.now() - START > DEATH:
+        log += f"{name} death {DEATH}s exceeded"
+        return timestamp(log), False
+    return timestamp(log), True
+
+
 def make_memory_paths(id: int = MEM_ID) -> str:
     return f"/tmp/o.memory.{id}.txt", f"/tmp/o.memory.{id}.lock"
 
@@ -37,25 +57,6 @@ Each line in the robot memory contains a time since the start of the node.
 {memraw}
 </robot_memory>
 """
-
-
-def timestamp(log: str) -> str:
-    elapsed_time = datetime.now() - START
-    minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
-    return f"⏱️   time [{int(minutes)}m:{seconds:.2f}]{log}"
-
-
-def heartbeat(name: str) -> (str, bool):
-    global STEPS
-    STEPS += 1
-    log = timestamp(f"{name} step {STEPS} of {MAX_STEPS}")
-    if STEPS > MAX_STEPS:
-        log += timestamp(f"{name} max steps {MAX_STEPS} exceeded")
-        return log, False
-    if datetime.now() - START > DEATH:
-        log += timestamp(f"{name} death {DEATH}s exceeded")
-        return log, False
-    return log, True
 
 
 def make_memory(id: int) -> (str, int):
@@ -95,7 +96,7 @@ async def get_memory() -> (str, str):
     with FileLock(mem_lock_path):
         with open(mem_path, "r") as f:
             memraw = f.read()
-    return timestamp(log), memraw
+    return timestamp(log), make_memory_prompt(memraw)
 
 
 async def add_memory(txt: str) -> str:
