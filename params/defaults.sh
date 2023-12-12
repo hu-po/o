@@ -4,7 +4,7 @@ export O_STEPS=0
 export O_MAX_STEPS=3
 
 export O_MEM_ID=0
-export O_MEM_MAX_NUM=0
+export O_MEM_MAX_NUM=1
 export O_MEM_MAX_SIZE=4096
 
 export O_LLM="test llm"
@@ -12,11 +12,16 @@ export O_VLM="test vlm"
 export O_TTS="test tts"
 export O_STT="test stt"
 
-export O_DESCRIPTION="You are a test robot."
-export O_FUNCTIONS="MOVE(direction:str)
+export O_DESCRIPTION="You are a test robot
+Pick a function based on the robot log.
+Always pick a function and provide any args required.
+Here are the functions:
+MOVE(direction:str)
     direction must be one of [FORWARD, BACKWARD, LEFT, RIGHT]
-    🦿📷"
-export O_SUGGESTIONS="MOVE,FORWARD
+    🦿📷
+Pick one of the functions and the args.
+Here are some example outputs:
+MOVE,FORWARD
 MOVE,LEFT"
 export O_DEFAULT_FUNC="MOVE"
 export O_DEFAULT_CODE="FORWARD"
