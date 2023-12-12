@@ -22,6 +22,11 @@ MAX_STEPS: int = int(os.getenv("O_MAX_STEPS", 1))
 MEM_ID = int(os.getenv("O_MEM_ID", 0))
 MEM_MAX_SIZE = int(os.getenv("O_MEM_MAX_SIZE", 4096))
 MEM_MAX_NUM = int(os.getenv("O_MEM_MAX_NUM", 8))
+MEM_PROMPT = str(os.getenv("O_MEM_PROMPT","""
+The robot memory contains timestamped logs of robot node activity.
+There are many nodes running asynchronously as part of the robot.
+Here is the robot memory:
+"""))
 
 
 def timestamp(s: str) -> str:
@@ -49,14 +54,7 @@ def make_memory_paths(id: int = MEM_ID) -> str:
 
 
 def make_memory_prompt(memraw: str) -> str:
-    return """
-Each line in the robot memory is the output of one node.
-There are many nodes running asynchronously.
-Each line in the robot memory contains a time since the start of the node.
-<robot_memory>
-{memraw}
-</robot_memory>
-"""
+    return f"{MEM_PROMPT}{memraw}"
 
 
 def make_memory(id: int) -> (str, int):
