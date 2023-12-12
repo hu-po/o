@@ -13,6 +13,6 @@ def import_node(name: str) -> dict:
         from nodes.talk import EMOJI, loop
     else:
         from nodes.test import EMOJI, loop
-    print(f"🖥️ using node {name}{EMOJI}")
+    print(f"🖥️ {EMOJI} starting node {name}")
 
     return {"emoji": EMOJI, "loop": loop}

@@ -15,7 +15,7 @@ def import_robot(robot: str, node: str) -> dict:
     else:
         from robots.test import DEFAULT_FUNC, DEFAULT_CODE, DESCRIPTION
         from robots.test import __file__ as _file
-    print(f"🖥️ {node}  using robot {robot}")
+    print(f"🖥️ {node} using robot {robot}")
 
     async def async_act(func: str, code: str) -> str:
         _s = time.time()

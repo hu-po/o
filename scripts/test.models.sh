@@ -11,12 +11,12 @@ for model_api in "${model_apis[@]}"; do
             source params/defaults.sh
             source params/rep.sh
     else
-        echo "🖥️   ❌ no tests for model_api $model_api"
+        echo "🖥️ ❌ no tests for model_api $model_api"
         exit 1
     fi
     if ! python3 o.py --node test --model_api $model_api --robot test; then
-        echo "🖥️   ❌ testing failed with $model_api"
+        echo "🖥️ ❌ testing failed with $model_api"
         exit 1
     fi
 done
-echo "🖥️   ✅ testing completed"
+echo "🖥️ ✅ testing completed"

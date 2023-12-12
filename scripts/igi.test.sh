@@ -19,8 +19,8 @@ python3 o.py --node quiet --model_api rep --robot igi
 
 status=$?
 if [ $status -ne 0 ]; then
-    echo "🖥️   ❌ testing failed with exit status $status"
+    echo "🖥️ ❌ testing failed with exit status $status"
     exit $status
 else
-    echo "🖥️   ✅ testing completed"
+    echo "🖥️ ✅ testing completed"
 fi

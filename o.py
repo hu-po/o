@@ -117,6 +117,5 @@ if __name__ == "__main__":
         "get_memory": get_memory,
         "add_memory": add_memory,
     }
-    print(f"      {node['emoji']}  node started")
     asyncio.run(node["loop"](models, robot, utils))
-    print(f"      {node['emoji']}✅  node finished")
+    print(f"🖥️ {node['emoji']} ✅ node finished")
