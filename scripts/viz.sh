@@ -7,9 +7,9 @@ get_formatted_output() {
     echo "🖥️ 🖥️ 🖥️  params:"
     printenv | grep '^O_' | while read -r line; do
         echo "$line"
-    echo "🖥️🖥️🖥️  memory:"
-    cat $O_MEM_PATH
     done
+    echo "🖥️ 🖥️ 🖥️  memory:"
+    cat "/tmp/o.memory.$O_MEM_ID.txt"
 }
 
 display_image() {
