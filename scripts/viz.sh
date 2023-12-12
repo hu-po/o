@@ -1,19 +1,19 @@
 get_formatted_output() {
-    echo "🖥️    Running python3 instances:"
+    echo "🖥️🖥️🖥️  running python3 instances:"
     # Using ps with custom format to show memory usage (%mem) and elapsed time (etime)
     ps aux --sort=-%mem | awk '/python3 o\..*/ && !/grep/ {print $0, "Memory:", $4"%", "Duration:", $10}'
-    echo "🖥️    memory:"
+    echo "🖥️🖥️🖥️  memory:"
     cat $O_MEM_PATH
-    echo "🖥️    files:"
+    echo "🖥️🖥️🖥️  files:"
     ls -lht /tmp/o.*
-    echo "🖥️    params:"
+    echo "🖥️🖥️🖥️  params:"
     printenv | grep '^O_' | while read -r line; do
         echo "$line"
     done
 }
 
 display_image() {
-    echo "🖥️    display image for 2 seconds"
+    echo "🖥️ display image for 2 seconds"
     if command -v gpicview >/dev/null 2>&1; then
         DISPLAY=:0 timeout 2 gpicview $O_IMAGE_PATH
     elif command -v eog >/dev/null 2>&1; then
