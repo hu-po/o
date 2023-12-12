@@ -1,48 +1,34 @@
 import asyncio
+import os
 
-EMOJI = "📣"
+EMOJI = "📢"
+TALK_PROMPT = os.environ.get("O_TALK_PROMPT", """
+Respond to the human.
+Be short, laconic, and witty in your reply.
+""")
 
 async def loop(models: dict, robot: dict, utils: dict):
-    log = "📣 talk started (chatty, talks about everything)"
-    speak = "hello world"
+    speak = "hey there"
     heard = ""
     while  True:
         log, is_alive = utils['heartbeat'](EMOJI)
         if not is_alive:
             break
-        (_, memstr), (tts_log, _) = await asyncio.gather(
+        (mem_log, memstr), _, (stt_log, heard) = await asyncio.gather(
             utils['get_memory'](),
-            models["tts"](speak),
-        )
-        tasks = [
-            # Say "o" outloud so we know when listening
-            models["tts"]("o"),
-            models["stt"](),
             utils['add_memory'](log),
-        ]
-        if heard:
-            tasks.append(
-                models["llm"](
-                    f"""
-Reply to the human.
-The human said: [{heard}].
-Be short, laconic, and witty in your reply.
-The human might mention the robot memory:
-{memstr}
-                """
-                )
-            )
-        else:
-            tasks.append(
-                models["llm"](
-                    f"""
-Describe what the robot sees and any future plans.
-Be short, laconic, and witty in your reply.
-{memstr}
-                """
-                )
-            )
-        (tts_log, _), (stt_log, heard), _, (llm_log, speak) = await asyncio.gather(
-            *tasks
+            models["stt"](),
         )
-        log = f"{tts_log}{llm_log}{stt_log}"
+        log = mem_log + stt_log
+        if heard:
+            (llm_log, speak) = await models["llm"](f"""
+{TALK_PROMPT}
+You just heard [{heard}]
+{memstr}
+""")
+            log += llm_log
+            (tts_log, _) = await models["tts"](speak)
+            log += tts_log
+        else:
+            log += f"{EMOJI} heard nothing"
+        await utils['add_memory'](log)

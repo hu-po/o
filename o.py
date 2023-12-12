@@ -23,6 +23,7 @@ MEM_ID = int(os.getenv("O_MEM_ID", 0))
 MEM_MAX_SIZE = int(os.getenv("O_MEM_MAX_SIZE", 4096))
 MEM_MAX_NUM = int(os.getenv("O_MEM_MAX_NUM", 8))
 MEM_PROMPT = str(os.getenv("O_MEM_PROMPT","""
+To provide a better answer, it might be useful to reference the robot memory.
 The robot memory contains timestamped logs of robot node activity.
 There are many nodes running asynchronously as part of the robot.
 Here is the robot memory:

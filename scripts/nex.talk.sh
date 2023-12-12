@@ -22,4 +22,4 @@ export O_DEFAULT_CODE="FORWARD"
 export O_DEATH=60
 O_MAX_STEPS=80 python3 o.py --node body --model_api gpt --robot nex &
 O_MAX_STEPS=12 python3 o.py --node look --model_api gpt --robot nex &
-O_MAX_STEPS=24 python3 o.py --node quiet --model_api gpt --robot nex
+O_MAX_STEPS=24 python3 o.py --node talk --model_api gpt --robot nex
