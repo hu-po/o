@@ -104,6 +104,7 @@ async def add_memory(txt: str) -> str:
     with FileLock(mem_lock_path):
         with open(mem_path, "a") as f:
             f.write(timestamp(txt))
+            print(timestamp(txt))
     return timestamp(log)
 
 
