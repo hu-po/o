@@ -77,8 +77,8 @@ async def select_memory(id: int = MEM_ID) -> (str, int):
         return log, id
     else:
         mem_size = os.path.getsize(mem_path)
+        log = f"💾  found memory {id} of {MEM_MAX_NUM} size {mem_size} bytes"
         if mem_size < MEM_MAX_SIZE:
-            log = f"💾  found memory {id} of {MEM_MAX_NUM} size {mem_size} bytes"
             return log, id
         else:
             log += f" max size {MEM_MAX_SIZE} bytes exceeded"
