@@ -10,7 +10,7 @@ async def loop(models: dict, robot: dict, utils: dict):
             break
         (_, memstr) = await utils['get_memory']()
         (llm_log, reply), robot_log, _ = await asyncio.gather(
-            models["llm"](f"{memstr}{robot['DESCRIPTION']}"),
+            models["llm"](f"{robot['DESCRIPTION']}{memstr}"),
             robot["act"](func, code),
             utils['add_memory'](log),
         )
