@@ -5,7 +5,7 @@ export O_DESCRIPTION="Pick a function based on the robot log
 Always pick a function and provide any args required
 Here are the functions:
 PLAY(action:str)
-    action must be one of [GRAB_LEFT_HAND, GRAB_RIGHT_HAND, CROUCH]
+    action must be one of [GRAB_LEFT_HAND, GRAB_RIGHT_HAND]
     🦾📷
 LOOK(direction:str)
     direction must be one of [FORWARD, LEFT, RIGHT, UP, DOWN]
