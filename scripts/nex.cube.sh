@@ -1,13 +1,8 @@
 echo "🖥️   running robot nex with model_api gpt"
 source scripts/nuke.sh
 source params/gpt.sh
-export O_DESCRIPTION="You are a small humanoid robot with a monocular camera
-You are small and only 20cm off the ground
-In front of you there is a red cube and a blue cube.
-You must pick the right behavior to grab the correct cube.
-Use either your left or your right hand to grab the cube.
-Pick a function based on the robot log.
-Always pick a function and provide any args required.
+export O_DESCRIPTION="Pick a function based on the robot log
+Always pick a function and provide any args required
 Here are the functions:
 PLAY(action:str)
     action must be one of [GRAB_LEFT_HAND, GRAB_RIGHT_HAND, CROUCH]
@@ -15,10 +10,15 @@ PLAY(action:str)
 LOOK(direction:str)
     direction must be one of [FORWARD, LEFT, RIGHT, UP, DOWN]
     👀📷
-Pick one of the functions and the args.
+Pick one of the functions and the args
 Here are some example outputs:
 PLAY,CROUCH
-LOOK,FORWARD"
+LOOK,FORWARD
+You are a small humanoid robot with a monocular camera
+You are small and only 20cm off the ground
+In front of you there is a red cube and a blue cube
+You must pick the right behavior to grab the correct cube
+Use either your left or your right hand to grab the cube"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="DOWN"
 export O_VIDEO_DEVICE=0
