@@ -22,8 +22,8 @@ LOOK,FORWARD"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="DOWN"
 export O_VIDEO_DEVICE=0
-export O_DEATH=120
-export O_MAX_STEPS=12
+export O_DEATH=30
+export O_MAX_STEPS=6
 export O_MUTE_MODE=1
 export O_GOAL="grab the red cube" 
 python3 o.py --node body --model_api gpt --robot nex &
