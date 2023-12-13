@@ -236,3 +236,7 @@ if __name__ == "__main__":
         print(move(direction=args.code))
     else:
         raise ValueError(f" unknown func {args.func} code {args.code}")
+    try:
+        rospy.signal_shutdown("Done")
+    except: # noqa
+        pass
