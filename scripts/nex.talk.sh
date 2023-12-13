@@ -19,6 +19,7 @@ PLAY,CROUCH
 LOOK,FORWARD"
 export O_DEFAULT_FUNC="LOOK"
 export O_DEFAULT_CODE="FORWARD"
+export O_VIDEO_DEVICE=0
 export O_DEATH=60
 export O_TALK_PROMPT="Respond to the human in a few words.
 Be short, laconic, and witty in your reply."
