@@ -1,6 +1,8 @@
 def import_node(name: str) -> dict:
     if name == "body":
         from nodes.body import EMOJI, loop
+    elif name == "goal":
+        from nodes.goal import EMOJI, loop
     elif name == "look":
         from nodes.look import EMOJI, loop
     elif name == "plan":
