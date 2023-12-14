@@ -9,6 +9,7 @@ get_formatted_output() {
         echo "$line"
     done
     echo "🖥️ 🖥️ 🖥️  memory:"
+    export O_MEM_ID=0
     cat "/tmp/o.memory.$O_MEM_ID.txt"
 }
 
