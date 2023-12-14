@@ -12,6 +12,7 @@ import sounddevice as sd
 
 IMAGE_PATH = os.getenv('O_IMAGE_PATH', "/tmp/o.image.jpeg")
 IMAGE_LOCK_PATH = os.getenv('O_IMAGE_LOCK_PATH', "/tmp/o.image.lock")
+IMAGE_FREQ = int(os.getenv('O_IMAGE_FREQ', 1))
 AUDIO_RECORD_TIME = int(os.getenv('O_AUDIO_RECORD_TIME', 3))
 AUDIO_SAMPLE_RATE = int(os.getenv('O_AUDIO_SAMPLE_RATE', 16000))
 AUDIO_CHANNELS = int(os.getenv('O_AUDIO_CHANNELS', 1))
@@ -19,6 +20,9 @@ AUDIO_OUTPUT_PATH = os.getenv('O_AUDIO_OUTPUT_PATH', "/tmp/o.audio.wav")
 AUDIO_LOCK_PATH = os.getenv('O_SPEAKING_LOCK_PATH', "/tmp/o.audio.lock")
 
 def import_models(api: str, node: str) -> dict:
+    api = "test"
+    from models.test import llm, vlm, tts, stt
+    from models.test import LLM, VLM, TTS, STT
     if api == "gpt":
         from models.gpt import llm, vlm, tts, stt
         from models.gpt import LLM, VLM, TTS, STT
@@ -27,10 +31,11 @@ def import_models(api: str, node: str) -> dict:
         from models.rep import llm, vlm, tts, stt
         from models.rep import LLM, VLM, TTS, STT
 
-    else:
-        from models.test import llm, vlm, tts, stt
-        from models.test import LLM, VLM, TTS, STT
-    print(f"🖥️ {node} using model_api {api}")
+    elif api == "gem":
+        from models.gem import llm, vlm
+        from models.gem import LLM, VLM
+
+    print(f"🖥️ {node} using model {api}")
     # print(f"   LLM 💬: {LLM}")
     # print(f"   VLM 👁️‍🗨️: {VLM}")
     # print(f"   TTS 🗣️: {TTS}")
@@ -56,7 +61,7 @@ def import_models(api: str, node: str) -> dict:
     async def async_vlm(prompt: str) -> str:
         try:
             if not os.path.exists(IMAGE_PATH):
-                await asyncio.sleep(0.4)
+                await asyncio.sleep(IMAGE_FREQ)
                 return f"{node}👁️‍🗨️❌ no image found", None
             with FileLock(IMAGE_LOCK_PATH):
                 with open(IMAGE_PATH, "rb") as f:

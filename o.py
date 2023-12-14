@@ -11,7 +11,7 @@ from robots import import_robot
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--node", type=str, default="test")
-argparser.add_argument("--model_api", type=str, default="test")
+argparser.add_argument("--model", type=str, default="test")
 argparser.add_argument("--robot", type=str, default="test")
 
 START = datetime.now()
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
     node: dict = import_node(args.node)
     robot: dict = import_robot(args.robot, node["emoji"])
-    models: dict = import_models(args.model_api, node["emoji"])
+    models: dict = import_models(args.model, node["emoji"])
     utils: dict = {
         "heartbeat": heartbeat,
         "get_memory": get_memory,

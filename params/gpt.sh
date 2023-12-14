@@ -1,4 +1,4 @@
-echo "🔠 loading model_api gpt test params"
+echo "🔠 loading model gpt test params"
 export O_LLM="gpt-4-1106-preview"
 export O_LLM_MAX_TOKENS=16
 export O_LLM_TEMPERATURE=0.4

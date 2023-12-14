@@ -29,6 +29,7 @@ export O_DEFAULT_CODE="FORWARD"
 export O_VIDEO_DEVICE="/dev/video0"
 export O_IMAGE_PATH="/tmp/o.image.jpeg"
 export O_IMAGE_LOCK_PATH="/tmp/o.image.lock"
+export O_IMAGE_FREQ=1
 
 export O_AUDIO_RECORD_TIME=3
 export O_AUDIO_SAMPLE_RATE=16000

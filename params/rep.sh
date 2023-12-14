@@ -1,4 +1,4 @@
-echo "🔠 loading model_api rep test params"
+echo "🔠 loading model rep test params"
 export O_LLM="meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
 export O_LLM_MAX_TOKENS=16
 export O_LLM_TEMPERATURE=0.4

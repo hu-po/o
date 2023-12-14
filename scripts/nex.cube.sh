@@ -3,7 +3,7 @@ export O_MODEL="gpt"
 # export O_MODEL="rep"
 # export O_MODEL="gem"
 source params/$O_MODEL.sh
-echo "🖥️   running robot nex with model_api $O_MODEL"
+echo "🖥️   running robot nex with model $O_MODEL"
 export O_DESCRIPTION="Pick a function based on the robot log
 Always pick a function and provide any args required
 Here are the functions:
@@ -29,6 +29,6 @@ export O_DEATH=30
 export O_MAX_STEPS=6
 export O_MUTE_MODE=1
 export O_GOAL="grab the red cube" 
-python3 o.py --node body --model_api $O_MODEL --robot nex &
-python3 o.py --node look --model_api $O_MODEL --robot nex &
-python3 o.py --node goal --model_api $O_MODEL --robot nex
+python3 o.py --node body --model $O_MODEL --robot nex &
+python3 o.py --node look --model $O_MODEL --robot nex &
+python3 o.py --node goal --model $O_MODEL --robot nex

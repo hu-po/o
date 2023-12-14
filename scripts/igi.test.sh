@@ -1,9 +1,12 @@
-echo "🖥️   running robot igi with model_api gpt"
+source scripts/nuke.sh
+export O_MODEL="gpt"
+# export O_MODEL="rep"
+# export O_MODEL="gem"
+source params/$O_MODEL.sh
+echo "🖥️   running robot igi with model $O_MODEL"
 export DISPLAY=:0
 xdotool key shift
-source scripts/nuke.sh
 source params/defaults.sh
-source params/gpt.sh
 export O_DESCRIPTION="You are a small robot with a stereo camera vision module
 Your vision module uses two cameras to infer 3d
 Pick a function based on the robot log.
@@ -33,6 +36,6 @@ Be short, laconic, and witty in your reply."
 export O_MUTE_MODE=0
 export O_DEATH=120
 export O_MAX_STEPS=12
-python3 o.py --node body --model_api gpt --robot igi &
-python3 o.py --node look --model_api gpt --robot igi &
-python3 o.py --node talk --model_api gpt --robot igi
+python3 o.py --node body --model $O_MODEL --robot igi &
+python3 o.py --node look --model $O_MODEL --robot igi &
+python3 o.py --node talk --model $O_MODEL --robot igi
