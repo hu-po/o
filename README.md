@@ -23,6 +23,10 @@ The `params` module contains code for different parameters. For example `params/
 
 If you are interested in contributing, please read the [contributing guide](docs/contributing.md).
 
+## Video
+
+[![YouTube Video](https://img.youtube.com/vi/bN9_ml4f05M/0.jpg)](https://www.youtube.com/watch?v=bN9_ml4f05M)
+
 ## Citation
 
 ```
